@@ -1,0 +1,7 @@
+{
+  "name": "ui",
+  "version": "1.1.0",
+  "dependencies": {
+    "paint": "1.1.0"
+  }
+}

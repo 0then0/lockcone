@@ -1,0 +1,19 @@
+lockfileVersion: '9.0'
+importers:
+  .:
+    dependencies:
+      aws-sdk: {specifier: ^2.0.0, version: 2.1.0}
+    devDependencies:
+      vitest: {specifier: 4.1.11, version: 4.1.11}
+packages:
+  vitest@4.1.11: {resolution: {integrity: demo-vitest-new}}
+  vite@7.0.1: {resolution: {integrity: demo-vite-new}}
+  esbuild@0.25.9: {resolution: {integrity: demo-esbuild-new}}
+  aws-sdk@2.1.0: {resolution: {integrity: demo-aws-new}}
+snapshots:
+  vitest@4.1.11:
+    dependencies: {vite: 7.0.1}
+  vite@7.0.1:
+    optionalDependencies: {esbuild: 0.25.9}
+  esbuild@0.25.9: {}
+  aws-sdk@2.1.0: {}

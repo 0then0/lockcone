@@ -1,0 +1,10 @@
+{
+  "name": "demo",
+  "private": true,
+  "devDependencies": {
+    "vitest": "4.1.10"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.0.0"
+  }
+}

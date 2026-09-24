@@ -1,0 +1,40 @@
+{
+  "name": "lockcone",
+  "version": "0.1.0",
+  "description": "Git blame for dependency changes: evidence from pnpm dependency graphs.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "bin": {
+    "lockcone": "dist/cli/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "packageManager": "pnpm@12.5.1",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.test.json",
+    "lint": "biome lint",
+    "format": "biome check --write",
+    "format:check": "biome ci",
+    "test": "pnpm build && vitest run",
+    "demo": "pnpm build && node examples/demo.mjs",
+    "prepack": "pnpm build"
+  },
+  "dependencies": {
+    "commander": "15.0.0",
+    "yaml": "2.9.1",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.14",
+    "@types/node": "^24.0.0",
+    "typescript": "7.0.2",
+    "vitest": "5.0.1"
+  }
+}

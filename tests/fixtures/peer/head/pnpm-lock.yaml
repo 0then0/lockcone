@@ -1,0 +1,13 @@
+lockfileVersion: '9.0'
+importers:
+  .:
+    dependencies:
+      plugin: {specifier: 1.0.0, version: '1.0.0(react@19.0.0)'}
+      react: {specifier: 19.0.0, version: 19.0.0}
+packages:
+  plugin@1.0.0: {peerDependencies: {react: '*'}}
+  react@19.0.0: {}
+snapshots:
+  plugin@1.0.0(react@19.0.0):
+    dependencies: {react: 19.0.0}
+  react@19.0.0: {}
