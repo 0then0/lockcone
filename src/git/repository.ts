@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { parseAllDocuments } from 'yaml';
+import { parse, parseAllDocuments } from 'yaml';
 
 export interface RepositoryState {
   revision: string;
@@ -8,26 +8,69 @@ export interface RepositoryState {
 
 export const resolutionFiles = new Set(['.npmrc', '.pnpmfile.cjs', 'pnpmfile.cjs']);
 
-export function configuredPatches(lockfile: string | undefined): Set<string> {
-  if (lockfile === undefined) return new Set();
+function patchPaths(value: unknown, lockfileFormat: boolean): Set<string> {
+  const paths = new Set<string>();
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return paths;
+  for (const patch of Object.values(value)) {
+    if (typeof patch === 'string') {
+      if (!lockfileFormat) paths.add(patch);
+    } else if (
+      lockfileFormat &&
+      patch !== null &&
+      typeof patch === 'object' &&
+      'path' in patch &&
+      typeof patch.path === 'string'
+    ) {
+      paths.add(patch.path);
+    }
+  }
+  return paths;
+}
+
+export function configuredPatches(files: Map<string, string>): Set<string> {
+  const paths = new Set<string>();
+  const lockfile = files.get('pnpm-lock.yaml');
   try {
-    const documents = parseAllDocuments(lockfile, { uniqueKeys: true });
+    const documents = parseAllDocuments(lockfile ?? '', { uniqueKeys: true });
     const value = documents.at(-1)?.toJS({ maxAliasCount: 100 });
     if (value && typeof value === 'object' && 'patchedDependencies' in value) {
-      const configured = (value as { patchedDependencies?: unknown })
-        .patchedDependencies;
-      if (configured && typeof configured === 'object') {
-        return new Set(
-          Object.values(configured).filter(
-            (item): item is string => typeof item === 'string',
-          ),
-        );
-      }
+      for (const path of patchPaths(
+        (value as { patchedDependencies?: unknown }).patchedDependencies,
+        true,
+      ))
+        paths.add(path);
     }
   } catch {
     // Let the lockfile parser report syntax errors after all files are read.
   }
-  return new Set();
+  const configs = [
+    {
+      source: files.get('pnpm-workspace.yaml'),
+      parse: (source: string) =>
+        parse(source, { maxAliasCount: 100, uniqueKeys: true }),
+      lockfileFormat: false,
+    },
+    {
+      source: files.get('package.json'),
+      parse: (source: string) => JSON.parse(source) as { pnpm?: unknown },
+      lockfileFormat: false,
+    },
+  ];
+  for (const { source, parse: parseConfig } of configs) {
+    if (source === undefined) continue;
+    try {
+      const parsed = parseConfig(source);
+      const config = 'pnpm' in parsed ? parsed.pnpm : parsed;
+      const patched =
+        config !== null && typeof config === 'object' && 'patchedDependencies' in config
+          ? config.patchedDependencies
+          : undefined;
+      for (const path of patchPaths(patched, false)) paths.add(path);
+    } catch {
+      // Manifest and workspace parsers report their own syntax errors.
+    }
+  }
+  return paths;
 }
 
 function git(cwd: string, args: string[]): string {
@@ -120,8 +163,7 @@ export function readRepository(cwd: string, ref: string): RepositoryState {
       resolutionFiles.has(path),
   );
   const initial = readBlobs(root, candidates);
-  const lockfile = initial.get('pnpm-lock.yaml');
-  const patches = configuredPatches(lockfile);
+  const patches = configuredPatches(initial);
   const patchEntries = tree.filter(({ path }) => patches.has(path));
   const files = new Map([...initial, ...readBlobs(root, patchEntries)]);
   if (!files.has('package.json') || !files.has('pnpm-lock.yaml')) {

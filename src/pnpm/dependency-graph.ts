@@ -1,6 +1,5 @@
 import { posix } from 'node:path';
 import type { RepositoryState } from '../git/repository.js';
-import { resolutionFiles } from '../git/repository.js';
 import type { DependencyGraph, GraphNode } from '../graph/dependency-graph.js';
 import { dependencyId, workspaceId } from '../graph/dependency-graph.js';
 import type { Manifest } from '../manifests/package-json.js';
@@ -280,32 +279,6 @@ export function buildPnpmState(repository: RepositoryState): PnpmState {
           warn(`Unsupported dependency protocol: ${path} ${name}: ${declared}`);
       }
     }
-  }
-  if (lockfile.environment) {
-    const environment = lockfile.environment as Lockfile;
-    for (const importer of Object.values(environment.importers)) {
-      if (
-        importer.configDependencies &&
-        Object.keys(importer.configDependencies as object).length
-      ) {
-        warn('Environment configDependencies are not modeled.');
-      }
-    }
-  }
-  for (const field of ['overrides', 'patchedDependencies', 'catalogs'] as const) {
-    if (lockfile[field] && Object.keys(lockfile[field] as object).length)
-      warn(`Unsupported pnpm feature: ${field}`);
-  }
-  for (const [path, manifest] of manifests) {
-    if (manifest.pnpm && Object.keys(manifest.pnpm as object).length)
-      warn(`Unmodeled pnpm configuration: ${path}/package.json`);
-  }
-  for (const key of Object.keys(workspace)) {
-    if (key !== 'packages') warn(`Unmodeled pnpm-workspace.yaml setting: ${key}`);
-  }
-  for (const path of repository.files.keys()) {
-    if (resolutionFiles.has(path) && path !== '.npmrc')
-      warn(`Resolution hook is not executed: ${path}`);
   }
   graph.warnings = [...new Set(graph.warnings)].sort();
   return { ...repository, graph, manifests, lockfile, workspace };

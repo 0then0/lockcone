@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { evidencePath } from '../src/analysis/diff.js';
 import { explain, why } from '../src/analysis/explain.js';
+import { configuredPatches } from '../src/git/repository.js';
 import { dependencyId, workspaceId } from '../src/graph/dependency-graph.js';
 import { dependencyPath, traverse } from '../src/graph/traversal.js';
 import { renderJson } from '../src/output/json.js';
@@ -221,7 +222,11 @@ describe('dependency cone analysis', () => {
           '.': { dependencies: { a: { specifier: '1.0.0', version: '1.0.0' } } },
         },
         { 'a@1.0.0': {} },
-        { patchedDependencies: { 'a@1.0.0': 'patches/a.patch' } },
+        { patchedDependencies: { 'a@1.0.0': 'patch-hash' } },
+      );
+      repository.files.set(
+        'pnpm-workspace.yaml',
+        'patchedDependencies:\n  a@1.0.0: patches/a.patch\n',
       );
       repository.files.set('patches/a.patch', contents);
       return repository;
@@ -230,6 +235,81 @@ describe('dependency cone analysis', () => {
     expect(report.warnings).toContain('Resolution input changed: patches/a.patch');
     expect(report.changes.every((change) => change.confidence === 'unknown')).toBe(
       true,
+    );
+  });
+
+  it('finds patch paths in pnpm 10 lockfiles and pnpm 11+ workspace config', () => {
+    expect(
+      configuredPatches(
+        new Map([
+          [
+            'pnpm-lock.yaml',
+            "lockfileVersion: '9.0'\npatchedDependencies:\n  a@1.0.0:\n    hash: abc\n    path: patches/a.patch\n",
+          ],
+        ]),
+      ),
+    ).toEqual(new Set(['patches/a.patch']));
+    expect(
+      configuredPatches(
+        new Map([
+          [
+            'pnpm-lock.yaml',
+            "lockfileVersion: '9.0'\npatchedDependencies:\n  a@1.0.0: abc\n",
+          ],
+          ['pnpm-workspace.yaml', 'patchedDependencies:\n  a@1.0.0: patches/a.patch\n'],
+        ]),
+      ),
+    ).toEqual(new Set(['patches/a.patch']));
+  });
+
+  it('does not make changes unknown because unchanged overrides are present', () => {
+    const base = fixture('upgrade', 'base');
+    const head = fixture('upgrade', 'head');
+    for (const repository of [base, head]) {
+      repository.files.set(
+        'pnpm-workspace.yaml',
+        'overrides:\n  unused-package: 1.0.0\n',
+      );
+      repository.files.set(
+        'pnpm-lock.yaml',
+        `${repository.files.get('pnpm-lock.yaml')}\noverrides:\n  unused-package: 1.0.0\n`,
+      );
+    }
+    const report = explain(base, head);
+    expect(report.warnings).toEqual([]);
+    expect(report.summary).toEqual({
+      explained: 4,
+      'partially-explained': 0,
+      unexplained: 2,
+      unknown: 0,
+    });
+  });
+
+  it('marks a graph change unknown when a configured patch file changes', () => {
+    const build = (integrity: string, patch: string) => {
+      const repository = state(
+        { dependencies: { a: '1.0.0' } },
+        { '.': { dependencies: { a: { specifier: '1.0.0', version: '1.0.0' } } } },
+        { 'a@1.0.0': {} },
+        { patchedDependencies: { 'a@1.0.0': 'patch-hash' } },
+      );
+      repository.files.set(
+        'pnpm-workspace.yaml',
+        'patchedDependencies:\n  a@1.0.0: patches/a.patch\n',
+      );
+      repository.files.set('patches/a.patch', patch);
+      repository.files.set(
+        'pnpm-lock.yaml',
+        repository.files
+          .get('pnpm-lock.yaml')!
+          .replace('a@1.0.0: {}', `a@1.0.0: {resolution: {integrity: ${integrity}}}`),
+      );
+      return repository;
+    };
+    const report = explain(build('before', 'before'), build('after', 'after'));
+    expect(report.warnings).toContain('Resolution input changed: patches/a.patch');
+    expect(report.changes.find((item) => item.kind === 'package')?.confidence).toBe(
+      'unknown',
     );
   });
 
@@ -355,13 +435,30 @@ describe('dependency cone analysis', () => {
     );
   });
 
+  it('does not claim metadata fields changed when a new package version has the same value', () => {
+    const build = (version: string) =>
+      state(
+        { dependencies: { a: version } },
+        { '.': { dependencies: { a: { specifier: version, version } } } },
+        { [`a@${version}`]: {} },
+        { packages: { [`a@${version}`]: { resolution: { integrity: 'same' } } } },
+      );
+    const report = explain(build('1.0.0'), build('2.0.0'));
+    const change = report.changes.find((item) => item.kind === 'package');
+    expect(change?.details.every((detail) => detail.metadataChanged.length === 0)).toBe(
+      true,
+    );
+  });
+
   it('marks unresolved references and unsupported configuration as unknown', () => {
     const base = fixture('upgrade', 'base');
     const head = fixture('upgrade', 'head');
     head.files.set('pnpm-workspace.yaml', 'catalog:\n  vite: 7.0.1\n');
     const report = explain(base, head);
     expect(report.changes.every((item) => item.confidence === 'unknown')).toBe(true);
-    expect(report.warnings.some((item) => item.includes('catalog'))).toBe(true);
+    expect(report.warnings).toContain(
+      'Workspace configuration changed; resolution effects are not modeled.',
+    );
     head.files.delete('pnpm-workspace.yaml');
     head.files.set(
       'pnpm-lock.yaml',

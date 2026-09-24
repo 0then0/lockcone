@@ -125,9 +125,9 @@ uncertainty applies to affected instances and paths through them.
   Workspace membership supports `*`, `**`, `{a,b}`, and `!` package globs.
   Unsupported glob syntax warns; a matching manifest without a lockfile importer
   remains visible as manifest intent and warns that the lockfile is incomplete.
-- Peer suffixes are preserved, but peer resolution is not simulated. Catalogs,
-  overrides, patches, custom pnpm configuration, hooks, and unsupported references
-  produce uncertainty rather than a claim of causality. Hooks are never executed.
+- Peer suffixes are preserved, but peer resolution is not simulated. Changes to
+  catalogs, overrides, patches, custom pnpm configuration, or hooks produce
+  uncertainty rather than a claim of causality. Hooks are never executed.
 - Separate per-workspace lockfiles, custom lockfile locations, npm/yarn/Bun,
   other ecosystems, and SARIF are not supported in v0.1.
 - Runtime/platform selection, global pnpm configuration, and external registry
@@ -163,9 +163,9 @@ permissions:
   contents: read
 jobs:
   lockcone:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: OWNER/lockcone@COMMIT_SHA
@@ -173,7 +173,7 @@ jobs:
         with:
           base: ${{ github.event.pull_request.base.sha }}
           head: ${{ github.event.pull_request.head.sha }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: lockcone-report
           path: ${{ steps.lockcone.outputs.report }}

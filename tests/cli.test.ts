@@ -20,6 +20,17 @@ beforeAll(() => {
       Object.fromEntries(fixture('upgrade', side).files),
     ]),
   );
+  for (const [side, source] of [
+    ['patchBase', 'base'],
+    ['patchHead', 'head'],
+  ] as const) {
+    states[side] = { ...states[source] };
+    states[side]['pnpm-workspace.yaml'] =
+      'patchedDependencies:\n  aws-sdk@2: patches/aws-sdk.patch\n';
+    states[side]['pnpm-lock.yaml'] +=
+      '\npatchedDependencies:\n  aws-sdk@2: stable-hash\n';
+    states[side]['patches/aws-sdk.patch'] = side === 'patchBase' ? 'before' : 'after';
+  }
   writeFileSync(join(temporary, 'states.json'), JSON.stringify(states));
   const shim = join(temporary, 'git');
   writeFileSync(
@@ -31,7 +42,7 @@ const args = process.argv.slice(2);
 if (args[0] === 'rev-parse' && args[1] === '--show-toplevel') process.stdout.write(process.cwd());
 else if (args[0] === 'rev-parse') {
   const ref = args.at(-1).replace(/\\^\\{commit\\}$/, '');
-  const side = ({ 'main': 'base', 'HEAD~1': 'base', 'HEAD': 'head' })[ref];
+  const side = ({ 'main': 'base', 'HEAD~1': 'base', 'HEAD': 'head', 'patch-base': 'patchBase', 'patch-head': 'patchHead' })[ref];
   if (!side) { process.stderr.write('unknown revision'); process.exit(128); }
   process.stdout.write(side);
 } else if (args[0] === 'ls-tree') {
@@ -109,6 +120,28 @@ describe('compiled CLI', () => {
     expect(
       execFileSync(process.execPath, [cli, 'explain'], { env, encoding: 'utf8' }),
     ).toContain('Outside dependency cone');
+  });
+
+  it('loads changed pnpm 11+ patch files from the committed workspace config', () => {
+    const report = JSON.parse(
+      execFileSync(
+        process.execPath,
+        [
+          cli,
+          'diff',
+          '--base',
+          'patch-base',
+          '--head',
+          'patch-head',
+          '--format',
+          'json',
+        ],
+        { env, encoding: 'utf8' },
+      ),
+    );
+    expect(report.warnings).toContain(
+      'Resolution input changed: patches/aws-sdk.patch',
+    );
   });
 
   it.each([

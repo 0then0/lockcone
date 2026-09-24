@@ -115,6 +115,11 @@ function nodeDetails(
   const previousMetadata = counterpart
     ? metadataFields(detailMetadata(counterpart))
     : new Map<string, string>();
+  const metadataChanged = counterpart
+    ? [...new Set([...currentMetadata.keys(), ...previousMetadata.keys()])]
+        .filter((path) => currentMetadata.get(path) !== previousMetadata.get(path))
+        .sort()
+    : [];
   return {
     side,
     node: node.id,
@@ -130,11 +135,7 @@ function nodeDetails(
             .filter(([key]) => !counterpartEdges.has(key))
             .map(([, edge]) => edge)
         : [],
-    metadataChanged: [
-      ...new Set([...currentMetadata.keys(), ...previousMetadata.keys()]),
-    ]
-      .filter((path) => currentMetadata.get(path) !== previousMetadata.get(path))
-      .sort(),
+    metadataChanged,
   };
 }
 
@@ -218,8 +219,7 @@ export function diff(base: PnpmState, head: PnpmState): Report {
       warnings.add(`Resolution input changed: ${path}`);
     }
   }
-  const patches = (state: PnpmState): Set<string> =>
-    configuredPatches(state.files.get('pnpm-lock.yaml'));
+  const patches = (state: PnpmState): Set<string> => configuredPatches(state.files);
   for (const path of new Set([...patches(base), ...patches(head)])) {
     if (base.files.get(path) !== head.files.get(path))
       warnings.add(`Resolution input changed: ${path}`);
@@ -235,6 +235,7 @@ export function diff(base: PnpmState, head: PnpmState): Report {
       'cpu',
       'libc',
       'dependenciesMeta',
+      'pnpm',
     ]) {
       if (
         stable(base.manifests.get(path)?.[field]) !==

@@ -17,21 +17,13 @@ outputs:
 runs:
   using: composite
   steps:
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-node@v6
       with:
         node-version: '24'
-    - name: Locate LockCone manifest
-      id: paths
-      shell: bash
-      env:
-        LOCKCONE_ACTION: ${{ github.action_path }}
-      run: |
-        node -e 'const p = require("node:path"); console.log("manifest=" + p.relative(process.env.GITHUB_WORKSPACE, p.join(process.env.LOCKCONE_ACTION, "package.json")))' >> "$GITHUB_OUTPUT"
-    - uses: pnpm/action-setup@v4
+    - uses: pnpm/setup@v2
       with:
         version: 12.5.1
-        package_json_file: ${{ steps.paths.outputs.manifest }}
-        run_install: false
+        install: false
     - name: Build LockCone
       shell: bash
       env:
