@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { evidencePath } from '../src/analysis/diff.js';
+import { evidencePath, diff as graphDiff } from '../src/analysis/diff.js';
 import { explain, why } from '../src/analysis/explain.js';
 import { configuredPatches } from '../src/git/repository.js';
 import { dependencyId, workspaceId } from '../src/graph/dependency-graph.js';
@@ -265,8 +265,78 @@ describe('dependency cone analysis', () => {
           .flatMap((item) => [item.root, item.root]),
       ].sort(),
     );
-    for (const evidence of change.evidence)
-      expect(evidencePath(filtered, evidence)).toContain(evidence.root);
+    const paths = change.evidence.map((evidence) => evidencePath(filtered, evidence));
+    expect(paths).toHaveLength(4);
+    for (const evidence of change.evidence) {
+      const name = evidence.root.endsWith(',"a"]') ? 'a' : 'b';
+      const version = evidence.side === 'base' ? '1.0.0' : '2.0.0';
+      expect(evidencePath(filtered, evidence)).toEqual([
+        evidence.root,
+        `${name}@${version}`,
+        `c@${version}`,
+      ]);
+    }
+  });
+
+  it('explains a change through a certain root despite another uncertain path', () => {
+    const build = (version: string) => {
+      const nodes = new Map();
+      for (const name of ['a', 'b']) {
+        const id = dependencyId('.', 'dependencies', name);
+        nodes.set(id, {
+          id,
+          kind: 'dependency' as const,
+          name,
+          version,
+          scope: '.:dependencies',
+          edges: [{ name: 'c', kind: 'dependencies', target: `c@${version}` }],
+          metadata: { declared: version },
+          uncertain: name === 'a',
+        });
+      }
+      nodes.set(`c@${version}`, {
+        id: `c@${version}`,
+        kind: 'package' as const,
+        name: 'c',
+        version,
+        scope: '',
+        edges: [],
+        metadata: {},
+        uncertain: false,
+      });
+      return {
+        revision: version,
+        graph: { nodes, warnings: [] },
+        manifests: new Map([
+          [
+            '.',
+            {
+              dependencies: { a: version, b: version },
+              devDependencies: {},
+              optionalDependencies: {},
+              peerDependencies: {},
+            },
+          ],
+        ]),
+        lockfile: {
+          lockfileVersion: '9.0',
+          importers: {},
+          packages: {},
+          snapshots: {},
+        },
+        workspace: {},
+        files: new Map(),
+      };
+    };
+    const report = graphDiff(build('1.0.0'), build('2.0.0'));
+    const change = report.changes.find((item) => item.name === 'c')!;
+    expect(change.confidence).toBe('explained');
+    expect(change.evidence.map((item) => item.root)).toContain(
+      dependencyId('.', 'dependencies', 'a'),
+    );
+    expect(change.evidence.map((item) => item.root)).toContain(
+      dependencyId('.', 'dependencies', 'b'),
+    );
   });
 
   it('marks configured patch files missing on either side as unknown', () => {
@@ -564,11 +634,37 @@ describe('dependency cone analysis', () => {
     expect(change.changedNodes.head).toContain('a@3.0.0');
     const text = renderText(report);
     expect(text).toContain(
-      'metadata $.package.resolution.integrity: "hash-1.0.0" → (absent)',
+      'metadata [a@1.0.0] $.package.resolution.integrity: "hash-1.0.0" → (absent)',
     );
     expect(text).toContain(
-      'metadata $.package.resolution.integrity: (absent) → "hash-3.0.0"',
+      'metadata [a@3.0.0] $.package.resolution.integrity: (absent) → "hash-3.0.0"',
     );
+  });
+
+  it('does not merge metadata lines from distinct nodes with equal values', () => {
+    const build = (version: string, versions: string[]) =>
+      state(
+        { dependencies: { a: version } },
+        { '.': { dependencies: { a: { specifier: version, version } } } },
+        Object.fromEntries(versions.map((item) => [`a@${item}`, {}])),
+        {
+          packages: Object.fromEntries(
+            versions.map((item) => [
+              `a@${item}`,
+              { resolution: { integrity: 'same-hash' } },
+            ]),
+          ),
+        },
+      );
+    const report = explain(
+      build('2.0.0', ['1.0.0', '2.0.0']),
+      build('4.0.0', ['3.0.0', '4.0.0']),
+    );
+    const text = renderText(report);
+    expect(text).toContain('metadata [a@1.0.0]');
+    expect(text).toContain('metadata [a@2.0.0]');
+    expect(text).toContain('metadata [a@3.0.0]');
+    expect(text).toContain('metadata [a@4.0.0]');
   });
 
   it('marks unresolved references and unsupported configuration as unknown', () => {

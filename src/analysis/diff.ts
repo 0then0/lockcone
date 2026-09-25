@@ -311,7 +311,9 @@ export function diff(base: PnpmState, head: PnpmState): Report {
             ? counterparts[0]
             : undefined);
         details.push(nodeDetails(item, side, counterpart));
-        uncertain ||= item.uncertain || nodeVisits.some((visit) => visit.uncertain);
+        uncertain ||=
+          item.uncertain ||
+          (nodeVisits.length > 0 && nodeVisits.every((visit) => visit.uncertain));
         if (nodeVisits.length) reachable++;
         for (const visit of nodeVisits) {
           const pathId = JSON.stringify([side, visit.root, item.id]);

@@ -22,7 +22,6 @@ export function renderText(report: Report): string {
     if (!changes.length) continue;
     lines.push('', `${headings[confidence]}:`);
     for (const change of changes) {
-      const renderedMetadataDiffs = new Set<string>();
       lines.push(
         `  ${change.name} [${change.kind}${change.scope ? ` ${change.scope}` : ''}]: ${change.before.join(', ') || '(absent)'} → ${change.after.join(', ') || '(absent)'}`,
       );
@@ -44,12 +43,23 @@ export function renderText(report: Report): string {
           );
         }
         if (detail.metadataDiff.length) {
+          const sameNodePair = change.details.some(
+            (other) => other.side !== detail.side && other.node === detail.node,
+          );
+          const singleVersionPair =
+            change.before.length === 1 &&
+            change.after.length === 1 &&
+            change.changedNodes.base.length === 1 &&
+            change.changedNodes.head.length === 1 &&
+            change.changedNodes.base[0] !== change.changedNodes.head[0];
+          if (detail.side === 'head' && (sameNodePair || singleVersionPair)) continue;
           for (const item of detail.metadataDiff) {
-            const key = JSON.stringify(item);
-            if (renderedMetadataDiffs.has(key)) continue;
-            renderedMetadataDiffs.add(key);
+            const nodeLabel =
+              singleVersionPair && change.changedNodes.base[0] === detail.node
+                ? `${change.changedNodes.base[0]} → ${change.changedNodes.head[0]}`
+                : detail.node;
             lines.push(
-              `    ${detail.side}: metadata ${item.path}: ${item.before ?? '(absent)'} → ${item.after ?? '(absent)'}`,
+              `    ${detail.side}: metadata [${nodeLabel}] ${item.path}: ${item.before ?? '(absent)'} → ${item.after ?? '(absent)'}`,
             );
           }
         }
