@@ -22,6 +22,7 @@ export function renderText(report: Report): string {
     if (!changes.length) continue;
     lines.push('', `${headings[confidence]}:`);
     for (const change of changes) {
+      const renderedMetadataDiffs = new Set<string>();
       lines.push(
         `  ${change.name} [${change.kind}${change.scope ? ` ${change.scope}` : ''}]: ${change.before.join(', ') || '(absent)'} → ${change.after.join(', ') || '(absent)'}`,
       );
@@ -42,12 +43,11 @@ export function renderText(report: Report): string {
             `    ${detail.side}: metadata changed: ${detail.metadataChanged.join(', ')}`,
           );
         }
-        if (
-          detail.metadataDiff.length &&
-          (detail.side === 'head' ||
-            !change.details.some((item) => item.side === 'head'))
-        ) {
+        if (detail.metadataDiff.length) {
           for (const item of detail.metadataDiff) {
+            const key = JSON.stringify(item);
+            if (renderedMetadataDiffs.has(key)) continue;
+            renderedMetadataDiffs.add(key);
             lines.push(
               `    ${detail.side}: metadata ${item.path}: ${item.before ?? '(absent)'} → ${item.after ?? '(absent)'}`,
             );

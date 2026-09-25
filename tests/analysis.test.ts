@@ -214,7 +214,7 @@ describe('dependency cone analysis', () => {
     expect(report.warnings).toEqual([]);
   });
 
-  it('marks only configured patch changes as uncertain', () => {
+  it('reports configured patch changes when the graph itself is unchanged', () => {
     const build = (contents: string) => {
       const repository = state(
         { dependencies: { a: '1.0.0' } },
@@ -233,9 +233,40 @@ describe('dependency cone analysis', () => {
     };
     const report = explain(build('before'), build('after'));
     expect(report.warnings).toContain('Resolution input changed: patches/a.patch');
-    expect(report.changes.every((change) => change.confidence === 'unknown')).toBe(
-      true,
+    expect(report.changes).toEqual([]);
+  });
+
+  it('keeps every changed manifest root that reaches the same package', () => {
+    const build = (version: string) =>
+      state(
+        { dependencies: { a: version, b: version } },
+        {
+          '.': {
+            dependencies: {
+              a: { specifier: version, version },
+              b: { specifier: version, version },
+            },
+          },
+        },
+        {
+          [`a@${version}`]: { dependencies: { c: version } },
+          [`b@${version}`]: { dependencies: { c: version } },
+          [`c@${version}`]: {},
+        },
+      );
+    const report = explain(build('1.0.0'), build('2.0.0'));
+    const filtered = why(report, 'c');
+    const change = filtered.changes.find((item) => item.kind === 'package')!;
+    expect(filtered.manifestChanges.map((item) => item.name)).toEqual(['a', 'b']);
+    expect(change.evidence.map((item) => item.root).sort()).toEqual(
+      [
+        ...report.manifestChanges
+          .filter((item) => ['a', 'b'].includes(item.name))
+          .flatMap((item) => [item.root, item.root]),
+      ].sort(),
     );
+    for (const evidence of change.evidence)
+      expect(evidencePath(filtered, evidence)).toContain(evidence.root);
   });
 
   it('marks configured patch files missing on either side as unknown', () => {
@@ -507,6 +538,37 @@ describe('dependency cone analysis', () => {
         summary: { explained: 0, 'partially-explained': 0, unexplained: 0, unknown: 1 },
       }),
     ).toContain('$.package.resolution.integrity: "old-hash" → "new-hash"');
+  });
+
+  it('shows both metadata values for unpaired versions in a multi-version group', () => {
+    const build = (version: string, versions: string[]) =>
+      state(
+        { dependencies: { a: version } },
+        { '.': { dependencies: { a: { specifier: version, version } } } },
+        Object.fromEntries(versions.map((item) => [`a@${item}`, {}])),
+        {
+          packages: Object.fromEntries(
+            versions.map((item) => [
+              `a@${item}`,
+              { resolution: { integrity: `hash-${item}` } },
+            ]),
+          ),
+        },
+      );
+    const report = explain(
+      build('1.0.0', ['1.0.0', '2.0.0']),
+      build('3.0.0', ['2.0.0', '3.0.0']),
+    );
+    const change = report.changes.find((item) => item.kind === 'package')!;
+    expect(change.changedNodes.base).toContain('a@1.0.0');
+    expect(change.changedNodes.head).toContain('a@3.0.0');
+    const text = renderText(report);
+    expect(text).toContain(
+      'metadata $.package.resolution.integrity: "hash-1.0.0" → (absent)',
+    );
+    expect(text).toContain(
+      'metadata $.package.resolution.integrity: (absent) → "hash-3.0.0"',
+    );
   });
 
   it('marks unresolved references and unsupported configuration as unknown', () => {

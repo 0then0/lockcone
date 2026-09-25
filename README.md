@@ -149,8 +149,9 @@ The JSON object has `schemaVersion: 3`, resolved `base`/`head` commit IDs,
 `node`, `root`, and a `pathId` into the shared `pathNodes` parent graph. Details
 list changed edges, metadata field names, and `metadataDiff` entries with before
 and after values (`null` means the field is absent). `manifestChanges.root` maps
-those paths back to the manifest and dependency section. No diagnostic text is
-mixed into successful JSON output; failures go to stderr.
+those paths back to the manifest and dependency section. If several changed
+roots reach one node, the report includes an evidence path for each root. No
+diagnostic text is mixed into successful JSON output; failures go to stderr.
 
 The repository includes a composite [GitHub Action](action.yml). Once hosted,
 replace `OWNER/lockcone@COMMIT_SHA` below with this repository and a reviewed

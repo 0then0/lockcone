@@ -1,7 +1,8 @@
 import { configuredPatches, resolutionFiles } from '../git/repository.js';
 import type { GraphNode, NodeKind } from '../graph/dependency-graph.js';
 import { fingerprint, stable } from '../graph/dependency-graph.js';
-import { traverse } from '../graph/traversal.js';
+import type { Visit } from '../graph/traversal.js';
+import { traverseAll } from '../graph/traversal.js';
 import type { PnpmState } from '../pnpm/dependency-graph.js';
 import type { ManifestChange } from './cone.js';
 import { manifestChanges } from './cone.js';
@@ -202,20 +203,20 @@ export function diff(base: PnpmState, head: PnpmState): Report {
     )
     .map((change) => change.root);
   const visits = {
-    base: traverse(base.graph, roots),
-    head: traverse(head.graph, roots),
+    base: traverseAll(base.graph, roots),
+    head: traverseAll(head.graph, roots),
   };
   // Identity/version edits explain the workspace record itself, not upgrades of
   // unchanged dependency declarations. Do not expand them into dependency cones.
   for (const change of intent.filter((item) => item.section === 'workspace')) {
     for (const side of ['base', 'head'] as const) {
       const node = (side === 'base' ? base : head).graph.nodes.get(change.root);
-      if (node && !visits[side].has(change.root))
-        visits[side].set(change.root, {
-          root: change.root,
-          parent: null,
-          uncertain: node.uncertain,
-        });
+      const nodeVisits = visits[side].get(change.root) ?? [];
+      if (node && !nodeVisits.some((visit) => visit.root === change.root))
+        visits[side].set(change.root, [
+          ...nodeVisits,
+          { root: change.root, parent: null, uncertain: node.uncertain },
+        ]);
     }
   }
   const warnings = new Set([...base.graph.warnings, ...head.graph.warnings]);
@@ -299,9 +300,10 @@ export function diff(base: PnpmState, head: PnpmState): Report {
     const evidence: Evidence[] = [];
     const details: NodeDetails[] = [];
     let uncertain = warnings.size > 0;
+    let reachable = 0;
     for (const side of ['base', 'head'] as const) {
       for (const item of changed[side]) {
-        const visit = visits[side].get(item.id);
+        const nodeVisits = visits[side].get(item.id) ?? [];
         const counterparts = side === 'base' ? newNodes : oldNodes;
         const counterpart =
           (side === 'base' ? head : base).graph.nodes.get(item.id) ??
@@ -309,14 +311,17 @@ export function diff(base: PnpmState, head: PnpmState): Report {
             ? counterparts[0]
             : undefined);
         details.push(nodeDetails(item, side, counterpart));
-        uncertain ||= item.uncertain || Boolean(visit?.uncertain);
-        if (visit) {
-          const pathId = JSON.stringify([side, item.id]);
+        uncertain ||= item.uncertain || nodeVisits.some((visit) => visit.uncertain);
+        if (nodeVisits.length) reachable++;
+        for (const visit of nodeVisits) {
+          const pathId = JSON.stringify([side, visit.root, item.id]);
           let current: string | null = item.id;
           while (current !== null) {
-            const id = JSON.stringify([side, current]);
+            const id = JSON.stringify([side, visit.root, current]);
             if (pathNodes[id]) break;
-            const currentVisit = visits[side].get(current);
+            const currentVisit: Visit | undefined = (
+              visits[side].get(current) ?? []
+            ).find((candidate) => candidate.root === visit.root);
             if (!currentVisit) break;
             pathNodes[id] = {
               side,
@@ -324,7 +329,7 @@ export function diff(base: PnpmState, head: PnpmState): Report {
               parent:
                 currentVisit.parent === null
                   ? null
-                  : JSON.stringify([side, currentVisit.parent]),
+                  : JSON.stringify([side, visit.root, currentVisit.parent]),
             };
             current = currentVisit.parent;
           }
@@ -334,9 +339,9 @@ export function diff(base: PnpmState, head: PnpmState): Report {
     }
     const confidence: Confidence = uncertain
       ? 'unknown'
-      : evidence.length === total
+      : reachable === total
         ? 'explained'
-        : evidence.length > 0
+        : reachable > 0
           ? 'partially-explained'
           : 'unexplained';
     changes.push({

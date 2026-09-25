@@ -6,18 +6,21 @@ export interface Visit {
   uncertain: boolean;
 }
 
-export function traverse(graph: DependencyGraph, roots: string[]): Map<string, Visit> {
-  const visits = new Map<string, Visit>();
-  const queue: string[] = [];
+export function traverseAll(
+  graph: DependencyGraph,
+  roots: string[],
+): Map<string, Visit[]> {
+  const visits = new Map<string, Map<string, Visit>>();
+  const queue: { id: string; visit: Visit }[] = [];
   for (const root of [...new Set(roots)].sort()) {
     const node = graph.nodes.get(root);
     if (!node) continue;
-    visits.set(root, { root, parent: null, uncertain: node.uncertain });
-    queue.push(root);
+    const visit = { root, parent: null, uncertain: node.uncertain };
+    visits.set(root, new Map([[root, visit]]));
+    queue.push({ id: root, visit });
   }
   for (let index = 0; index < queue.length; index++) {
-    const id = queue[index]!;
-    const visit = visits.get(id)!;
+    const { id, visit } = queue[index]!;
     const node = graph.nodes.get(id)!;
     for (const edge of [...node.edges].sort((a, b) =>
       a.target.localeCompare(b.target),
@@ -25,13 +28,30 @@ export function traverse(graph: DependencyGraph, roots: string[]): Map<string, V
       const target = graph.nodes.get(edge.target);
       if (!target) continue;
       const uncertain = visit.uncertain || target.uncertain;
-      const prior = visits.get(target.id);
+      const targetVisits = visits.get(target.id) ?? new Map<string, Visit>();
+      const prior = targetVisits.get(visit.root);
       if (prior && (!prior.uncertain || uncertain)) continue;
-      visits.set(target.id, { root: visit.root, parent: id, uncertain });
-      queue.push(target.id);
+      const next = { root: visit.root, parent: id, uncertain };
+      targetVisits.set(visit.root, next);
+      visits.set(target.id, targetVisits);
+      queue.push({ id: target.id, visit: next });
     }
   }
-  return visits;
+  return new Map(
+    [...visits].map(([id, nodeVisits]) => [
+      id,
+      [...nodeVisits.values()].sort(
+        (a, b) =>
+          Number(a.uncertain) - Number(b.uncertain) || a.root.localeCompare(b.root),
+      ),
+    ]),
+  );
+}
+
+export function traverse(graph: DependencyGraph, roots: string[]): Map<string, Visit> {
+  return new Map(
+    [...traverseAll(graph, roots)].map(([id, visits]) => [id, visits[0]!]),
+  );
 }
 
 export function dependencyPath(id: string, visits: Map<string, Visit>): string[] {
