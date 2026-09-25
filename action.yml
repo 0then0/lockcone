@@ -40,7 +40,8 @@ runs:
         LOCKCONE_HEAD: ${{ inputs.head }}
         LOCKCONE_REPOSITORY: ${{ inputs.repository }}
       run: |
-        report=$(mktemp "$RUNNER_TEMP/lockcone-XXXXXX.json")
+        report_dir=$(mktemp -d "$RUNNER_TEMP/lockcone.XXXXXX")
+        report="$report_dir/report.json"
         node "$LOCKCONE_ACTION/dist/cli/index.js" diff \
           --cwd "$LOCKCONE_REPOSITORY" \
           --base "$LOCKCONE_BASE" --head "$LOCKCONE_HEAD" \

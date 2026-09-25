@@ -2,7 +2,11 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { evidencePath, diff as graphDiff } from '../src/analysis/diff.js';
 import { explain, why } from '../src/analysis/explain.js';
-import { configuredPatches, parseBlobBatch } from '../src/git/repository.js';
+import {
+  configuredPatches,
+  parseBlobBatch,
+  parseTreeBatch,
+} from '../src/git/repository.js';
 import { dependencyId, workspaceId } from '../src/graph/dependency-graph.js';
 import { dependencyPath, traverse } from '../src/graph/traversal.js';
 import { renderJson } from '../src/output/json.js';
@@ -766,6 +770,41 @@ describe('dependency cone analysis', () => {
     await expect(
       parseBlobBatch([{ object: 'expected', path: 'package.json' }], chunks()),
     ).rejects.toThrow('Git did not return a valid blob');
+  });
+
+  it.each([
+    ['truncated content', 'oid blob 3\nab'],
+    ['invalid content boundary', 'oid blob 1\naX'],
+  ])('rejects Git blob batches with %s', async (_scenario, response) => {
+    async function* chunks(): AsyncGenerator<Buffer> {
+      yield Buffer.from(response);
+    }
+    await expect(
+      parseBlobBatch([{ object: 'oid', path: 'package.json' }], chunks()),
+    ).rejects.toThrow('Git returned');
+  });
+
+  it('reads NUL-delimited Git tree entries across stream chunks', async () => {
+    const output = Buffer.from(
+      '100644 blob object-a\tpackage.json\0' + '160000 commit object-b\tpackages/ui\0',
+    );
+    async function* chunks(): AsyncGenerator<Buffer> {
+      for (let offset = 0; offset < output.length; offset += 5)
+        yield output.subarray(offset, offset + 5);
+    }
+    await expect(parseTreeBatch(chunks())).resolves.toEqual([
+      { object: 'object-a', path: 'package.json' },
+      { object: 'object-b', path: 'packages/ui' },
+    ]);
+  });
+
+  it('rejects truncated Git tree listings', async () => {
+    async function* chunks(): AsyncGenerator<Buffer> {
+      yield Buffer.from('100644 blob object-a\tpackage.json');
+    }
+    await expect(parseTreeBatch(chunks())).rejects.toThrow(
+      'Git returned a truncated tree listing',
+    );
   });
 
   it('renders consistent text and JSON and filters why results', () => {

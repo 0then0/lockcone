@@ -25,14 +25,39 @@ jobs:
       - run: pnpm test
       - run: pnpm demo
       - name: Run the composite action
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' || github.event.before != '0000000000000000000000000000000000000000'
         id: lockcone
         uses: ./
         with:
-          base: ${{ github.event.pull_request.base.sha }}
-          head: ${{ github.event.pull_request.head.sha }}
+          base: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          head: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       - name: Validate the action report
-        if: github.event_name == 'pull_request'
+        if: steps.lockcone.conclusion == 'success'
         env:
           LOCKCONE_REPORT: ${{ steps.lockcone.outputs.report }}
         run: node -e 'const fs = require("node:fs"); const report = JSON.parse(fs.readFileSync(process.env.LOCKCONE_REPORT, "utf8")); if (report.schemaVersion !== 3) process.exit(1);'
+  action-macos:
+    if: github.event_name == 'pull_request' || github.event.before != '0000000000000000000000000000000000000000'
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Run the composite action twice
+        id: first
+        uses: ./
+        with:
+          base: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          head: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      - uses: ./
+        id: second
+        with:
+          base: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          head: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      - name: Validate both reports use distinct temporary paths
+        env:
+          REPORT_ONE: ${{ steps.first.outputs.report }}
+          REPORT_TWO: ${{ steps.second.outputs.report }}
+        run: |
+          test "$REPORT_ONE" != "$REPORT_TWO"
+          node -e 'const fs = require("node:fs"); for (const path of [process.env.REPORT_ONE, process.env.REPORT_TWO]) { if (JSON.parse(fs.readFileSync(path, "utf8")).schemaVersion !== 3) process.exit(1); }'

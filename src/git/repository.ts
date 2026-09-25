@@ -90,23 +90,44 @@ function git(cwd: string, args: string[]): string {
   }
 }
 
-interface TreeEntry {
+export interface TreeEntry {
   object: string;
   path: string;
 }
 
-function listTree(cwd: string, revision: string): TreeEntry[] {
-  return git(cwd, ['ls-tree', '-r', '-z', '--full-tree', revision])
-    .split('\0')
-    .filter(Boolean)
-    .map((record) => {
+export async function parseTreeBatch(
+  chunks: AsyncIterable<Buffer>,
+): Promise<TreeEntry[]> {
+  const entries: TreeEntry[] = [];
+  let pending = Buffer.alloc(0);
+  for await (const chunk of chunks) {
+    let start = 0;
+    while (start < chunk.length) {
+      const end = chunk.indexOf(0, start);
+      if (end < 0) {
+        pending = Buffer.concat([pending, chunk.subarray(start)]);
+        break;
+      }
+      const record = Buffer.concat([pending, chunk.subarray(start, end)]).toString(
+        'utf8',
+      );
+      pending = Buffer.alloc(0);
       const separator = record.indexOf('\t');
       const [mode, type, object] = record.slice(0, separator).split(' ');
-      if (mode === undefined || type === undefined || object === undefined) {
+      if (
+        separator < 0 ||
+        mode === undefined ||
+        type === undefined ||
+        object === undefined
+      ) {
         throw new Error('Git returned a malformed tree entry.');
       }
-      return { object, path: record.slice(separator + 1) };
-    });
+      entries.push({ object, path: record.slice(separator + 1) });
+      start = end + 1;
+    }
+  }
+  if (pending.length) throw new Error('Git returned a truncated tree listing.');
+  return entries;
 }
 
 export async function parseBlobBatch(
@@ -174,38 +195,62 @@ export async function parseBlobBatch(
   return blobs;
 }
 
-async function readBlobs(
+async function streamGit<T>(
   cwd: string,
-  entries: TreeEntry[],
-): Promise<Map<string, string>> {
-  if (!entries.length) return new Map();
-  const child = spawn('git', ['cat-file', '--batch'], {
+  args: string[],
+  input: string,
+  parse: (stdout: AsyncIterable<Buffer>) => Promise<T>,
+): Promise<T> {
+  const child = spawn('git', args, {
     cwd,
     stdio: ['pipe', 'pipe', 'pipe'],
   });
   const stderr: Buffer[] = [];
   child.stderr.on('data', (part: Buffer) => stderr.push(part));
+  child.stdin.on('error', () => undefined);
   const closed = new Promise<number>((resolve, reject) => {
     child.once('error', reject);
     child.once('close', (code) => resolve(code ?? 1));
   });
   try {
-    child.stdin.end(`${entries.map(({ object }) => object).join('\n')}\n`);
-    const blobs = await parseBlobBatch(entries, child.stdout);
+    child.stdin.end(input);
+    const result = await parse(child.stdout);
     const code = await closed;
     if (code !== 0)
       throw new Error(
-        `Git blob read failed: ${Buffer.concat(stderr).toString('utf8').trim()}`,
+        `Git read failed: ${Buffer.concat(stderr).toString('utf8').trim()}`,
       );
-    return blobs;
+    return result;
   } catch (error) {
     child.kill();
     await closed.catch(() => undefined);
     if (error instanceof Error && error.message.startsWith('Git ')) throw error;
     throw new Error(
-      `Git blob read failed: ${Buffer.concat(stderr).toString('utf8').trim() || String(error)}`,
+      `Git read failed: ${Buffer.concat(stderr).toString('utf8').trim() || String(error)}`,
     );
   }
+}
+
+async function listTree(cwd: string, revision: string): Promise<TreeEntry[]> {
+  return streamGit(
+    cwd,
+    ['ls-tree', '-r', '-z', '--full-tree', revision],
+    '',
+    parseTreeBatch,
+  );
+}
+
+async function readBlobs(
+  cwd: string,
+  entries: TreeEntry[],
+): Promise<Map<string, string>> {
+  if (!entries.length) return new Map();
+  return streamGit(
+    cwd,
+    ['cat-file', '--batch'],
+    `${entries.map(({ object }) => object).join('\n')}\n`,
+    (stdout) => parseBlobBatch(entries, stdout),
+  );
 }
 
 export async function readRepository(
@@ -219,7 +264,7 @@ export async function readRepository(
     '--end-of-options',
     `${ref}^{commit}`,
   ]).trim();
-  const tree = listTree(root, revision);
+  const tree = await listTree(root, revision);
   const candidates = tree.filter(
     ({ path }) =>
       path === 'pnpm-lock.yaml' ||
