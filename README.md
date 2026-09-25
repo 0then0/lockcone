@@ -142,14 +142,15 @@ a package manager, a lockfile formatter, or an AI explanation system.
 lockcone diff --base origin/main --head HEAD --format json > lockcone-report.json
 ```
 
-The JSON object has `schemaVersion: 2`, resolved `base`/`head` commit IDs,
+The JSON object has `schemaVersion: 3`, resolved `base`/`head` commit IDs,
 `manifestChanges`, `changes`, `warnings`, and `summary`. Each change includes
 `kind`, `scope`, `change`, `before`, `after`, `changedNodes`, `confidence`, `reason`,
 `evidence`, `details`, and `possibleExplanations`. Evidence contains `side`,
 `node`, `root`, and a `pathId` into the shared `pathNodes` parent graph. Details
-list changed edges and metadata fields for each changed node. `manifestChanges.root` maps those
-paths back to the manifest and dependency section. No diagnostic text is mixed
-into successful JSON output; failures go to stderr.
+list changed edges, metadata field names, and `metadataDiff` entries with before
+and after values (`null` means the field is absent). `manifestChanges.root` maps
+those paths back to the manifest and dependency section. No diagnostic text is
+mixed into successful JSON output; failures go to stderr.
 
 The repository includes a composite [GitHub Action](action.yml). Once hosted,
 replace `OWNER/lockcone@COMMIT_SHA` below with this repository and a reviewed

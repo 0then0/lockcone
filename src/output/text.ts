@@ -42,6 +42,17 @@ export function renderText(report: Report): string {
             `    ${detail.side}: metadata changed: ${detail.metadataChanged.join(', ')}`,
           );
         }
+        if (
+          detail.metadataDiff.length &&
+          (detail.side === 'head' ||
+            !change.details.some((item) => item.side === 'head'))
+        ) {
+          for (const item of detail.metadataDiff) {
+            lines.push(
+              `    ${detail.side}: metadata ${item.path}: ${item.before ?? '(absent)'} → ${item.after ?? '(absent)'}`,
+            );
+          }
+        }
       }
       for (const evidence of change.evidence)
         lines.push(

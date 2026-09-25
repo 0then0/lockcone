@@ -238,13 +238,35 @@ describe('dependency cone analysis', () => {
     );
   });
 
+  it('marks configured patch files missing on either side as unknown', () => {
+    const build = (version: string) => {
+      const repository = state(
+        { dependencies: { a: version } },
+        { '.': { dependencies: { a: { specifier: version, version } } } },
+        { [`a@${version}`]: {} },
+      );
+      repository.files.set(
+        'pnpm-workspace.yaml',
+        'patchedDependencies:\n  a@1.0.0: ./patches/a.patch\n',
+      );
+      return repository;
+    };
+    const report = explain(build('1.0.0'), build('2.0.0'));
+    expect(report.warnings).toContain(
+      'Configured patch file is missing: patches/a.patch',
+    );
+    expect(report.changes.find((change) => change.name === 'a')?.confidence).toBe(
+      'unknown',
+    );
+  });
+
   it('finds patch paths in pnpm 10 lockfiles and pnpm 11+ workspace config', () => {
     expect(
       configuredPatches(
         new Map([
           [
             'pnpm-lock.yaml',
-            "lockfileVersion: '9.0'\npatchedDependencies:\n  a@1.0.0:\n    hash: abc\n    path: patches/a.patch\n",
+            "lockfileVersion: '9.0'\npatchedDependencies:\n  a@1.0.0:\n    hash: abc\n    path: ./patches/a.patch\n",
           ],
         ]),
       ),
@@ -256,7 +278,10 @@ describe('dependency cone analysis', () => {
             'pnpm-lock.yaml',
             "lockfileVersion: '9.0'\npatchedDependencies:\n  a@1.0.0: abc\n",
           ],
-          ['pnpm-workspace.yaml', 'patchedDependencies:\n  a@1.0.0: patches/a.patch\n'],
+          [
+            'pnpm-workspace.yaml',
+            'patchedDependencies:\n  a@1.0.0: ./patches/a.patch\n',
+          ],
         ]),
       ),
     ).toEqual(new Set(['patches/a.patch']));
@@ -448,6 +473,40 @@ describe('dependency cone analysis', () => {
     expect(change?.details.every((detail) => detail.metadataChanged.length === 0)).toBe(
       true,
     );
+    expect(change?.details.flatMap((detail) => detail.metadataDiff)).toEqual([]);
+  });
+
+  it('shows integrity values across a package version change', () => {
+    const build = (version: string, integrity: string) =>
+      state(
+        { dependencies: { a: version } },
+        { '.': { dependencies: { a: { specifier: version, version } } } },
+        { [`a@${version}`]: {} },
+        { packages: { [`a@${version}`]: { resolution: { integrity } } } },
+      );
+    const change = explain(
+      build('1.0.0', 'old-hash'),
+      build('2.0.0', 'new-hash'),
+    ).changes.find((item) => item.kind === 'package')!;
+    expect(
+      change.details.find((detail) => detail.side === 'head')?.metadataDiff,
+    ).toContainEqual({
+      path: '$.package.resolution.integrity',
+      before: '"old-hash"',
+      after: '"new-hash"',
+    });
+    expect(
+      renderText({
+        schemaVersion: 3,
+        base: 'base',
+        head: 'head',
+        manifestChanges: [],
+        changes: [change],
+        pathNodes: {},
+        warnings: [],
+        summary: { explained: 0, 'partially-explained': 0, unexplained: 0, unknown: 1 },
+      }),
+    ).toContain('$.package.resolution.integrity: "old-hash" → "new-hash"');
   });
 
   it('marks unresolved references and unsupported configuration as unknown', () => {
@@ -524,11 +583,13 @@ describe('dependency cone analysis', () => {
   });
 
   it('renders consistent text and JSON and filters why results', () => {
-    const report = why(
-      explain(fixture('upgrade', 'base'), fixture('upgrade', 'head')),
-      'aws-sdk',
-    );
+    const full = explain(fixture('upgrade', 'base'), fixture('upgrade', 'head'));
+    const report = why(full, 'aws-sdk');
     expect(report.summary.unexplained).toBe(2);
+    expect(report.manifestChanges).toEqual([]);
+    expect(why(full, 'vite').manifestChanges.map((change) => change.name)).toEqual([
+      'vitest',
+    ]);
     expect(JSON.parse(renderJson(report))).toEqual(report);
     expect(renderText(report)).toContain('UNEXPLAINED_BY_MANIFEST_CHANGE');
     expect(renderText(report)).toContain('No path found');

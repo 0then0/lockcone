@@ -28,6 +28,7 @@ export interface NodeDetails {
   edgesAdded: GraphNode['edges'];
   edgesRemoved: GraphNode['edges'];
   metadataChanged: string[];
+  metadataDiff: { path: string; before: string | null; after: string | null }[];
 }
 export interface Change {
   name: string;
@@ -44,7 +45,7 @@ export interface Change {
   possibleExplanations: string[];
 }
 export interface Report {
-  schemaVersion: 2;
+  schemaVersion: 3;
   base: string;
   head: string;
   manifestChanges: ManifestChange[];
@@ -120,6 +121,22 @@ function nodeDetails(
         .filter((path) => currentMetadata.get(path) !== previousMetadata.get(path))
         .sort()
     : [];
+  const metadataDiff = [
+    ...new Set([...currentMetadata.keys(), ...previousMetadata.keys()]),
+  ]
+    .filter((path) => currentMetadata.get(path) !== previousMetadata.get(path))
+    .sort()
+    .map((path) => ({
+      path,
+      before:
+        side === 'base'
+          ? (currentMetadata.get(path) ?? null)
+          : (previousMetadata.get(path) ?? null),
+      after:
+        side === 'base'
+          ? (previousMetadata.get(path) ?? null)
+          : (currentMetadata.get(path) ?? null),
+    }));
   return {
     side,
     node: node.id,
@@ -136,6 +153,7 @@ function nodeDetails(
             .map(([, edge]) => edge)
         : [],
     metadataChanged,
+    metadataDiff,
   };
 }
 
@@ -219,9 +237,18 @@ export function diff(base: PnpmState, head: PnpmState): Report {
       warnings.add(`Resolution input changed: ${path}`);
     }
   }
-  const patches = (state: PnpmState): Set<string> => configuredPatches(state.files);
-  for (const path of new Set([...patches(base), ...patches(head)])) {
-    if (base.files.get(path) !== head.files.get(path))
+  const basePatches = configuredPatches(base.files);
+  const headPatches = configuredPatches(head.files);
+  for (const path of new Set([...basePatches, ...headPatches])) {
+    if (
+      (basePatches.has(path) && !base.files.has(path)) ||
+      (headPatches.has(path) && !head.files.has(path))
+    )
+      warnings.add(`Configured patch file is missing: ${path}`);
+    else if (
+      basePatches.has(path) !== headPatches.has(path) ||
+      base.files.get(path) !== head.files.get(path)
+    )
       warnings.add(`Resolution input changed: ${path}`);
   }
   if (intent.some((change) => change.section === 'peerDependencies'))
@@ -275,7 +302,12 @@ export function diff(base: PnpmState, head: PnpmState): Report {
     for (const side of ['base', 'head'] as const) {
       for (const item of changed[side]) {
         const visit = visits[side].get(item.id);
-        const counterpart = (side === 'base' ? head : base).graph.nodes.get(item.id);
+        const counterparts = side === 'base' ? newNodes : oldNodes;
+        const counterpart =
+          (side === 'base' ? head : base).graph.nodes.get(item.id) ??
+          (oldNodes.length === 1 && newNodes.length === 1
+            ? counterparts[0]
+            : undefined);
         details.push(nodeDetails(item, side, counterpart));
         uncertain ||= item.uncertain || Boolean(visit?.uncertain);
         if (visit) {
@@ -340,7 +372,7 @@ export function diff(base: PnpmState, head: PnpmState): Report {
     });
   }
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     base: base.revision,
     head: head.revision,
     manifestChanges: intent,

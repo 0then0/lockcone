@@ -9,6 +9,9 @@ export function explain(base: RepositoryState, head: RepositoryState): Report {
 
 export function why(report: Report, name: string): Report {
   const changes = report.changes.filter((change) => change.name === name);
+  const roots = new Set(
+    changes.flatMap((change) => change.evidence.map((item) => item.root)),
+  );
   const pathNodes: Report['pathNodes'] = {};
   for (const change of changes) {
     for (const evidence of change.evidence) {
@@ -21,5 +24,11 @@ export function why(report: Report, name: string): Report {
       }
     }
   }
-  return { ...report, changes, pathNodes, summary: summarize(changes) };
+  return {
+    ...report,
+    changes,
+    manifestChanges: report.manifestChanges.filter((change) => roots.has(change.root)),
+    pathNodes,
+    summary: summarize(changes),
+  };
 }

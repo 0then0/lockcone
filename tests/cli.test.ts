@@ -26,7 +26,7 @@ beforeAll(() => {
   ] as const) {
     states[side] = { ...states[source] };
     states[side]['pnpm-workspace.yaml'] =
-      'patchedDependencies:\n  aws-sdk@2: patches/aws-sdk.patch\n';
+      'patchedDependencies:\n  aws-sdk@2: ./patches/aws-sdk.patch\n';
     states[side]['pnpm-lock.yaml'] +=
       '\npatchedDependencies:\n  aws-sdk@2: stable-hash\n';
     states[side]['patches/aws-sdk.patch'] = side === 'patchBase' ? 'before' : 'after';

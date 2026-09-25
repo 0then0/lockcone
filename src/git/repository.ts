@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process';
+import { posix } from 'node:path';
 import { parse, parseAllDocuments } from 'yaml';
 
 export interface RepositoryState {
@@ -13,7 +14,7 @@ function patchPaths(value: unknown, lockfileFormat: boolean): Set<string> {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return paths;
   for (const patch of Object.values(value)) {
     if (typeof patch === 'string') {
-      if (!lockfileFormat) paths.add(patch);
+      if (!lockfileFormat) paths.add(posix.normalize(patch.replaceAll('\\', '/')));
     } else if (
       lockfileFormat &&
       patch !== null &&
@@ -21,7 +22,7 @@ function patchPaths(value: unknown, lockfileFormat: boolean): Set<string> {
       'path' in patch &&
       typeof patch.path === 'string'
     ) {
-      paths.add(patch.path);
+      paths.add(posix.normalize(patch.path.replaceAll('\\', '/')));
     }
   }
   return paths;
