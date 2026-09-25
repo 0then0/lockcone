@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v6
         with:
           node-version: '24'
@@ -22,3 +24,15 @@ jobs:
       - run: pnpm format:check
       - run: pnpm test
       - run: pnpm demo
+      - name: Run the composite action
+        if: github.event_name == 'pull_request'
+        id: lockcone
+        uses: ./
+        with:
+          base: ${{ github.event.pull_request.base.sha }}
+          head: ${{ github.event.pull_request.head.sha }}
+      - name: Validate the action report
+        if: github.event_name == 'pull_request'
+        env:
+          LOCKCONE_REPORT: ${{ steps.lockcone.outputs.report }}
+        run: node -e 'const fs = require("node:fs"); const report = JSON.parse(fs.readFileSync(process.env.LOCKCONE_REPORT, "utf8")); if (report.schemaVersion !== 3) process.exit(1);'

@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { evidencePath, diff as graphDiff } from '../src/analysis/diff.js';
 import { explain, why } from '../src/analysis/explain.js';
-import { configuredPatches } from '../src/git/repository.js';
+import { configuredPatches, parseBlobBatch } from '../src/git/repository.js';
 import { dependencyId, workspaceId } from '../src/graph/dependency-graph.js';
 import { dependencyPath, traverse } from '../src/graph/traversal.js';
 import { renderJson } from '../src/output/json.js';
@@ -739,6 +739,33 @@ describe('dependency cone analysis', () => {
     );
     expect(() => parseLockfile('lockfileVersion: 9\nlockfileVersion: 9')).toThrow();
     expect(() => parseLockfile('lockfileVersion: 9\nimporters: []')).toThrow();
+  });
+
+  it('reads Git blob batches when headers and contents span stream chunks', async () => {
+    const entries = [
+      { object: 'oid-a', path: 'package.json' },
+      { object: 'oid-b', path: 'pnpm-lock.yaml' },
+    ];
+    const output = Buffer.from(`oid-a blob 7\nhello\n!\noid-b blob 3\nλx\n`);
+    async function* chunks(): AsyncGenerator<Buffer> {
+      for (let offset = 0; offset < output.length; offset += 3)
+        yield output.subarray(offset, offset + 3);
+    }
+    await expect(parseBlobBatch(entries, chunks())).resolves.toEqual(
+      new Map([
+        ['package.json', 'hello\n!'],
+        ['pnpm-lock.yaml', 'λx'],
+      ]),
+    );
+  });
+
+  it('rejects Git blob batches that do not match the requested objects', async () => {
+    async function* chunks(): AsyncGenerator<Buffer> {
+      yield Buffer.from('other blob 0\n\n');
+    }
+    await expect(
+      parseBlobBatch([{ object: 'expected', path: 'package.json' }], chunks()),
+    ).rejects.toThrow('Git did not return a valid blob');
   });
 
   it('renders consistent text and JSON and filters why results', () => {

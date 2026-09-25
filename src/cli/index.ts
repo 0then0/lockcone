@@ -27,8 +27,12 @@ function options(command: Command): Command {
     );
 }
 
-function output(range: string | undefined, opts: Options, name?: string): void {
-  const report = runDiff(range, opts, name);
+async function output(
+  range: string | undefined,
+  opts: Options,
+  name?: string,
+): Promise<void> {
+  const report = await runDiff(range, opts, name);
   process.stdout.write(
     `${opts.format === 'json' ? renderJson(report) : renderText(report)}\n`,
   );

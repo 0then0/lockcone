@@ -24,15 +24,16 @@ export function revisions(
   return [options.base ?? 'HEAD~1', options.head ?? 'HEAD'];
 }
 
-export function runDiff(
+export async function runDiff(
   range: string | undefined,
   options: Options,
   name?: string,
-): Report {
+): Promise<Report> {
   const [base, head] = revisions(range, options);
-  const report = explain(
+  const [baseState, headState] = await Promise.all([
     readRepository(options.cwd, base),
     readRepository(options.cwd, head),
-  );
+  ]);
+  const report = explain(baseState, headState);
   return name === undefined ? report : why(report, name);
 }

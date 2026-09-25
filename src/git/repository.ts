@@ -1,4 +1,4 @@
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawn } from 'node:child_process';
 import { posix } from 'node:path';
 import { parse, parseAllDocuments } from 'yaml';
 
@@ -109,44 +109,109 @@ function listTree(cwd: string, revision: string): TreeEntry[] {
     });
 }
 
-function readBlobs(cwd: string, entries: TreeEntry[]): Map<string, string> {
+export async function parseBlobBatch(
+  entries: TreeEntry[],
+  chunks: AsyncIterable<Buffer>,
+): Promise<Map<string, string>> {
   const blobs = new Map<string, string>();
-  if (!entries.length) return blobs;
-  try {
-    const output = execFileSync('git', ['cat-file', '--batch'], {
-      cwd,
-      input: `${entries.map(({ object }) => object).join('\n')}\n`,
-      maxBuffer: 256 * 1024 * 1024,
-      stdio: ['pipe', 'pipe', 'pipe'],
-    });
-    let offset = 0;
-    for (const entry of entries) {
-      const end = output.indexOf(0x0a, offset);
-      if (end < 0) throw new Error('Git returned a truncated blob header.');
-      const header = output.toString('ascii', offset, end).split(' ');
-      const size = Number(header[2]);
-      if (header[1] !== 'blob' || !Number.isSafeInteger(size) || size < 0) {
-        throw new Error(`Git did not return a blob for ${entry.path}.`);
-      }
-      const start = end + 1;
-      const finish = start + size;
-      if (finish >= output.length || output[finish] !== 0x0a) {
-        throw new Error(`Git returned a truncated blob for ${entry.path}.`);
-      }
-      blobs.set(entry.path, output.toString('utf8', start, finish));
-      offset = finish + 1;
+  const iterator = chunks[Symbol.asyncIterator]();
+  let chunk: Buffer<ArrayBufferLike> = Buffer.alloc(0);
+  let offset = 0;
+  async function fill(): Promise<void> {
+    while (offset === chunk.length) {
+      const next = await iterator.next();
+      if (next.done) throw new Error('Git returned a truncated blob batch.');
+      chunk = next.value;
+      offset = 0;
     }
+  }
+  async function readLine(): Promise<string> {
+    const parts: Buffer[] = [];
+    while (true) {
+      await fill();
+      const end = chunk.indexOf(0x0a, offset);
+      if (end >= 0) {
+        parts.push(chunk.subarray(offset, end));
+        offset = end + 1;
+        return Buffer.concat(parts).toString('ascii');
+      }
+      parts.push(chunk.subarray(offset));
+      offset = chunk.length;
+    }
+  }
+  async function readBytes(size: number): Promise<Buffer> {
+    const parts: Buffer[] = [];
+    let remaining = size;
+    while (remaining > 0) {
+      await fill();
+      const length = Math.min(remaining, chunk.length - offset);
+      parts.push(chunk.subarray(offset, offset + length));
+      offset += length;
+      remaining -= length;
+    }
+    return Buffer.concat(parts, size);
+  }
+
+  for (const entry of entries) {
+    const [object, type, sizeText, extra] = (await readLine()).split(' ');
+    const size = Number(sizeText);
+    if (
+      object !== entry.object ||
+      type !== 'blob' ||
+      extra !== undefined ||
+      !Number.isSafeInteger(size) ||
+      size < 0
+    ) {
+      throw new Error(`Git did not return a valid blob for ${entry.path}.`);
+    }
+    const content = await readBytes(size);
+    if ((await readBytes(1))[0] !== 0x0a)
+      throw new Error(`Git returned a malformed blob boundary for ${entry.path}.`);
+    blobs.set(entry.path, content.toString('utf8'));
+  }
+  if (offset < chunk.length || !(await iterator.next()).done)
+    throw new Error('Git returned unexpected data after the blob batch.');
+  return blobs;
+}
+
+async function readBlobs(
+  cwd: string,
+  entries: TreeEntry[],
+): Promise<Map<string, string>> {
+  if (!entries.length) return new Map();
+  const child = spawn('git', ['cat-file', '--batch'], {
+    cwd,
+    stdio: ['pipe', 'pipe', 'pipe'],
+  });
+  const stderr: Buffer[] = [];
+  child.stderr.on('data', (part: Buffer) => stderr.push(part));
+  const closed = new Promise<number>((resolve, reject) => {
+    child.once('error', reject);
+    child.once('close', (code) => resolve(code ?? 1));
+  });
+  try {
+    child.stdin.end(`${entries.map(({ object }) => object).join('\n')}\n`);
+    const blobs = await parseBlobBatch(entries, child.stdout);
+    const code = await closed;
+    if (code !== 0)
+      throw new Error(
+        `Git blob read failed: ${Buffer.concat(stderr).toString('utf8').trim()}`,
+      );
     return blobs;
   } catch (error) {
+    child.kill();
+    await closed.catch(() => undefined);
     if (error instanceof Error && error.message.startsWith('Git ')) throw error;
-    const detail = error as { stderr?: string | Buffer; message?: string };
     throw new Error(
-      `Git blob read failed: ${String(detail.stderr ?? detail.message).trim()}`,
+      `Git blob read failed: ${Buffer.concat(stderr).toString('utf8').trim() || String(error)}`,
     );
   }
 }
 
-export function readRepository(cwd: string, ref: string): RepositoryState {
+export async function readRepository(
+  cwd: string,
+  ref: string,
+): Promise<RepositoryState> {
   const root = git(cwd, ['rev-parse', '--show-toplevel']).trim();
   const revision = git(root, [
     'rev-parse',
@@ -163,10 +228,10 @@ export function readRepository(cwd: string, ref: string): RepositoryState {
       path.endsWith('/package.json') ||
       resolutionFiles.has(path),
   );
-  const initial = readBlobs(root, candidates);
+  const initial = await readBlobs(root, candidates);
   const patches = configuredPatches(initial);
   const patchEntries = tree.filter(({ path }) => patches.has(path));
-  const files = new Map([...initial, ...readBlobs(root, patchEntries)]);
+  const files = new Map([...initial, ...(await readBlobs(root, patchEntries))]);
   if (!files.has('package.json') || !files.has('pnpm-lock.yaml')) {
     throw new Error(
       `Revision ${ref} needs package.json and pnpm-lock.yaml at the repository root.`,
