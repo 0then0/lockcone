@@ -9,6 +9,7 @@ import { renderJson } from '../src/output/json.js';
 import { renderText } from '../src/output/text.js';
 import { buildPnpmState } from '../src/pnpm/dependency-graph.js';
 import { parseLockfile } from '../src/pnpm/lockfile-parser.js';
+import { sanitizeTerminalControls } from '../src/sanitize.js';
 import { fixture, state } from './helpers.js';
 
 describe('dependency cone analysis', () => {
@@ -753,6 +754,36 @@ describe('dependency cone analysis', () => {
     expect(renderText(report)).toContain('No path found');
     expect(renderText(report)).toContain('\n');
     expect(why(report, 'missing').changes).toEqual([]);
+  });
+
+  it('strips Unicode bidi controls from terminal output and preserves JSON data', () => {
+    const controls = [
+      '\u061c',
+      '\u200e',
+      '\u200f',
+      '\u202a',
+      '\u202b',
+      '\u202c',
+      '\u202d',
+      '\u202e',
+      '\u2066',
+      '\u2067',
+      '\u2068',
+      '\u2069',
+    ];
+    for (const control of controls)
+      expect(sanitizeTerminalControls(`safe${control}text`)).toBe('safetext');
+
+    const report = explain(fixture('upgrade', 'base'), fixture('upgrade', 'head'));
+    const unsafeName = `pkg\u202ename`;
+    const contaminated = {
+      ...report,
+      changes: report.changes.map((change, index) =>
+        index === 0 ? { ...change, name: unsafeName } : change,
+      ),
+    };
+    expect(renderText(contaminated)).not.toContain('\u202e');
+    expect(JSON.parse(renderJson(contaminated)).changes[0].name).toBe(unsafeName);
   });
 
   it('stores paths as a shared graph instead of copying every prefix', () => {
