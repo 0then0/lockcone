@@ -6,6 +6,7 @@ import {
   configuredPatches,
   parseBlobBatch,
   parseTreeBatch,
+  streamGit,
 } from '../src/git/repository.js';
 import { dependencyId, workspaceId } from '../src/graph/dependency-graph.js';
 import { dependencyPath, traverse } from '../src/graph/traversal.js';
@@ -782,6 +783,18 @@ describe('dependency cone analysis', () => {
     await expect(
       parseBlobBatch([{ object: 'oid', path: 'package.json' }], chunks()),
     ).rejects.toThrow('Git returned');
+  });
+
+  it('keeps Git stderr when cat-file exits before returning the requested blob', async () => {
+    await expect(
+      streamGit(
+        process.cwd(),
+        ['cat-file', '--definitely-invalid', '--batch'],
+        `${'0'.repeat(40)}\n`,
+        (stdout) =>
+          parseBlobBatch([{ object: '0'.repeat(40), path: 'missing' }], stdout),
+      ),
+    ).rejects.toThrow(/truncated blob batch.*unknown option/i);
   });
 
   it('reads NUL-delimited Git tree entries across stream chunks', async () => {

@@ -24,40 +24,84 @@ jobs:
       - run: pnpm format:check
       - run: pnpm test
       - run: pnpm demo
+      - name: Resolve action test refs
+        id: refs
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            base="$PR_BASE"
+            head="$PR_HEAD"
+          else
+            if ! base="$(git rev-parse --verify HEAD^ 2>/dev/null)"; then
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            head="$(git rev-parse --verify HEAD)"
+          fi
+          echo "base=$base" >> "$GITHUB_OUTPUT"
+          echo "head=$head" >> "$GITHUB_OUTPUT"
       - name: Run the composite action
-        if: github.event_name == 'pull_request' || github.event.before != '0000000000000000000000000000000000000000'
+        if: steps.refs.outputs.skip != 'true'
         id: lockcone
         uses: ./
         with:
-          base: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
-          head: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          base: ${{ steps.refs.outputs.base }}
+          head: ${{ steps.refs.outputs.head }}
       - name: Validate the action report
         if: steps.lockcone.conclusion == 'success'
         env:
           LOCKCONE_REPORT: ${{ steps.lockcone.outputs.report }}
-        run: node -e 'const fs = require("node:fs"); const report = JSON.parse(fs.readFileSync(process.env.LOCKCONE_REPORT, "utf8")); if (report.schemaVersion !== 3) process.exit(1);'
+          LOCKCONE_BASE: ${{ steps.refs.outputs.base }}
+          LOCKCONE_HEAD: ${{ steps.refs.outputs.head }}
+        run: node -e 'const fs = require("node:fs"); const report = JSON.parse(fs.readFileSync(process.env.LOCKCONE_REPORT, "utf8")); if (report.schemaVersion !== 3 || report.base !== process.env.LOCKCONE_BASE || report.head !== process.env.LOCKCONE_HEAD) process.exit(1);'
   action-macos:
-    if: github.event_name == 'pull_request' || github.event.before != '0000000000000000000000000000000000000000'
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
+      - name: Resolve action test refs
+        id: refs
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            base="$PR_BASE"
+            head="$PR_HEAD"
+          else
+            if ! base="$(git rev-parse --verify HEAD^ 2>/dev/null)"; then
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            head="$(git rev-parse --verify HEAD)"
+          fi
+          echo "base=$base" >> "$GITHUB_OUTPUT"
+          echo "head=$head" >> "$GITHUB_OUTPUT"
       - name: Run the composite action twice
+        if: steps.refs.outputs.skip != 'true'
         id: first
         uses: ./
         with:
-          base: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
-          head: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-      - uses: ./
+          base: ${{ steps.refs.outputs.base }}
+          head: ${{ steps.refs.outputs.head }}
+      - if: steps.refs.outputs.skip != 'true'
+        uses: ./
         id: second
         with:
-          base: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
-          head: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          base: ${{ steps.refs.outputs.base }}
+          head: ${{ steps.refs.outputs.head }}
       - name: Validate both reports use distinct temporary paths
+        if: steps.first.conclusion == 'success' && steps.second.conclusion == 'success'
         env:
           REPORT_ONE: ${{ steps.first.outputs.report }}
           REPORT_TWO: ${{ steps.second.outputs.report }}
+          LOCKCONE_BASE: ${{ steps.refs.outputs.base }}
+          LOCKCONE_HEAD: ${{ steps.refs.outputs.head }}
         run: |
           test "$REPORT_ONE" != "$REPORT_TWO"
-          node -e 'const fs = require("node:fs"); for (const path of [process.env.REPORT_ONE, process.env.REPORT_TWO]) { if (JSON.parse(fs.readFileSync(path, "utf8")).schemaVersion !== 3) process.exit(1); }'
+          node -e 'const fs = require("node:fs"); for (const path of [process.env.REPORT_ONE, process.env.REPORT_TWO]) { const report = JSON.parse(fs.readFileSync(path, "utf8")); if (report.schemaVersion !== 3 || report.base !== process.env.LOCKCONE_BASE || report.head !== process.env.LOCKCONE_HEAD) process.exit(1); }'

@@ -195,7 +195,7 @@ export async function parseBlobBatch(
   return blobs;
 }
 
-async function streamGit<T>(
+export async function streamGit<T>(
   cwd: string,
   args: string[],
   input: string,
@@ -224,10 +224,12 @@ async function streamGit<T>(
   } catch (error) {
     child.kill();
     await closed.catch(() => undefined);
-    if (error instanceof Error && error.message.startsWith('Git ')) throw error;
-    throw new Error(
-      `Git read failed: ${Buffer.concat(stderr).toString('utf8').trim() || String(error)}`,
-    );
+    const detail = Buffer.concat(stderr).toString('utf8').trim();
+    if (error instanceof Error && error.message.startsWith('Git ')) {
+      if (!detail || error.message.includes(detail)) throw error;
+      throw new Error(`${error.message}: ${detail}`, { cause: error });
+    }
+    throw new Error(`Git read failed: ${detail || String(error)}`);
   }
 }
 
