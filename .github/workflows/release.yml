@@ -1,0 +1,58 @@
+name: Release
+on:
+  push:
+    tags:
+      - 'v*'
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - uses: pnpm/setup@v2
+        with:
+          version: 12.5.1
+          install: false
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm format:check
+      - run: pnpm test
+      - name: Verify tag matches package version
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          package_version="$(node -p "require('./package.json').version")"
+          test "$RELEASE_TAG" = "v$package_version"
+      - name: Pack and install smoke test
+        id: package
+        run: |
+          mkdir -p release
+          pnpm pack --pack-destination release
+          tarball="$GITHUB_WORKSPACE/release/lockcone-$(node -p "require('./package.json').version").tgz"
+          install_dir="$(mktemp -d "$RUNNER_TEMP/lockcone-install.XXXXXX")"
+          npm install --prefix "$install_dir" "$tarball"
+          "$install_dir/node_modules/.bin/lockcone" --version
+          "$install_dir/node_modules/.bin/lockcone" --help
+          (cd release && sha256sum "$(basename "$tarball")" > SHA256SUMS)
+          echo "tarball=$tarball" >> "$GITHUB_OUTPUT"
+          echo "checksums=$GITHUB_WORKSPACE/release/SHA256SUMS" >> "$GITHUB_OUTPUT"
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_TARBALL: ${{ steps.package.outputs.tarball }}
+          RELEASE_CHECKSUMS: ${{ steps.package.outputs.checksums }}
+        run: |
+          gh release create "$RELEASE_TAG" \
+            --verify-tag \
+            --title "LockCone $RELEASE_TAG" \
+            --generate-notes \
+            "$RELEASE_TARBALL" \
+            "$RELEASE_CHECKSUMS"

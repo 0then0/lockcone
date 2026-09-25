@@ -2,6 +2,14 @@
   "name": "lockcone",
   "version": "0.1.0",
   "description": "Git blame for dependency changes: evidence from pnpm dependency graphs.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/0then0/lockcone.git"
+  },
+  "homepage": "https://github.com/0then0/lockcone#readme",
+  "bugs": {
+    "url": "https://github.com/0then0/lockcone/issues"
+  },
   "type": "module",
   "license": "Apache-2.0",
   "bin": {

@@ -31,8 +31,16 @@ package downloads for the fixture, or AI service is needed.
 
 ## Build and run
 
-Requires Node.js 22.12+ and pnpm 12.5.1 for development. The npm package has not
-been published by this repository setup; build from source:
+Requires Node.js 22.12+ to run. Install a tagged release directly from its
+GitHub Release artifact:
+
+```bash
+npm install --global https://github.com/0then0/lockcone/releases/download/v0.1.0/lockcone-0.1.0.tgz
+lockcone --help
+```
+
+Each release also includes `SHA256SUMS` for verifying the downloaded archive.
+For development, use pnpm 12.5.1 and build from source:
 
 ```bash
 pnpm install --frozen-lockfile
@@ -49,8 +57,9 @@ have `package.json` and `pnpm-lock.yaml` at its Git root in both revisions.
 LockCone reads committed files through Git; it does not check out revisions,
 install target dependencies, run target scripts, or include uncommitted changes.
 
-After building, `pnpm pack` creates an installable CLI archive. Its executable is
-`lockcone`, so the equivalent installed command is `lockcone diff main..HEAD`.
+The release workflow runs on `v*` tags, requires the tag to match the package
+version, tests the packed archive by installing and invoking it, and attaches
+the installable tarball and its SHA-256 checksum to the GitHub Release.
 
 ## Commands
 
