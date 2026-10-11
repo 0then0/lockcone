@@ -1,0 +1,393 @@
+{
+  "schemaVersion": 3,
+  "base": "a8da02adf4f6168a2b3cf7dbd30d24c5cbfbf186",
+  "head": "0e9a94e76f28666161245da8bdf48c2b892f69ef",
+  "manifestChanges": [],
+  "changes": [
+    {
+      "name": "package-manager-detector",
+      "kind": "dependency",
+      "scope": ".:dependencies",
+      "change": "updated",
+      "before": [
+        "1.6.0"
+      ],
+      "after": [
+        "1.7.0"
+      ],
+      "changedNodes": {
+        "base": [
+          "dependency:[\".\",\"dependencies\",\"package-manager-detector\"]"
+        ],
+        "head": [
+          "dependency:[\".\",\"dependencies\",\"package-manager-detector\"]"
+        ]
+      },
+      "details": [
+        {
+          "side": "base",
+          "node": "dependency:[\".\",\"dependencies\",\"package-manager-detector\"]",
+          "edgesAdded": [],
+          "edgesRemoved": [
+            {
+              "name": "package-manager-detector",
+              "kind": "dependencies",
+              "target": "package-manager-detector@1.6.0"
+            }
+          ],
+          "metadataChanged": [],
+          "metadataDiff": []
+        },
+        {
+          "side": "head",
+          "node": "dependency:[\".\",\"dependencies\",\"package-manager-detector\"]",
+          "edgesAdded": [
+            {
+              "name": "package-manager-detector",
+              "kind": "dependencies",
+              "target": "package-manager-detector@1.7.0"
+            }
+          ],
+          "edgesRemoved": [],
+          "metadataChanged": [],
+          "metadataDiff": []
+        }
+      ],
+      "confidence": "unknown",
+      "reason": "RESOLUTION_CONTEXT_NOT_FULLY_MODELED",
+      "evidence": [],
+      "possibleExplanations": [
+        "resolver update or deduplication",
+        "peer dependency resolution",
+        "lockfile regeneration differences"
+      ]
+    },
+    {
+      "name": "@antfu/install-pkg",
+      "kind": "package",
+      "scope": "",
+      "change": "updated",
+      "before": [
+        "1.1.0"
+      ],
+      "after": [
+        "1.1.0"
+      ],
+      "changedNodes": {
+        "base": [
+          "@antfu/install-pkg@1.1.0"
+        ],
+        "head": [
+          "@antfu/install-pkg@1.1.0"
+        ]
+      },
+      "details": [
+        {
+          "side": "base",
+          "node": "@antfu/install-pkg@1.1.0",
+          "edgesAdded": [],
+          "edgesRemoved": [
+            {
+              "name": "package-manager-detector",
+              "kind": "dependencies",
+              "target": "package-manager-detector@1.6.0"
+            }
+          ],
+          "metadataChanged": [],
+          "metadataDiff": []
+        },
+        {
+          "side": "head",
+          "node": "@antfu/install-pkg@1.1.0",
+          "edgesAdded": [
+            {
+              "name": "package-manager-detector",
+              "kind": "dependencies",
+              "target": "package-manager-detector@1.7.0"
+            }
+          ],
+          "edgesRemoved": [],
+          "metadataChanged": [],
+          "metadataDiff": []
+        }
+      ],
+      "confidence": "unknown",
+      "reason": "RESOLUTION_CONTEXT_NOT_FULLY_MODELED",
+      "evidence": [],
+      "possibleExplanations": [
+        "resolver update or deduplication",
+        "peer dependency resolution",
+        "lockfile regeneration differences"
+      ]
+    },
+    {
+      "name": "@antfu/ni",
+      "kind": "package",
+      "scope": "",
+      "change": "updated",
+      "before": [
+        "30.1.0"
+      ],
+      "after": [
+        "30.1.0"
+      ],
+      "changedNodes": {
+        "base": [
+          "@antfu/ni@30.1.0"
+        ],
+        "head": [
+          "@antfu/ni@30.1.0"
+        ]
+      },
+      "details": [
+        {
+          "side": "base",
+          "node": "@antfu/ni@30.1.0",
+          "edgesAdded": [],
+          "edgesRemoved": [
+            {
+              "name": "package-manager-detector",
+              "kind": "dependencies",
+              "target": "package-manager-detector@1.6.0"
+            }
+          ],
+          "metadataChanged": [],
+          "metadataDiff": []
+        },
+        {
+          "side": "head",
+          "node": "@antfu/ni@30.1.0",
+          "edgesAdded": [
+            {
+              "name": "package-manager-detector",
+              "kind": "dependencies",
+              "target": "package-manager-detector@1.7.0"
+            }
+          ],
+          "edgesRemoved": [],
+          "metadataChanged": [],
+          "metadataDiff": []
+        }
+      ],
+      "confidence": "unknown",
+      "reason": "RESOLUTION_CONTEXT_NOT_FULLY_MODELED",
+      "evidence": [],
+      "possibleExplanations": [
+        "resolver update or deduplication",
+        "peer dependency resolution",
+        "lockfile regeneration differences"
+      ]
+    },
+    {
+      "name": "bumpp",
+      "kind": "package",
+      "scope": "",
+      "change": "updated",
+      "before": [
+        "11.1.0"
+      ],
+      "after": [
+        "11.1.0"
+      ],
+      "changedNodes": {
+        "base": [
+          "bumpp@11.1.0"
+        ],
+        "head": [
+          "bumpp@11.1.0"
+        ]
+      },
+      "details": [
+        {
+          "side": "base",
+          "node": "bumpp@11.1.0",
+          "edgesAdded": [],
+          "edgesRemoved": [
+            {
+              "name": "package-manager-detector",
+              "kind": "dependencies",
+              "target": "package-manager-detector@1.6.0"
+            }
+          ],
+          "metadataChanged": [],
+          "metadataDiff": []
+        },
+        {
+          "side": "head",
+          "node": "bumpp@11.1.0",
+          "edgesAdded": [
+            {
+              "name": "package-manager-detector",
+              "kind": "dependencies",
+              "target": "package-manager-detector@1.7.0"
+            }
+          ],
+          "edgesRemoved": [],
+          "metadataChanged": [],
+          "metadataDiff": []
+        }
+      ],
+      "confidence": "unknown",
+      "reason": "RESOLUTION_CONTEXT_NOT_FULLY_MODELED",
+      "evidence": [],
+      "possibleExplanations": [
+        "resolver update or deduplication",
+        "peer dependency resolution",
+        "lockfile regeneration differences"
+      ]
+    },
+    {
+      "name": "package-manager-detector",
+      "kind": "package",
+      "scope": "",
+      "change": "updated",
+      "before": [
+        "1.6.0"
+      ],
+      "after": [
+        "1.7.0"
+      ],
+      "changedNodes": {
+        "base": [
+          "package-manager-detector@1.6.0"
+        ],
+        "head": [
+          "package-manager-detector@1.7.0"
+        ]
+      },
+      "details": [
+        {
+          "side": "base",
+          "node": "package-manager-detector@1.6.0",
+          "edgesAdded": [],
+          "edgesRemoved": [],
+          "metadataChanged": [
+            "$.package.resolution.integrity"
+          ],
+          "metadataDiff": [
+            {
+              "path": "$.package.resolution.integrity",
+              "before": "\"sha512-61A5ThoTiDG/C8s8UMZwSorAGwMJ0ERVGj2OjoW5pAalsNOg15+iQiPzrLJ4jhZ1HJzmC2PIHT2oEiH3R5fzNA==\"",
+              "after": "\"sha512-xg1eHpwYL/D/HEdWw2goFZP6vV0FH7W+PZ5rFkGjdIDLtxq7EkzBUeT3m+lndYCt8wKbmofUu1MUdMCXkCk9ZQ==\""
+            }
+          ]
+        },
+        {
+          "side": "head",
+          "node": "package-manager-detector@1.7.0",
+          "edgesAdded": [],
+          "edgesRemoved": [],
+          "metadataChanged": [
+            "$.package.resolution.integrity"
+          ],
+          "metadataDiff": [
+            {
+              "path": "$.package.resolution.integrity",
+              "before": "\"sha512-61A5ThoTiDG/C8s8UMZwSorAGwMJ0ERVGj2OjoW5pAalsNOg15+iQiPzrLJ4jhZ1HJzmC2PIHT2oEiH3R5fzNA==\"",
+              "after": "\"sha512-xg1eHpwYL/D/HEdWw2goFZP6vV0FH7W+PZ5rFkGjdIDLtxq7EkzBUeT3m+lndYCt8wKbmofUu1MUdMCXkCk9ZQ==\""
+            }
+          ]
+        }
+      ],
+      "confidence": "unknown",
+      "reason": "RESOLUTION_CONTEXT_NOT_FULLY_MODELED",
+      "evidence": [],
+      "possibleExplanations": [
+        "resolver update or deduplication",
+        "peer dependency resolution",
+        "lockfile regeneration differences"
+      ]
+    },
+    {
+      "name": "taze",
+      "kind": "package",
+      "scope": "",
+      "change": "updated",
+      "before": [
+        "19.14.1"
+      ],
+      "after": [
+        "19.14.1"
+      ],
+      "changedNodes": {
+        "base": [
+          "taze@19.14.1"
+        ],
+        "head": [
+          "taze@19.14.1"
+        ]
+      },
+      "details": [
+        {
+          "side": "base",
+          "node": "taze@19.14.1",
+          "edgesAdded": [],
+          "edgesRemoved": [
+            {
+              "name": "package-manager-detector",
+              "kind": "dependencies",
+              "target": "package-manager-detector@1.6.0"
+            }
+          ],
+          "metadataChanged": [],
+          "metadataDiff": []
+        },
+        {
+          "side": "head",
+          "node": "taze@19.14.1",
+          "edgesAdded": [
+            {
+              "name": "package-manager-detector",
+              "kind": "dependencies",
+              "target": "package-manager-detector@1.7.0"
+            }
+          ],
+          "edgesRemoved": [],
+          "metadataChanged": [],
+          "metadataDiff": []
+        }
+      ],
+      "confidence": "unknown",
+      "reason": "RESOLUTION_CONTEXT_NOT_FULLY_MODELED",
+      "evidence": [],
+      "possibleExplanations": [
+        "resolver update or deduplication",
+        "peer dependency resolution",
+        "lockfile regeneration differences"
+      ]
+    }
+  ],
+  "pathNodes": {},
+  "warnings": [
+    "Lockfile resolution configuration changed.",
+    "Unsupported dependency protocol: . @antfu/eslint-config: catalog:dev",
+    "Unsupported dependency protocol: . @posva/prompts: catalog:prod-inlined",
+    "Unsupported dependency protocol: . @types/ini: catalog:dev",
+    "Unsupported dependency protocol: . @types/node: catalog:dev",
+    "Unsupported dependency protocol: . @types/which: catalog:dev",
+    "Unsupported dependency protocol: . bumpp: catalog:dev",
+    "Unsupported dependency protocol: . eslint: catalog:dev",
+    "Unsupported dependency protocol: . fast-npm-meta: catalog:prod-inlined",
+    "Unsupported dependency protocol: . fzf: catalog:prod",
+    "Unsupported dependency protocol: . ini: catalog:prod-inlined",
+    "Unsupported dependency protocol: . lint-staged: catalog:dev",
+    "Unsupported dependency protocol: . package-manager-detector: catalog:prod",
+    "Unsupported dependency protocol: . pnpm-workspace-yaml: catalog:prod-inlined",
+    "Unsupported dependency protocol: . simple-git-hooks: catalog:dev",
+    "Unsupported dependency protocol: . taze: catalog:dev",
+    "Unsupported dependency protocol: . tinyexec: catalog:prod",
+    "Unsupported dependency protocol: . tinyglobby: catalog:prod",
+    "Unsupported dependency protocol: . tsdown: catalog:dev",
+    "Unsupported dependency protocol: . tsx: catalog:dev",
+    "Unsupported dependency protocol: . typescript: catalog:dev",
+    "Unsupported dependency protocol: . vitest: catalog:dev",
+    "Unsupported dependency protocol: . which: catalog:prod-inlined",
+    "Workspace configuration changed; resolution effects are not modeled."
+  ],
+  "summary": {
+    "explained": 0,
+    "partially-explained": 0,
+    "unexplained": 0,
+    "unknown": 6
+  }
+}

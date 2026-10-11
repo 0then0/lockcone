@@ -1,0 +1,66 @@
+LockCone: a8da02adf4f6168a2b3cf7dbd30d24c5cbfbf186..0e9a94e76f28666161245da8bdf48c2b892f69ef
+
+Manifest changes:
+  None.
+
+Catalog entry changes (pnpm-workspace.yaml):
+  prod.package-manager-detector: ^1.6.0 → ^1.7.0
+    base affected declarations: dependency:[".","dependencies","package-manager-detector"]
+    head affected declarations: dependency:[".","dependencies","package-manager-detector"]
+
+Dependency declaration intent:
+  . [dependencies] package-manager-detector: effective-range
+    base: reference catalog:prod; effective declaration ^1.6.0; origin pnpm-workspace.yaml prod.package-manager-detector; observed resolution 1.6.0
+    head: reference catalog:prod; effective declaration ^1.7.0; origin pnpm-workspace.yaml prod.package-manager-detector; observed resolution 1.7.0
+
+Explained changes (reachable from changed root):
+  package-manager-detector [dependency .:dependencies]: 1.6.0 → 1.7.0
+    REACHABLE_FROM_CHANGED_ROOT
+    base: dependency:[".","dependencies","package-manager-detector"] -- dependencies.package-manager-detector -> package-manager-detector@1.6.0 (removed)
+    base: metadata changed: $.effectiveRange
+    base: metadata [dependency:[".","dependencies","package-manager-detector"]] $.effectiveRange: "^1.6.0" → "^1.7.0"
+    head: dependency:[".","dependencies","package-manager-detector"] -- dependencies.package-manager-detector -> package-manager-detector@1.7.0 (added)
+    head: metadata changed: $.effectiveRange
+    base: pnpm-workspace.yaml prod.package-manager-detector (^1.6.0) → dependency:[".","dependencies","package-manager-detector"]
+    head: pnpm-workspace.yaml prod.package-manager-detector (^1.7.0) → dependency:[".","dependencies","package-manager-detector"]
+  package-manager-detector [package]: 1.6.0 → 1.7.0
+    REACHABLE_FROM_CHANGED_ROOT
+    base: metadata changed: $.package.resolution.integrity
+    base: metadata [package-manager-detector@1.6.0 → package-manager-detector@1.7.0] $.package.resolution.integrity: "sha512-61A5ThoTiDG/C8s8UMZwSorAGwMJ0ERVGj2OjoW5pAalsNOg15+iQiPzrLJ4jhZ1HJzmC2PIHT2oEiH3R5fzNA==" → "sha512-xg1eHpwYL/D/HEdWw2goFZP6vV0FH7W+PZ5rFkGjdIDLtxq7EkzBUeT3m+lndYCt8wKbmofUu1MUdMCXkCk9ZQ=="
+    head: metadata changed: $.package.resolution.integrity
+    base: pnpm-workspace.yaml prod.package-manager-detector (^1.6.0) → dependency:[".","dependencies","package-manager-detector"] → package-manager-detector@1.6.0
+    head: pnpm-workspace.yaml prod.package-manager-detector (^1.7.0) → dependency:[".","dependencies","package-manager-detector"] → package-manager-detector@1.7.0
+
+Outside dependency cone:
+  @antfu/install-pkg [package]: 1.1.0 → 1.1.0
+    UNEXPLAINED_BY_MANIFEST_CHANGE
+    base: @antfu/install-pkg@1.1.0 -- dependencies.package-manager-detector -> package-manager-detector@1.6.0 (removed)
+    head: @antfu/install-pkg@1.1.0 -- dependencies.package-manager-detector -> package-manager-detector@1.7.0 (added)
+    No path found from changed dependency declarations.
+    Possible explanations (not verified): resolver update or deduplication; peer dependency resolution; lockfile regeneration differences.
+  @antfu/ni [package]: 30.1.0 → 30.1.0
+    UNEXPLAINED_BY_MANIFEST_CHANGE
+    base: @antfu/ni@30.1.0 -- dependencies.package-manager-detector -> package-manager-detector@1.6.0 (removed)
+    head: @antfu/ni@30.1.0 -- dependencies.package-manager-detector -> package-manager-detector@1.7.0 (added)
+    No path found from changed dependency declarations.
+    Possible explanations (not verified): resolver update or deduplication; peer dependency resolution; lockfile regeneration differences.
+  bumpp [package]: 11.1.0 → 11.1.0
+    UNEXPLAINED_BY_MANIFEST_CHANGE
+    base: bumpp@11.1.0 -- dependencies.package-manager-detector -> package-manager-detector@1.6.0 (removed)
+    head: bumpp@11.1.0 -- dependencies.package-manager-detector -> package-manager-detector@1.7.0 (added)
+    No path found from changed dependency declarations.
+    Possible explanations (not verified): resolver update or deduplication; peer dependency resolution; lockfile regeneration differences.
+  taze [package]: 19.14.1 → 19.14.1
+    UNEXPLAINED_BY_MANIFEST_CHANGE
+    base: taze@19.14.1 -- dependencies.package-manager-detector -> package-manager-detector@1.6.0 (removed)
+    head: taze@19.14.1 -- dependencies.package-manager-detector -> package-manager-detector@1.7.0 (added)
+    No path found from changed dependency declarations.
+    Possible explanations (not verified): resolver update or deduplication; peer dependency resolution; lockfile regeneration differences.
+
+Summary (change groups, including importer resolutions and workspaces):
+  explained: 2
+  partially-explained: 0
+  unexplained: 4
+  unknown: 0
+
+Reachability is evidence, not proof of causality. Unexplained changes are not automatically errors.

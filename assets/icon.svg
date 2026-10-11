@@ -1,0 +1,27 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="112"
+  height="112"
+  viewBox="0 0 112 112"
+  role="img"
+  aria-labelledby="title description"
+>
+  <title id="title">LockCone</title>
+  <desc
+    id="description"
+  >A lock marks a changed dependency root. A cone highlights its reachable dependency graph, with one node outside the cone.</desc>
+  <rect width="112" height="112" rx="24" fill="#101827" />
+  <path d="M56 34 18 94h76Z" fill="#38bdf8" opacity=".12" />
+  <g fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round">
+    <path d="M56 38v17m0 0L35 76m21-21 21 21M35 76l-10 17m10-17 15 17m27-17-11 17m11-17 11 17" />
+    <path d="M48 28v-7a8 8 0 0 1 16 0v7" />
+  </g>
+  <rect x="43" y="27" width="26" height="20" rx="5" fill="#38bdf8" />
+  <circle cx="56" cy="36" r="3" fill="#101827" />
+  <g fill="#38bdf8">
+    <circle cx="56" cy="55" r="5" /><circle cx="35" cy="76" r="5" />
+    <circle cx="77" cy="76" r="5" /><circle cx="25" cy="93" r="4" />
+    <circle cx="50" cy="93" r="4" /><circle cx="66" cy="93" r="4" /><circle cx="88" cy="93" r="4" />
+  </g>
+  <circle cx="92" cy="52" r="5" fill="none" stroke="#94a3b8" stroke-width="2.5" />
+</svg>

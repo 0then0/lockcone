@@ -3,9 +3,17 @@ import type { GraphNode, NodeKind } from '../graph/dependency-graph.js';
 import { fingerprint, stable } from '../graph/dependency-graph.js';
 import type { Visit } from '../graph/traversal.js';
 import { traverseAll } from '../graph/traversal.js';
+import type { Declaration } from '../pnpm/catalogs.js';
+import {
+  catalogName,
+  unmodeledCatalogSnapshots,
+  workspaceResolutionInputs,
+} from '../pnpm/catalogs.js';
 import type { PnpmState } from '../pnpm/dependency-graph.js';
 import type { ManifestChange } from './cone.js';
 import { manifestChanges } from './cone.js';
+import type { CatalogChange, DeclarationChange } from './declarations.js';
+import { catalogChanges, declarationChanges } from './declarations.js';
 
 export type Confidence =
   | 'explained'
@@ -46,10 +54,13 @@ export interface Change {
   possibleExplanations: string[];
 }
 export interface Report {
-  schemaVersion: 3;
+  schemaVersion: 4;
   base: string;
   head: string;
   manifestChanges: ManifestChange[];
+  declarations: { base: Declaration[]; head: Declaration[] };
+  declarationChanges: DeclarationChange[];
+  catalogChanges: CatalogChange[];
   changes: Change[];
   pathNodes: Record<string, EvidencePathNode>;
   warnings: string[];
@@ -145,12 +156,14 @@ function nodeDetails(
       side === 'head'
         ? [...currentEdges]
             .filter(([key]) => !counterpartEdges.has(key))
+            .sort(([a], [b]) => a.localeCompare(b))
             .map(([, edge]) => edge)
         : [],
     edgesRemoved:
       side === 'base'
         ? [...currentEdges]
             .filter(([key]) => !counterpartEdges.has(key))
+            .sort(([a], [b]) => a.localeCompare(b))
             .map(([, edge]) => edge)
         : [],
     metadataChanged,
@@ -174,7 +187,7 @@ export function evidencePath(report: Report, evidence: Evidence): string[] {
 
 function groupNodes(nodes: Map<string, GraphNode>): Map<string, GraphNode[]> {
   const groups = new Map<string, GraphNode[]>();
-  for (const node of nodes.values()) {
+  for (const node of [...nodes.values()].sort((a, b) => a.id.localeCompare(b.id))) {
     const key = JSON.stringify([node.kind, node.scope, node.name]);
     const group = groups.get(key) ?? [];
     group.push(node);
@@ -196,11 +209,10 @@ export function summarize(changes: Change[]): Report['summary'] {
 
 export function diff(base: PnpmState, head: PnpmState): Report {
   const intent = manifestChanges(base, head);
-  const roots = intent
-    .filter(
-      (change) =>
-        change.section !== 'workspace' && change.section !== 'peerDependencies',
-    )
+  const declarations = declarationChanges(base, head);
+  const catalogs = catalogChanges(base, head);
+  const roots = declarations
+    .filter((change) => change.traversal)
     .map((change) => change.root);
   const visits = {
     base: traverseAll(base.graph, roots),
@@ -220,17 +232,70 @@ export function diff(base: PnpmState, head: PnpmState): Report {
     }
   }
   const warnings = new Set([...base.graph.warnings, ...head.graph.warnings]);
-  if (stable(base.workspace) !== stable(head.workspace))
+  // A catalog reference in an unmodeled configuration input may change meaning
+  // even if that input's text did not change. Do not attribute overrides to cones.
+  const referencesCatalog = (value: unknown, name: string): boolean => {
+    if (typeof value === 'string') return catalogName(value) === name;
+    if (Array.isArray(value))
+      return value.some((item) => referencesCatalog(item, name));
+    return (
+      value !== null &&
+      typeof value === 'object' &&
+      Object.values(value).some((item) => referencesCatalog(item, name))
+    );
+  };
+  for (const change of catalogs) {
+    if (
+      [base, head].some((state) =>
+        referencesCatalog(
+          [workspaceResolutionInputs(state.workspace), state.manifests.get('.')?.pnpm],
+          change.catalog,
+        ),
+      )
+    )
+      warnings.add(
+        `Changed catalog ${change.catalog} is referenced by unmodeled resolution configuration.`,
+      );
+    // Hooks may inspect the workspace configuration directly; never execute them.
+    if (
+      (change.affectedDeclarations.base.some(
+        (root) => !base.declarations.get(root)?.shadowedByOptional,
+      ) ||
+        change.affectedDeclarations.head.some(
+          (root) => !head.declarations.get(root)?.shadowedByOptional,
+        )) &&
+      [base, head].some((state) =>
+        [...resolutionFiles].some(
+          (file) => file.endsWith('.cjs') && state.files.has(file),
+        ),
+      )
+    )
+      warnings.add(
+        'Catalog changed while a pnpm hook is present; hook effects are not modeled.',
+      );
+  }
+  if (
+    stable(workspaceResolutionInputs(base.workspace)) !==
+    stable(workspaceResolutionInputs(head.workspace))
+  )
     warnings.add(
       'Workspace configuration changed; resolution effects are not modeled.',
     );
-  const configuration = (state: PnpmState): unknown =>
-    Object.fromEntries(
+  const configuration = (state: PnpmState): unknown => ({
+    ...Object.fromEntries(
       Object.entries(state.lockfile).filter(
         ([key]) =>
-          !['importers', 'packages', 'snapshots', 'lockfileVersion'].includes(key),
+          ![
+            'importers',
+            'packages',
+            'snapshots',
+            'lockfileVersion',
+            'catalogs',
+          ].includes(key),
       ),
-    );
+    ),
+    catalogs: unmodeledCatalogSnapshots(state.catalogs, state.catalogSnapshots),
+  });
   if (stable(configuration(base)) !== stable(configuration(head)))
     warnings.add('Lockfile resolution configuration changed.');
   for (const path of new Set([...base.files.keys(), ...head.files.keys()])) {
@@ -252,7 +317,12 @@ export function diff(base: PnpmState, head: PnpmState): Report {
     )
       warnings.add(`Resolution input changed: ${path}`);
   }
-  if (intent.some((change) => change.section === 'peerDependencies'))
+  if (
+    intent.some((change) => change.section === 'peerDependencies') ||
+    declarations.some(
+      (change) => (change.after ?? change.before)?.section === 'peerDependencies',
+    )
+  )
     warnings.add('Workspace peer dependencies changed.');
   for (const path of new Set([...base.manifests.keys(), ...head.manifests.keys()])) {
     for (const field of [
@@ -379,10 +449,20 @@ export function diff(base: PnpmState, head: PnpmState): Report {
     });
   }
   return {
-    schemaVersion: 3,
+    schemaVersion: 4,
     base: base.revision,
     head: head.revision,
     manifestChanges: intent,
+    declarations: {
+      base: [...base.declarations.values()].sort((a, b) =>
+        a.root.localeCompare(b.root),
+      ),
+      head: [...head.declarations.values()].sort((a, b) =>
+        a.root.localeCompare(b.root),
+      ),
+    },
+    declarationChanges: declarations,
+    catalogChanges: catalogs,
     changes,
     pathNodes,
     warnings: [...warnings].sort(),

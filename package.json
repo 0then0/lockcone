@@ -1,6 +1,6 @@
 {
   "name": "lockcone",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Git blame for dependency changes: evidence from pnpm dependency graphs.",
   "repository": {
     "type": "git",
@@ -18,6 +18,8 @@
   "files": [
     "dist",
     "README.md",
+    "assets/icon.svg",
+    "docs",
     "LICENSE"
   ],
   "engines": {

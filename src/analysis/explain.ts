@@ -12,6 +12,15 @@ export function why(report: Report, name: string): Report {
   const roots = new Set(
     changes.flatMap((change) => change.evidence.map((item) => item.root)),
   );
+  for (const change of changes) {
+    if (change.kind === 'dependency') {
+      for (const root of [...change.changedNodes.base, ...change.changedNodes.head])
+        roots.add(root);
+    }
+  }
+  for (const change of report.declarationChanges) {
+    if ((change.after ?? change.before)?.name === name) roots.add(change.root);
+  }
   const pathNodes: Report['pathNodes'] = {};
   for (const change of changes) {
     for (const evidence of change.evidence) {
@@ -28,6 +37,26 @@ export function why(report: Report, name: string): Report {
     ...report,
     changes,
     manifestChanges: report.manifestChanges.filter((change) => roots.has(change.root)),
+    declarations: {
+      base: report.declarations.base.filter((item) => roots.has(item.root)),
+      head: report.declarations.head.filter((item) => roots.has(item.root)),
+    },
+    declarationChanges: report.declarationChanges.filter((change) =>
+      roots.has(change.root),
+    ),
+    catalogChanges: report.catalogChanges
+      .filter((change) =>
+        [...change.affectedDeclarations.base, ...change.affectedDeclarations.head].some(
+          (root) => roots.has(root),
+        ),
+      )
+      .map((change) => ({
+        ...change,
+        affectedDeclarations: {
+          base: change.affectedDeclarations.base.filter((root) => roots.has(root)),
+          head: change.affectedDeclarations.head.filter((root) => roots.has(root)),
+        },
+      })),
     pathNodes,
     summary: summarize(changes),
   };

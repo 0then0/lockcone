@@ -1,0 +1,77 @@
+LockCone: a8da02adf4f6168a2b3cf7dbd30d24c5cbfbf186..0e9a94e76f28666161245da8bdf48c2b892f69ef
+
+Manifest changes:
+  None.
+
+Unknown resolution context:
+  package-manager-detector [dependency .:dependencies]: 1.6.0 → 1.7.0
+    RESOLUTION_CONTEXT_NOT_FULLY_MODELED
+    base: dependency:[".","dependencies","package-manager-detector"] -- dependencies.package-manager-detector -> package-manager-detector@1.6.0 (removed)
+    head: dependency:[".","dependencies","package-manager-detector"] -- dependencies.package-manager-detector -> package-manager-detector@1.7.0 (added)
+    No path found from changed manifest dependencies.
+    Possible explanations (not verified): resolver update or deduplication; peer dependency resolution; lockfile regeneration differences.
+  @antfu/install-pkg [package]: 1.1.0 → 1.1.0
+    RESOLUTION_CONTEXT_NOT_FULLY_MODELED
+    base: @antfu/install-pkg@1.1.0 -- dependencies.package-manager-detector -> package-manager-detector@1.6.0 (removed)
+    head: @antfu/install-pkg@1.1.0 -- dependencies.package-manager-detector -> package-manager-detector@1.7.0 (added)
+    No path found from changed manifest dependencies.
+    Possible explanations (not verified): resolver update or deduplication; peer dependency resolution; lockfile regeneration differences.
+  @antfu/ni [package]: 30.1.0 → 30.1.0
+    RESOLUTION_CONTEXT_NOT_FULLY_MODELED
+    base: @antfu/ni@30.1.0 -- dependencies.package-manager-detector -> package-manager-detector@1.6.0 (removed)
+    head: @antfu/ni@30.1.0 -- dependencies.package-manager-detector -> package-manager-detector@1.7.0 (added)
+    No path found from changed manifest dependencies.
+    Possible explanations (not verified): resolver update or deduplication; peer dependency resolution; lockfile regeneration differences.
+  bumpp [package]: 11.1.0 → 11.1.0
+    RESOLUTION_CONTEXT_NOT_FULLY_MODELED
+    base: bumpp@11.1.0 -- dependencies.package-manager-detector -> package-manager-detector@1.6.0 (removed)
+    head: bumpp@11.1.0 -- dependencies.package-manager-detector -> package-manager-detector@1.7.0 (added)
+    No path found from changed manifest dependencies.
+    Possible explanations (not verified): resolver update or deduplication; peer dependency resolution; lockfile regeneration differences.
+  package-manager-detector [package]: 1.6.0 → 1.7.0
+    RESOLUTION_CONTEXT_NOT_FULLY_MODELED
+    base: metadata changed: $.package.resolution.integrity
+    base: metadata [package-manager-detector@1.6.0 → package-manager-detector@1.7.0] $.package.resolution.integrity: "sha512-61A5ThoTiDG/C8s8UMZwSorAGwMJ0ERVGj2OjoW5pAalsNOg15+iQiPzrLJ4jhZ1HJzmC2PIHT2oEiH3R5fzNA==" → "sha512-xg1eHpwYL/D/HEdWw2goFZP6vV0FH7W+PZ5rFkGjdIDLtxq7EkzBUeT3m+lndYCt8wKbmofUu1MUdMCXkCk9ZQ=="
+    head: metadata changed: $.package.resolution.integrity
+    No path found from changed manifest dependencies.
+    Possible explanations (not verified): resolver update or deduplication; peer dependency resolution; lockfile regeneration differences.
+  taze [package]: 19.14.1 → 19.14.1
+    RESOLUTION_CONTEXT_NOT_FULLY_MODELED
+    base: taze@19.14.1 -- dependencies.package-manager-detector -> package-manager-detector@1.6.0 (removed)
+    head: taze@19.14.1 -- dependencies.package-manager-detector -> package-manager-detector@1.7.0 (added)
+    No path found from changed manifest dependencies.
+    Possible explanations (not verified): resolver update or deduplication; peer dependency resolution; lockfile regeneration differences.
+
+Analysis limitations:
+  Lockfile resolution configuration changed.
+  Unsupported dependency protocol: . @antfu/eslint-config: catalog:dev
+  Unsupported dependency protocol: . @posva/prompts: catalog:prod-inlined
+  Unsupported dependency protocol: . @types/ini: catalog:dev
+  Unsupported dependency protocol: . @types/node: catalog:dev
+  Unsupported dependency protocol: . @types/which: catalog:dev
+  Unsupported dependency protocol: . bumpp: catalog:dev
+  Unsupported dependency protocol: . eslint: catalog:dev
+  Unsupported dependency protocol: . fast-npm-meta: catalog:prod-inlined
+  Unsupported dependency protocol: . fzf: catalog:prod
+  Unsupported dependency protocol: . ini: catalog:prod-inlined
+  Unsupported dependency protocol: . lint-staged: catalog:dev
+  Unsupported dependency protocol: . package-manager-detector: catalog:prod
+  Unsupported dependency protocol: . pnpm-workspace-yaml: catalog:prod-inlined
+  Unsupported dependency protocol: . simple-git-hooks: catalog:dev
+  Unsupported dependency protocol: . taze: catalog:dev
+  Unsupported dependency protocol: . tinyexec: catalog:prod
+  Unsupported dependency protocol: . tinyglobby: catalog:prod
+  Unsupported dependency protocol: . tsdown: catalog:dev
+  Unsupported dependency protocol: . tsx: catalog:dev
+  Unsupported dependency protocol: . typescript: catalog:dev
+  Unsupported dependency protocol: . vitest: catalog:dev
+  Unsupported dependency protocol: . which: catalog:prod-inlined
+  Workspace configuration changed; resolution effects are not modeled.
+
+Summary (change groups, including importer resolutions and workspaces):
+  explained: 0
+  partially-explained: 0
+  unexplained: 0
+  unknown: 6
+
+Reachability is evidence, not proof of causality. Unexplained changes are not automatically errors.

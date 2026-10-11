@@ -1,0 +1,1435 @@
+{
+  "schemaVersion": 4,
+  "base": "a8da02adf4f6168a2b3cf7dbd30d24c5cbfbf186",
+  "head": "0e9a94e76f28666161245da8bdf48c2b892f69ef",
+  "manifestChanges": [],
+  "declarations": {
+    "base": [
+      {
+        "root": "dependency:[\".\",\"dependencies\",\"fzf\"]",
+        "importer": ".",
+        "section": "dependencies",
+        "name": "fzf",
+        "specifier": "catalog:prod",
+        "source": "catalog",
+        "catalog": {
+          "name": "prod",
+          "entry": "fzf",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^0.5.2",
+        "observedResolution": "0.5.2",
+        "catalogSnapshot": {
+          "specifier": "^0.5.2",
+          "version": "0.5.2"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"dependencies\",\"package-manager-detector\"]",
+        "importer": ".",
+        "section": "dependencies",
+        "name": "package-manager-detector",
+        "specifier": "catalog:prod",
+        "source": "catalog",
+        "catalog": {
+          "name": "prod",
+          "entry": "package-manager-detector",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^1.6.0",
+        "observedResolution": "1.6.0",
+        "catalogSnapshot": {
+          "specifier": "^1.6.0",
+          "version": "1.6.0"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"dependencies\",\"tinyexec\"]",
+        "importer": ".",
+        "section": "dependencies",
+        "name": "tinyexec",
+        "specifier": "catalog:prod",
+        "source": "catalog",
+        "catalog": {
+          "name": "prod",
+          "entry": "tinyexec",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^1.2.4",
+        "observedResolution": "1.2.4",
+        "catalogSnapshot": {
+          "specifier": "^1.2.4",
+          "version": "1.2.4"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"dependencies\",\"tinyglobby\"]",
+        "importer": ".",
+        "section": "dependencies",
+        "name": "tinyglobby",
+        "specifier": "catalog:prod",
+        "source": "catalog",
+        "catalog": {
+          "name": "prod",
+          "entry": "tinyglobby",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^0.2.17",
+        "observedResolution": "0.2.17",
+        "catalogSnapshot": {
+          "specifier": "^0.2.17",
+          "version": "0.2.17"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"@antfu/eslint-config\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "@antfu/eslint-config",
+        "specifier": "catalog:dev",
+        "source": "catalog",
+        "catalog": {
+          "name": "dev",
+          "entry": "@antfu/eslint-config",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^9.1.0",
+        "observedResolution": "9.1.0(@typescript-eslint/rule-tester@8.56.1(eslint@10.5.0(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/typescript-estree@8.62.0(typescript@6.0.3))(@typescript-eslint/utils@8.62.0(eslint@10.5.0(jiti@2.6.1))(typescript@6.0.3))(@vue/compiler-sfc@3.4.31)(eslint@10.5.0(jiti@2.6.1))(ts-declaration-location@1.0.7(typescript@6.0.3))(typescript@6.0.3)(vitest@4.1.9(@types/node@26.0.1)(vite@6.2.2(@types/node@26.0.1)(jiti@2.6.1)(tsx@4.22.4)(yaml@2.9.0)))",
+        "catalogSnapshot": {
+          "specifier": "^9.1.0",
+          "version": "9.1.0"
+        },
+        "uncertainty": [
+          "Observed package has a peer or incomplete resolution context."
+        ],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"@posva/prompts\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "@posva/prompts",
+        "specifier": "catalog:prod-inlined",
+        "source": "catalog",
+        "catalog": {
+          "name": "prod-inlined",
+          "entry": "@posva/prompts",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^2.4.4",
+        "observedResolution": "2.4.4",
+        "catalogSnapshot": {
+          "specifier": "^2.4.4",
+          "version": "2.4.4"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"@types/ini\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "@types/ini",
+        "specifier": "catalog:dev",
+        "source": "catalog",
+        "catalog": {
+          "name": "dev",
+          "entry": "@types/ini",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^4.1.1",
+        "observedResolution": "4.1.1",
+        "catalogSnapshot": {
+          "specifier": "^4.1.1",
+          "version": "4.1.1"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"@types/node\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "@types/node",
+        "specifier": "catalog:dev",
+        "source": "catalog",
+        "catalog": {
+          "name": "dev",
+          "entry": "@types/node",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^26.0.1",
+        "observedResolution": "26.0.1",
+        "catalogSnapshot": {
+          "specifier": "^26.0.1",
+          "version": "26.0.1"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"@types/which\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "@types/which",
+        "specifier": "catalog:dev",
+        "source": "catalog",
+        "catalog": {
+          "name": "dev",
+          "entry": "@types/which",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^3.0.4",
+        "observedResolution": "3.0.4",
+        "catalogSnapshot": {
+          "specifier": "^3.0.4",
+          "version": "3.0.4"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"bumpp\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "bumpp",
+        "specifier": "catalog:dev",
+        "source": "catalog",
+        "catalog": {
+          "name": "dev",
+          "entry": "bumpp",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^11.1.0",
+        "observedResolution": "11.1.0",
+        "catalogSnapshot": {
+          "specifier": "^11.1.0",
+          "version": "11.1.0"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"eslint\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "eslint",
+        "specifier": "catalog:dev",
+        "source": "catalog",
+        "catalog": {
+          "name": "dev",
+          "entry": "eslint",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^10.5.0",
+        "observedResolution": "10.5.0(jiti@2.6.1)",
+        "catalogSnapshot": {
+          "specifier": "^10.5.0",
+          "version": "10.5.0"
+        },
+        "uncertainty": [
+          "Observed package has a peer or incomplete resolution context."
+        ],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"fast-npm-meta\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "fast-npm-meta",
+        "specifier": "catalog:prod-inlined",
+        "source": "catalog",
+        "catalog": {
+          "name": "prod-inlined",
+          "entry": "fast-npm-meta",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^2.1.0",
+        "observedResolution": "2.1.0",
+        "catalogSnapshot": {
+          "specifier": "^2.1.0",
+          "version": "2.1.0"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"ini\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "ini",
+        "specifier": "catalog:prod-inlined",
+        "source": "catalog",
+        "catalog": {
+          "name": "prod-inlined",
+          "entry": "ini",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^7.0.0",
+        "observedResolution": "7.0.0",
+        "catalogSnapshot": {
+          "specifier": "^7.0.0",
+          "version": "7.0.0"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"lint-staged\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "lint-staged",
+        "specifier": "catalog:dev",
+        "source": "catalog",
+        "catalog": {
+          "name": "dev",
+          "entry": "lint-staged",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^17.0.8",
+        "observedResolution": "17.0.8",
+        "catalogSnapshot": {
+          "specifier": "^17.0.8",
+          "version": "17.0.8"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"pnpm-workspace-yaml\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "pnpm-workspace-yaml",
+        "specifier": "catalog:prod-inlined",
+        "source": "catalog",
+        "catalog": {
+          "name": "prod-inlined",
+          "entry": "pnpm-workspace-yaml",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^1.6.1",
+        "observedResolution": "1.6.1",
+        "catalogSnapshot": {
+          "specifier": "^1.6.1",
+          "version": "1.6.1"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"simple-git-hooks\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "simple-git-hooks",
+        "specifier": "catalog:dev",
+        "source": "catalog",
+        "catalog": {
+          "name": "dev",
+          "entry": "simple-git-hooks",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^2.13.1",
+        "observedResolution": "2.13.1",
+        "catalogSnapshot": {
+          "specifier": "^2.13.1",
+          "version": "2.13.1"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"taze\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "taze",
+        "specifier": "catalog:dev",
+        "source": "catalog",
+        "catalog": {
+          "name": "dev",
+          "entry": "taze",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^19.14.1",
+        "observedResolution": "19.14.1",
+        "catalogSnapshot": {
+          "specifier": "^19.14.1",
+          "version": "19.14.1"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"tsdown\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "tsdown",
+        "specifier": "catalog:dev",
+        "source": "catalog",
+        "catalog": {
+          "name": "dev",
+          "entry": "tsdown",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^0.22.3",
+        "observedResolution": "0.22.3(tsx@4.22.4)(typescript@6.0.3)(unrun@0.2.32(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(synckit@0.11.12))",
+        "catalogSnapshot": {
+          "specifier": "^0.22.3",
+          "version": "0.22.3"
+        },
+        "uncertainty": [
+          "Observed package has a peer or incomplete resolution context."
+        ],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"tsx\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "tsx",
+        "specifier": "catalog:dev",
+        "source": "catalog",
+        "catalog": {
+          "name": "dev",
+          "entry": "tsx",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^4.22.4",
+        "observedResolution": "4.22.4",
+        "catalogSnapshot": {
+          "specifier": "^4.22.4",
+          "version": "4.22.4"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"typescript\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "typescript",
+        "specifier": "catalog:dev",
+        "source": "catalog",
+        "catalog": {
+          "name": "dev",
+          "entry": "typescript",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^6.0.3",
+        "observedResolution": "6.0.3",
+        "catalogSnapshot": {
+          "specifier": "^6.0.3",
+          "version": "6.0.3"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"vitest\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "vitest",
+        "specifier": "catalog:dev",
+        "source": "catalog",
+        "catalog": {
+          "name": "dev",
+          "entry": "vitest",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^4.1.9",
+        "observedResolution": "4.1.9(@types/node@26.0.1)(vite@6.2.2(@types/node@26.0.1)(jiti@2.6.1)(tsx@4.22.4)(yaml@2.9.0))",
+        "catalogSnapshot": {
+          "specifier": "^4.1.9",
+          "version": "4.1.9"
+        },
+        "uncertainty": [
+          "Observed package has a peer or incomplete resolution context."
+        ],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"which\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "which",
+        "specifier": "catalog:prod-inlined",
+        "source": "catalog",
+        "catalog": {
+          "name": "prod-inlined",
+          "entry": "which",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^7.0.0",
+        "observedResolution": "7.0.0",
+        "catalogSnapshot": {
+          "specifier": "^7.0.0",
+          "version": "7.0.0"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      }
+    ],
+    "head": [
+      {
+        "root": "dependency:[\".\",\"dependencies\",\"fzf\"]",
+        "importer": ".",
+        "section": "dependencies",
+        "name": "fzf",
+        "specifier": "catalog:prod",
+        "source": "catalog",
+        "catalog": {
+          "name": "prod",
+          "entry": "fzf",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^0.5.2",
+        "observedResolution": "0.5.2",
+        "catalogSnapshot": {
+          "specifier": "^0.5.2",
+          "version": "0.5.2"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"dependencies\",\"package-manager-detector\"]",
+        "importer": ".",
+        "section": "dependencies",
+        "name": "package-manager-detector",
+        "specifier": "catalog:prod",
+        "source": "catalog",
+        "catalog": {
+          "name": "prod",
+          "entry": "package-manager-detector",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^1.7.0",
+        "observedResolution": "1.7.0",
+        "catalogSnapshot": {
+          "specifier": "^1.7.0",
+          "version": "1.7.0"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"dependencies\",\"tinyexec\"]",
+        "importer": ".",
+        "section": "dependencies",
+        "name": "tinyexec",
+        "specifier": "catalog:prod",
+        "source": "catalog",
+        "catalog": {
+          "name": "prod",
+          "entry": "tinyexec",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^1.2.4",
+        "observedResolution": "1.2.4",
+        "catalogSnapshot": {
+          "specifier": "^1.2.4",
+          "version": "1.2.4"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"dependencies\",\"tinyglobby\"]",
+        "importer": ".",
+        "section": "dependencies",
+        "name": "tinyglobby",
+        "specifier": "catalog:prod",
+        "source": "catalog",
+        "catalog": {
+          "name": "prod",
+          "entry": "tinyglobby",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^0.2.17",
+        "observedResolution": "0.2.17",
+        "catalogSnapshot": {
+          "specifier": "^0.2.17",
+          "version": "0.2.17"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"@antfu/eslint-config\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "@antfu/eslint-config",
+        "specifier": "catalog:dev",
+        "source": "catalog",
+        "catalog": {
+          "name": "dev",
+          "entry": "@antfu/eslint-config",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^9.1.0",
+        "observedResolution": "9.1.0(@typescript-eslint/rule-tester@8.56.1(eslint@10.5.0(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/typescript-estree@8.62.0(typescript@6.0.3))(@typescript-eslint/utils@8.62.0(eslint@10.5.0(jiti@2.6.1))(typescript@6.0.3))(@vue/compiler-sfc@3.4.31)(eslint@10.5.0(jiti@2.6.1))(ts-declaration-location@1.0.7(typescript@6.0.3))(typescript@6.0.3)(vitest@4.1.9(@types/node@26.0.1)(vite@6.2.2(@types/node@26.0.1)(jiti@2.6.1)(tsx@4.22.4)(yaml@2.9.0)))",
+        "catalogSnapshot": {
+          "specifier": "^9.1.0",
+          "version": "9.1.0"
+        },
+        "uncertainty": [
+          "Observed package has a peer or incomplete resolution context."
+        ],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"@posva/prompts\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "@posva/prompts",
+        "specifier": "catalog:prod-inlined",
+        "source": "catalog",
+        "catalog": {
+          "name": "prod-inlined",
+          "entry": "@posva/prompts",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^2.4.4",
+        "observedResolution": "2.4.4",
+        "catalogSnapshot": {
+          "specifier": "^2.4.4",
+          "version": "2.4.4"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"@types/ini\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "@types/ini",
+        "specifier": "catalog:dev",
+        "source": "catalog",
+        "catalog": {
+          "name": "dev",
+          "entry": "@types/ini",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^4.1.1",
+        "observedResolution": "4.1.1",
+        "catalogSnapshot": {
+          "specifier": "^4.1.1",
+          "version": "4.1.1"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"@types/node\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "@types/node",
+        "specifier": "catalog:dev",
+        "source": "catalog",
+        "catalog": {
+          "name": "dev",
+          "entry": "@types/node",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^26.0.1",
+        "observedResolution": "26.0.1",
+        "catalogSnapshot": {
+          "specifier": "^26.0.1",
+          "version": "26.0.1"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"@types/which\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "@types/which",
+        "specifier": "catalog:dev",
+        "source": "catalog",
+        "catalog": {
+          "name": "dev",
+          "entry": "@types/which",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^3.0.4",
+        "observedResolution": "3.0.4",
+        "catalogSnapshot": {
+          "specifier": "^3.0.4",
+          "version": "3.0.4"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"bumpp\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "bumpp",
+        "specifier": "catalog:dev",
+        "source": "catalog",
+        "catalog": {
+          "name": "dev",
+          "entry": "bumpp",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^11.1.0",
+        "observedResolution": "11.1.0",
+        "catalogSnapshot": {
+          "specifier": "^11.1.0",
+          "version": "11.1.0"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"eslint\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "eslint",
+        "specifier": "catalog:dev",
+        "source": "catalog",
+        "catalog": {
+          "name": "dev",
+          "entry": "eslint",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^10.5.0",
+        "observedResolution": "10.5.0(jiti@2.6.1)",
+        "catalogSnapshot": {
+          "specifier": "^10.5.0",
+          "version": "10.5.0"
+        },
+        "uncertainty": [
+          "Observed package has a peer or incomplete resolution context."
+        ],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"fast-npm-meta\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "fast-npm-meta",
+        "specifier": "catalog:prod-inlined",
+        "source": "catalog",
+        "catalog": {
+          "name": "prod-inlined",
+          "entry": "fast-npm-meta",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^2.1.0",
+        "observedResolution": "2.1.0",
+        "catalogSnapshot": {
+          "specifier": "^2.1.0",
+          "version": "2.1.0"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"ini\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "ini",
+        "specifier": "catalog:prod-inlined",
+        "source": "catalog",
+        "catalog": {
+          "name": "prod-inlined",
+          "entry": "ini",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^7.0.0",
+        "observedResolution": "7.0.0",
+        "catalogSnapshot": {
+          "specifier": "^7.0.0",
+          "version": "7.0.0"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"lint-staged\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "lint-staged",
+        "specifier": "catalog:dev",
+        "source": "catalog",
+        "catalog": {
+          "name": "dev",
+          "entry": "lint-staged",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^17.0.8",
+        "observedResolution": "17.0.8",
+        "catalogSnapshot": {
+          "specifier": "^17.0.8",
+          "version": "17.0.8"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"pnpm-workspace-yaml\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "pnpm-workspace-yaml",
+        "specifier": "catalog:prod-inlined",
+        "source": "catalog",
+        "catalog": {
+          "name": "prod-inlined",
+          "entry": "pnpm-workspace-yaml",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^1.6.1",
+        "observedResolution": "1.6.1",
+        "catalogSnapshot": {
+          "specifier": "^1.6.1",
+          "version": "1.6.1"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"simple-git-hooks\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "simple-git-hooks",
+        "specifier": "catalog:dev",
+        "source": "catalog",
+        "catalog": {
+          "name": "dev",
+          "entry": "simple-git-hooks",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^2.13.1",
+        "observedResolution": "2.13.1",
+        "catalogSnapshot": {
+          "specifier": "^2.13.1",
+          "version": "2.13.1"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"taze\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "taze",
+        "specifier": "catalog:dev",
+        "source": "catalog",
+        "catalog": {
+          "name": "dev",
+          "entry": "taze",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^19.14.1",
+        "observedResolution": "19.14.1",
+        "catalogSnapshot": {
+          "specifier": "^19.14.1",
+          "version": "19.14.1"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"tsdown\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "tsdown",
+        "specifier": "catalog:dev",
+        "source": "catalog",
+        "catalog": {
+          "name": "dev",
+          "entry": "tsdown",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^0.22.3",
+        "observedResolution": "0.22.3(tsx@4.22.4)(typescript@6.0.3)(unrun@0.2.32(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(synckit@0.11.12))",
+        "catalogSnapshot": {
+          "specifier": "^0.22.3",
+          "version": "0.22.3"
+        },
+        "uncertainty": [
+          "Observed package has a peer or incomplete resolution context."
+        ],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"tsx\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "tsx",
+        "specifier": "catalog:dev",
+        "source": "catalog",
+        "catalog": {
+          "name": "dev",
+          "entry": "tsx",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^4.22.4",
+        "observedResolution": "4.22.4",
+        "catalogSnapshot": {
+          "specifier": "^4.22.4",
+          "version": "4.22.4"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"typescript\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "typescript",
+        "specifier": "catalog:dev",
+        "source": "catalog",
+        "catalog": {
+          "name": "dev",
+          "entry": "typescript",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^6.0.3",
+        "observedResolution": "6.0.3",
+        "catalogSnapshot": {
+          "specifier": "^6.0.3",
+          "version": "6.0.3"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"vitest\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "vitest",
+        "specifier": "catalog:dev",
+        "source": "catalog",
+        "catalog": {
+          "name": "dev",
+          "entry": "vitest",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^4.1.9",
+        "observedResolution": "4.1.9(@types/node@26.0.1)(vite@6.2.2(@types/node@26.0.1)(jiti@2.6.1)(tsx@4.22.4)(yaml@2.9.0))",
+        "catalogSnapshot": {
+          "specifier": "^4.1.9",
+          "version": "4.1.9"
+        },
+        "uncertainty": [
+          "Observed package has a peer or incomplete resolution context."
+        ],
+        "shadowedByOptional": false
+      },
+      {
+        "root": "dependency:[\".\",\"devDependencies\",\"which\"]",
+        "importer": ".",
+        "section": "devDependencies",
+        "name": "which",
+        "specifier": "catalog:prod-inlined",
+        "source": "catalog",
+        "catalog": {
+          "name": "prod-inlined",
+          "entry": "which",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^7.0.0",
+        "observedResolution": "7.0.0",
+        "catalogSnapshot": {
+          "specifier": "^7.0.0",
+          "version": "7.0.0"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      }
+    ]
+  },
+  "declarationChanges": [
+    {
+      "root": "dependency:[\".\",\"dependencies\",\"package-manager-detector\"]",
+      "change": "effective-range",
+      "before": {
+        "root": "dependency:[\".\",\"dependencies\",\"package-manager-detector\"]",
+        "importer": ".",
+        "section": "dependencies",
+        "name": "package-manager-detector",
+        "specifier": "catalog:prod",
+        "source": "catalog",
+        "catalog": {
+          "name": "prod",
+          "entry": "package-manager-detector",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^1.6.0",
+        "observedResolution": "1.6.0",
+        "catalogSnapshot": {
+          "specifier": "^1.6.0",
+          "version": "1.6.0"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      "after": {
+        "root": "dependency:[\".\",\"dependencies\",\"package-manager-detector\"]",
+        "importer": ".",
+        "section": "dependencies",
+        "name": "package-manager-detector",
+        "specifier": "catalog:prod",
+        "source": "catalog",
+        "catalog": {
+          "name": "prod",
+          "entry": "package-manager-detector",
+          "file": "pnpm-workspace.yaml"
+        },
+        "effectiveRange": "^1.7.0",
+        "observedResolution": "1.7.0",
+        "catalogSnapshot": {
+          "specifier": "^1.7.0",
+          "version": "1.7.0"
+        },
+        "uncertainty": [],
+        "shadowedByOptional": false
+      },
+      "traversal": true
+    }
+  ],
+  "catalogChanges": [
+    {
+      "catalog": "prod",
+      "entry": "package-manager-detector",
+      "before": "^1.6.0",
+      "after": "^1.7.0",
+      "affectedDeclarations": {
+        "base": [
+          "dependency:[\".\",\"dependencies\",\"package-manager-detector\"]"
+        ],
+        "head": [
+          "dependency:[\".\",\"dependencies\",\"package-manager-detector\"]"
+        ]
+      },
+      "uncertainty": []
+    }
+  ],
+  "changes": [
+    {
+      "name": "package-manager-detector",
+      "kind": "dependency",
+      "scope": ".:dependencies",
+      "change": "updated",
+      "before": [
+        "1.6.0"
+      ],
+      "after": [
+        "1.7.0"
+      ],
+      "changedNodes": {
+        "base": [
+          "dependency:[\".\",\"dependencies\",\"package-manager-detector\"]"
+        ],
+        "head": [
+          "dependency:[\".\",\"dependencies\",\"package-manager-detector\"]"
+        ]
+      },
+      "details": [
+        {
+          "side": "base",
+          "node": "dependency:[\".\",\"dependencies\",\"package-manager-detector\"]",
+          "edgesAdded": [],
+          "edgesRemoved": [
+            {
+              "name": "package-manager-detector",
+              "kind": "dependencies",
+              "target": "package-manager-detector@1.6.0"
+            }
+          ],
+          "metadataChanged": [
+            "$.effectiveRange"
+          ],
+          "metadataDiff": [
+            {
+              "path": "$.effectiveRange",
+              "before": "\"^1.6.0\"",
+              "after": "\"^1.7.0\""
+            }
+          ]
+        },
+        {
+          "side": "head",
+          "node": "dependency:[\".\",\"dependencies\",\"package-manager-detector\"]",
+          "edgesAdded": [
+            {
+              "name": "package-manager-detector",
+              "kind": "dependencies",
+              "target": "package-manager-detector@1.7.0"
+            }
+          ],
+          "edgesRemoved": [],
+          "metadataChanged": [
+            "$.effectiveRange"
+          ],
+          "metadataDiff": [
+            {
+              "path": "$.effectiveRange",
+              "before": "\"^1.6.0\"",
+              "after": "\"^1.7.0\""
+            }
+          ]
+        }
+      ],
+      "confidence": "explained",
+      "reason": "REACHABLE_FROM_CHANGED_ROOT",
+      "evidence": [
+        {
+          "side": "base",
+          "node": "dependency:[\".\",\"dependencies\",\"package-manager-detector\"]",
+          "root": "dependency:[\".\",\"dependencies\",\"package-manager-detector\"]",
+          "pathId": "[\"base\",\"dependency:[\\\".\\\",\\\"dependencies\\\",\\\"package-manager-detector\\\"]\",\"dependency:[\\\".\\\",\\\"dependencies\\\",\\\"package-manager-detector\\\"]\"]"
+        },
+        {
+          "side": "head",
+          "node": "dependency:[\".\",\"dependencies\",\"package-manager-detector\"]",
+          "root": "dependency:[\".\",\"dependencies\",\"package-manager-detector\"]",
+          "pathId": "[\"head\",\"dependency:[\\\".\\\",\\\"dependencies\\\",\\\"package-manager-detector\\\"]\",\"dependency:[\\\".\\\",\\\"dependencies\\\",\\\"package-manager-detector\\\"]\"]"
+        }
+      ],
+      "possibleExplanations": []
+    },
+    {
+      "name": "@antfu/install-pkg",
+      "kind": "package",
+      "scope": "",
+      "change": "updated",
+      "before": [
+        "1.1.0"
+      ],
+      "after": [
+        "1.1.0"
+      ],
+      "changedNodes": {
+        "base": [
+          "@antfu/install-pkg@1.1.0"
+        ],
+        "head": [
+          "@antfu/install-pkg@1.1.0"
+        ]
+      },
+      "details": [
+        {
+          "side": "base",
+          "node": "@antfu/install-pkg@1.1.0",
+          "edgesAdded": [],
+          "edgesRemoved": [
+            {
+              "name": "package-manager-detector",
+              "kind": "dependencies",
+              "target": "package-manager-detector@1.6.0"
+            }
+          ],
+          "metadataChanged": [],
+          "metadataDiff": []
+        },
+        {
+          "side": "head",
+          "node": "@antfu/install-pkg@1.1.0",
+          "edgesAdded": [
+            {
+              "name": "package-manager-detector",
+              "kind": "dependencies",
+              "target": "package-manager-detector@1.7.0"
+            }
+          ],
+          "edgesRemoved": [],
+          "metadataChanged": [],
+          "metadataDiff": []
+        }
+      ],
+      "confidence": "unexplained",
+      "reason": "UNEXPLAINED_BY_MANIFEST_CHANGE",
+      "evidence": [],
+      "possibleExplanations": [
+        "resolver update or deduplication",
+        "peer dependency resolution",
+        "lockfile regeneration differences"
+      ]
+    },
+    {
+      "name": "@antfu/ni",
+      "kind": "package",
+      "scope": "",
+      "change": "updated",
+      "before": [
+        "30.1.0"
+      ],
+      "after": [
+        "30.1.0"
+      ],
+      "changedNodes": {
+        "base": [
+          "@antfu/ni@30.1.0"
+        ],
+        "head": [
+          "@antfu/ni@30.1.0"
+        ]
+      },
+      "details": [
+        {
+          "side": "base",
+          "node": "@antfu/ni@30.1.0",
+          "edgesAdded": [],
+          "edgesRemoved": [
+            {
+              "name": "package-manager-detector",
+              "kind": "dependencies",
+              "target": "package-manager-detector@1.6.0"
+            }
+          ],
+          "metadataChanged": [],
+          "metadataDiff": []
+        },
+        {
+          "side": "head",
+          "node": "@antfu/ni@30.1.0",
+          "edgesAdded": [
+            {
+              "name": "package-manager-detector",
+              "kind": "dependencies",
+              "target": "package-manager-detector@1.7.0"
+            }
+          ],
+          "edgesRemoved": [],
+          "metadataChanged": [],
+          "metadataDiff": []
+        }
+      ],
+      "confidence": "unexplained",
+      "reason": "UNEXPLAINED_BY_MANIFEST_CHANGE",
+      "evidence": [],
+      "possibleExplanations": [
+        "resolver update or deduplication",
+        "peer dependency resolution",
+        "lockfile regeneration differences"
+      ]
+    },
+    {
+      "name": "bumpp",
+      "kind": "package",
+      "scope": "",
+      "change": "updated",
+      "before": [
+        "11.1.0"
+      ],
+      "after": [
+        "11.1.0"
+      ],
+      "changedNodes": {
+        "base": [
+          "bumpp@11.1.0"
+        ],
+        "head": [
+          "bumpp@11.1.0"
+        ]
+      },
+      "details": [
+        {
+          "side": "base",
+          "node": "bumpp@11.1.0",
+          "edgesAdded": [],
+          "edgesRemoved": [
+            {
+              "name": "package-manager-detector",
+              "kind": "dependencies",
+              "target": "package-manager-detector@1.6.0"
+            }
+          ],
+          "metadataChanged": [],
+          "metadataDiff": []
+        },
+        {
+          "side": "head",
+          "node": "bumpp@11.1.0",
+          "edgesAdded": [
+            {
+              "name": "package-manager-detector",
+              "kind": "dependencies",
+              "target": "package-manager-detector@1.7.0"
+            }
+          ],
+          "edgesRemoved": [],
+          "metadataChanged": [],
+          "metadataDiff": []
+        }
+      ],
+      "confidence": "unexplained",
+      "reason": "UNEXPLAINED_BY_MANIFEST_CHANGE",
+      "evidence": [],
+      "possibleExplanations": [
+        "resolver update or deduplication",
+        "peer dependency resolution",
+        "lockfile regeneration differences"
+      ]
+    },
+    {
+      "name": "package-manager-detector",
+      "kind": "package",
+      "scope": "",
+      "change": "updated",
+      "before": [
+        "1.6.0"
+      ],
+      "after": [
+        "1.7.0"
+      ],
+      "changedNodes": {
+        "base": [
+          "package-manager-detector@1.6.0"
+        ],
+        "head": [
+          "package-manager-detector@1.7.0"
+        ]
+      },
+      "details": [
+        {
+          "side": "base",
+          "node": "package-manager-detector@1.6.0",
+          "edgesAdded": [],
+          "edgesRemoved": [],
+          "metadataChanged": [
+            "$.package.resolution.integrity"
+          ],
+          "metadataDiff": [
+            {
+              "path": "$.package.resolution.integrity",
+              "before": "\"sha512-61A5ThoTiDG/C8s8UMZwSorAGwMJ0ERVGj2OjoW5pAalsNOg15+iQiPzrLJ4jhZ1HJzmC2PIHT2oEiH3R5fzNA==\"",
+              "after": "\"sha512-xg1eHpwYL/D/HEdWw2goFZP6vV0FH7W+PZ5rFkGjdIDLtxq7EkzBUeT3m+lndYCt8wKbmofUu1MUdMCXkCk9ZQ==\""
+            }
+          ]
+        },
+        {
+          "side": "head",
+          "node": "package-manager-detector@1.7.0",
+          "edgesAdded": [],
+          "edgesRemoved": [],
+          "metadataChanged": [
+            "$.package.resolution.integrity"
+          ],
+          "metadataDiff": [
+            {
+              "path": "$.package.resolution.integrity",
+              "before": "\"sha512-61A5ThoTiDG/C8s8UMZwSorAGwMJ0ERVGj2OjoW5pAalsNOg15+iQiPzrLJ4jhZ1HJzmC2PIHT2oEiH3R5fzNA==\"",
+              "after": "\"sha512-xg1eHpwYL/D/HEdWw2goFZP6vV0FH7W+PZ5rFkGjdIDLtxq7EkzBUeT3m+lndYCt8wKbmofUu1MUdMCXkCk9ZQ==\""
+            }
+          ]
+        }
+      ],
+      "confidence": "explained",
+      "reason": "REACHABLE_FROM_CHANGED_ROOT",
+      "evidence": [
+        {
+          "side": "base",
+          "node": "package-manager-detector@1.6.0",
+          "root": "dependency:[\".\",\"dependencies\",\"package-manager-detector\"]",
+          "pathId": "[\"base\",\"dependency:[\\\".\\\",\\\"dependencies\\\",\\\"package-manager-detector\\\"]\",\"package-manager-detector@1.6.0\"]"
+        },
+        {
+          "side": "head",
+          "node": "package-manager-detector@1.7.0",
+          "root": "dependency:[\".\",\"dependencies\",\"package-manager-detector\"]",
+          "pathId": "[\"head\",\"dependency:[\\\".\\\",\\\"dependencies\\\",\\\"package-manager-detector\\\"]\",\"package-manager-detector@1.7.0\"]"
+        }
+      ],
+      "possibleExplanations": []
+    },
+    {
+      "name": "taze",
+      "kind": "package",
+      "scope": "",
+      "change": "updated",
+      "before": [
+        "19.14.1"
+      ],
+      "after": [
+        "19.14.1"
+      ],
+      "changedNodes": {
+        "base": [
+          "taze@19.14.1"
+        ],
+        "head": [
+          "taze@19.14.1"
+        ]
+      },
+      "details": [
+        {
+          "side": "base",
+          "node": "taze@19.14.1",
+          "edgesAdded": [],
+          "edgesRemoved": [
+            {
+              "name": "package-manager-detector",
+              "kind": "dependencies",
+              "target": "package-manager-detector@1.6.0"
+            }
+          ],
+          "metadataChanged": [],
+          "metadataDiff": []
+        },
+        {
+          "side": "head",
+          "node": "taze@19.14.1",
+          "edgesAdded": [
+            {
+              "name": "package-manager-detector",
+              "kind": "dependencies",
+              "target": "package-manager-detector@1.7.0"
+            }
+          ],
+          "edgesRemoved": [],
+          "metadataChanged": [],
+          "metadataDiff": []
+        }
+      ],
+      "confidence": "unexplained",
+      "reason": "UNEXPLAINED_BY_MANIFEST_CHANGE",
+      "evidence": [],
+      "possibleExplanations": [
+        "resolver update or deduplication",
+        "peer dependency resolution",
+        "lockfile regeneration differences"
+      ]
+    }
+  ],
+  "pathNodes": {
+    "[\"base\",\"dependency:[\\\".\\\",\\\"dependencies\\\",\\\"package-manager-detector\\\"]\",\"dependency:[\\\".\\\",\\\"dependencies\\\",\\\"package-manager-detector\\\"]\"]": {
+      "side": "base",
+      "node": "dependency:[\".\",\"dependencies\",\"package-manager-detector\"]",
+      "parent": null
+    },
+    "[\"head\",\"dependency:[\\\".\\\",\\\"dependencies\\\",\\\"package-manager-detector\\\"]\",\"dependency:[\\\".\\\",\\\"dependencies\\\",\\\"package-manager-detector\\\"]\"]": {
+      "side": "head",
+      "node": "dependency:[\".\",\"dependencies\",\"package-manager-detector\"]",
+      "parent": null
+    },
+    "[\"base\",\"dependency:[\\\".\\\",\\\"dependencies\\\",\\\"package-manager-detector\\\"]\",\"package-manager-detector@1.6.0\"]": {
+      "side": "base",
+      "node": "package-manager-detector@1.6.0",
+      "parent": "[\"base\",\"dependency:[\\\".\\\",\\\"dependencies\\\",\\\"package-manager-detector\\\"]\",\"dependency:[\\\".\\\",\\\"dependencies\\\",\\\"package-manager-detector\\\"]\"]"
+    },
+    "[\"head\",\"dependency:[\\\".\\\",\\\"dependencies\\\",\\\"package-manager-detector\\\"]\",\"package-manager-detector@1.7.0\"]": {
+      "side": "head",
+      "node": "package-manager-detector@1.7.0",
+      "parent": "[\"head\",\"dependency:[\\\".\\\",\\\"dependencies\\\",\\\"package-manager-detector\\\"]\",\"dependency:[\\\".\\\",\\\"dependencies\\\",\\\"package-manager-detector\\\"]\"]"
+    }
+  },
+  "warnings": [],
+  "summary": {
+    "explained": 2,
+    "partially-explained": 0,
+    "unexplained": 4,
+    "unknown": 0
+  }
+}

@@ -4,6 +4,8 @@ import type { DependencyGraph, GraphNode } from '../graph/dependency-graph.js';
 import { dependencyId, workspaceId } from '../graph/dependency-graph.js';
 import type { Manifest } from '../manifests/package-json.js';
 import { parseManifest, sections } from '../manifests/package-json.js';
+import type { CatalogSnapshots, Catalogs, Declaration } from './catalogs.js';
+import { declaration, parseCatalogSnapshots, parseCatalogs } from './catalogs.js';
 import type { Lockfile } from './lockfile-parser.js';
 import { parseLockfile, parseWorkspace } from './lockfile-parser.js';
 
@@ -13,6 +15,9 @@ export interface PnpmState {
   manifests: Map<string, Manifest>;
   lockfile: Lockfile;
   workspace: Record<string, unknown>;
+  catalogs: Catalogs;
+  catalogSnapshots: CatalogSnapshots;
+  declarations: Map<string, Declaration>;
   files: Map<string, string>;
 }
 
@@ -105,6 +110,9 @@ export function buildPnpmState(repository: RepositoryState): PnpmState {
   if (source === undefined) throw new Error('Missing pnpm-lock.yaml.');
   const lockfile = parseLockfile(source);
   const workspace = parseWorkspace(repository.files.get('pnpm-workspace.yaml'));
+  const catalogs = parseCatalogs(workspace);
+  const catalogSnapshots = parseCatalogSnapshots(lockfile);
+  const declarations = new Map<string, Declaration>();
   const graph: DependencyGraph = { nodes: new Map(), warnings: [] };
   const manifests = new Map<string, Manifest>();
   const warn = (message: string): void => {
@@ -249,12 +257,52 @@ export function buildPnpmState(repository: RepositoryState): PnpmState {
           !resolved &&
           section === 'dependencies' &&
           manifest.optionalDependencies[name]
-        )
+        ) {
+          if (declared !== undefined) {
+            const id = dependencyId(path, section, name);
+            declarations.set(
+              id,
+              declaration(
+                id,
+                path,
+                section,
+                name,
+                declared,
+                catalogs,
+                catalogSnapshots,
+                undefined,
+                true,
+              ),
+            );
+          }
           continue;
+        }
         if (!resolved || declared !== resolved.specifier) {
           warn(`Manifest/lockfile mismatch: ${path} ${section}.${name}`);
         }
         const id = dependencyId(path, section, name);
+        const declaredEvidence =
+          declared === undefined
+            ? undefined
+            : declaration(
+                id,
+                path,
+                section,
+                name,
+                declared,
+                catalogs,
+                catalogSnapshots,
+                resolved,
+              );
+        if (declaredEvidence) {
+          if (unsupportedProtocolFor(declared))
+            declaredEvidence.uncertainty.push(
+              `Unsupported dependency protocol: ${path} ${name}: ${declared}`,
+            );
+          declarations.set(id, declaredEvidence);
+          for (const message of declaredEvidence.uncertainty) warn(message);
+        }
+        const unsupportedProtocol = unsupportedProtocolFor(declared);
         const node: GraphNode = {
           id,
           kind: 'dependency',
@@ -262,24 +310,68 @@ export function buildPnpmState(repository: RepositoryState): PnpmState {
           version: resolved?.version ?? '',
           scope: `${path}:${section}`,
           edges: [],
-          metadata: { declared, specifier: resolved?.specifier },
-          uncertain: /^(catalog:|file:|https?:|git[+:])/.test(declared ?? ''),
+          metadata: {
+            declared,
+            specifier: resolved?.specifier,
+            ...(declaredEvidence?.source === 'catalog'
+              ? {
+                  catalog: declaredEvidence.catalog,
+                  effectiveRange: declaredEvidence.effectiveRange,
+                }
+              : {}),
+          },
+          uncertain:
+            unsupportedProtocol || (declaredEvidence?.uncertainty.length ?? 0) > 0,
         };
         if (resolved) {
           const target = resolve(name, resolved.version, path);
           node.edges.push({ name, kind: section, target });
           node.uncertain ||= graph.nodes.get(target)?.uncertain ?? false;
+          if (declaredEvidence && graph.nodes.get(target)?.uncertain)
+            declaredEvidence.uncertainty.push(
+              'Observed package has a peer or incomplete resolution context.',
+            );
         }
         graph.nodes.set(id, node);
         // Consumers of a workspace package do not inherit its development tools.
         // Changed devDependencies remain independent traversal roots.
         if (section !== 'devDependencies')
           workspaceNode.edges.push({ name, kind: section, target: id });
-        if (/^(catalog:|file:|https?:|git[+:])/.test(declared ?? ''))
+        if (unsupportedProtocol)
           warn(`Unsupported dependency protocol: ${path} ${name}: ${declared}`);
       }
     }
+    for (const [name, specifier] of Object.entries(manifest.peerDependencies)) {
+      const id = dependencyId(path, 'peerDependencies', name);
+      const evidence = declaration(
+        id,
+        path,
+        'peerDependencies',
+        name,
+        specifier,
+        catalogs,
+        catalogSnapshots,
+      );
+      declarations.set(id, evidence);
+      for (const message of evidence.uncertainty.filter(
+        (message) => !message.startsWith('Peer declaration;'),
+      ))
+        warn(message);
+    }
   }
   graph.warnings = [...new Set(graph.warnings)].sort();
-  return { ...repository, graph, manifests, lockfile, workspace };
+  return {
+    ...repository,
+    graph,
+    manifests,
+    lockfile,
+    workspace,
+    catalogs,
+    catalogSnapshots,
+    declarations,
+  };
+}
+
+function unsupportedProtocolFor(specifier: string | undefined): boolean {
+  return /^(file:|https?:|git[+:])/.test(specifier ?? '');
 }

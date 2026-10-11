@@ -331,6 +331,22 @@ describe('dependency cone analysis', () => {
           snapshots: {},
         },
         workspace: {},
+        catalogs: {},
+        catalogSnapshots: {},
+        declarations: buildPnpmState(
+          state(
+            { dependencies: { a: version, b: version } },
+            {
+              '.': {
+                dependencies: {
+                  a: { specifier: version, version },
+                  b: { specifier: version, version },
+                },
+              },
+            },
+            { [`a@${version}`]: {}, [`b@${version}`]: {} },
+          ),
+        ).declarations,
         files: new Map(),
       };
     };
@@ -604,10 +620,13 @@ describe('dependency cone analysis', () => {
     });
     expect(
       renderText({
-        schemaVersion: 3,
+        schemaVersion: 4,
         base: 'base',
         head: 'head',
         manifestChanges: [],
+        declarations: { base: [], head: [] },
+        declarationChanges: [],
+        catalogChanges: [],
         changes: [change],
         pathNodes: {},
         warnings: [],
@@ -676,7 +695,7 @@ describe('dependency cone analysis', () => {
   it('marks unresolved references and unsupported configuration as unknown', () => {
     const base = fixture('upgrade', 'base');
     const head = fixture('upgrade', 'head');
-    head.files.set('pnpm-workspace.yaml', 'catalog:\n  vite: 7.0.1\n');
+    head.files.set('pnpm-workspace.yaml', 'overrides:\n  vite: 7.0.1\n');
     const report = explain(base, head);
     expect(report.changes.every((item) => item.confidence === 'unknown')).toBe(true);
     expect(report.warnings).toContain(

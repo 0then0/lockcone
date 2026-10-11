@@ -6,7 +6,7 @@ permissions:
   contents: read
 jobs:
   test:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
         with:
@@ -56,7 +56,7 @@ jobs:
           LOCKCONE_REPORT: ${{ steps.lockcone.outputs.report }}
           LOCKCONE_BASE: ${{ steps.refs.outputs.base }}
           LOCKCONE_HEAD: ${{ steps.refs.outputs.head }}
-        run: node -e 'const fs = require("node:fs"); const report = JSON.parse(fs.readFileSync(process.env.LOCKCONE_REPORT, "utf8")); if (report.schemaVersion !== 3 || report.base !== process.env.LOCKCONE_BASE || report.head !== process.env.LOCKCONE_HEAD) process.exit(1);'
+        run: node -e 'const fs = require("node:fs"); const report = JSON.parse(fs.readFileSync(process.env.LOCKCONE_REPORT, "utf8")); if (report.schemaVersion !== 4 || report.base !== process.env.LOCKCONE_BASE || report.head !== process.env.LOCKCONE_HEAD) process.exit(1);'
   action-macos:
     runs-on: macos-latest
     steps:
@@ -104,4 +104,4 @@ jobs:
           LOCKCONE_HEAD: ${{ steps.refs.outputs.head }}
         run: |
           test "$REPORT_ONE" != "$REPORT_TWO"
-          node -e 'const fs = require("node:fs"); for (const path of [process.env.REPORT_ONE, process.env.REPORT_TWO]) { const report = JSON.parse(fs.readFileSync(path, "utf8")); if (report.schemaVersion !== 3 || report.base !== process.env.LOCKCONE_BASE || report.head !== process.env.LOCKCONE_HEAD) process.exit(1); }'
+          node -e 'const fs = require("node:fs"); for (const path of [process.env.REPORT_ONE, process.env.REPORT_TWO]) { const report = JSON.parse(fs.readFileSync(path, "utf8")); if (report.schemaVersion !== 4 || report.base !== process.env.LOCKCONE_BASE || report.head !== process.env.LOCKCONE_HEAD) process.exit(1); }'

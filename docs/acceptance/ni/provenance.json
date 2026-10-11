@@ -1,0 +1,597 @@
+{
+  "repository": "https://github.com/antfu-collective/ni.git",
+  "base": "a8da02adf4f6168a2b3cf7dbd30d24c5cbfbf186",
+  "head": "0e9a94e76f28666161245da8bdf48c2b892f69ef",
+  "inputs": {
+    "base": {
+      "revision": "a8da02adf4f6168a2b3cf7dbd30d24c5cbfbf186",
+      "files": {
+        "package.json": {
+          "fixture": "tests/fixtures/ni/base/package.json",
+          "gitBlob": "50b294a9fc9518aeb1439962c148d392972e655a",
+          "sha256": "4672036546ce5a176030561565e3e34509061cc7137127c8b8a375649d7b6b17"
+        },
+        "pnpm-lock.yaml": {
+          "fixture": "tests/fixtures/ni/base/pnpm-lock.yaml",
+          "gitBlob": "d402867d0e6724d9a9c18effa22bea35374e7bb4",
+          "sha256": "d63056f83ef4287adbec9e0067b52abc5e5e070ce359f927f37e98be99c94a21"
+        },
+        "pnpm-workspace.yaml": {
+          "fixture": "tests/fixtures/ni/base/pnpm-workspace.yaml",
+          "gitBlob": "c18c77df9d966c1a05a38079c928293089a121f5",
+          "sha256": "7a4848ef8c625575f5262a611d7c70780afbf73a06b2176c014c90a6cda83cfd"
+        },
+        "test/fixtures/catalog/pnpm-default-only/package.json": {
+          "fixture": "tests/fixtures/ni/base/test/fixtures/catalog/pnpm-default-only/package.json",
+          "gitBlob": "7ed871e7841f3aa85faa921a84bae083836a43a1",
+          "sha256": "16d8c9c7112a382293ce906134cfb57b3f9436c7f87b6353231e7d38074c1c7b"
+        },
+        "test/fixtures/catalog/pnpm/package.json": {
+          "fixture": "tests/fixtures/ni/base/test/fixtures/catalog/pnpm/package.json",
+          "gitBlob": "ebfa23c8515f4a71bab6888d580f10ec69de59e9",
+          "sha256": "9a74a90604666b0b07a32ab00ec8bf1312513098124d958e8cabc1dfc1bf1c3c"
+        },
+        "test/fixtures/catalog/pnpm/packages/app/package.json": {
+          "fixture": "tests/fixtures/ni/base/test/fixtures/catalog/pnpm/packages/app/package.json",
+          "gitBlob": "342134d1efe6246751861e27ad79174a85fcb043",
+          "sha256": "606666f411189a7641ddecd867d96a9a08fe52343d6f2fdf687b15f22558f4e9"
+        },
+        "test/fixtures/packager/bun/package.json": {
+          "fixture": "tests/fixtures/ni/base/test/fixtures/packager/bun/package.json",
+          "gitBlob": "02aefc50b092919d3f7a15c6a493ea47c286cdc3",
+          "sha256": "b1e42b570fd3129e75b4f1336946b2743e737e626432a263c66ef349c01dcaf8"
+        },
+        "test/fixtures/packager/npm/package.json": {
+          "fixture": "tests/fixtures/ni/base/test/fixtures/packager/npm/package.json",
+          "gitBlob": "dedd3ce885860c465a6d822c0dfd908f84f56686",
+          "sha256": "6f508c72496957287e50df79eb53ac581e7faf88ca8899fc6bbc949bb7d7f6a8"
+        },
+        "test/fixtures/packager/pnpm-version-range/package.json": {
+          "fixture": "tests/fixtures/ni/base/test/fixtures/packager/pnpm-version-range/package.json",
+          "gitBlob": "ada8c563d1421feab1e9c32715238a024581c5a4",
+          "sha256": "e67199c6135a27524bb54709e988c2f4312433bcbba82d1c0ffb05eb2e0e7eb1"
+        },
+        "test/fixtures/packager/pnpm@6/package.json": {
+          "fixture": "tests/fixtures/ni/base/test/fixtures/packager/pnpm@6/package.json",
+          "gitBlob": "92c2681ca47ba55798b3af59628da1cf53d13568",
+          "sha256": "d7b6340dab39ce554ebf292bc2fbdbd12ef6f93c7af66a39fafcae224a224d82"
+        },
+        "test/fixtures/packager/pnpm/package.json": {
+          "fixture": "tests/fixtures/ni/base/test/fixtures/packager/pnpm/package.json",
+          "gitBlob": "7f6782f493ba318c95fd21b88c0bc8257cff6256",
+          "sha256": "5c184cd1c4411505fc4a9e23949ab4c6f2f6d9b232407d00f97a7594b641deb2"
+        },
+        "test/fixtures/packager/unknown/package.json": {
+          "fixture": "tests/fixtures/ni/base/test/fixtures/packager/unknown/package.json",
+          "gitBlob": "a94fef91cc6947b27cdaab493228baf911c350bd",
+          "sha256": "c9d17a73ed858a5fb7c7a037fe5855fb76abfc651d3b19ff028b699b10b43e53"
+        },
+        "test/fixtures/packager/yarn@berry/package.json": {
+          "fixture": "tests/fixtures/ni/base/test/fixtures/packager/yarn@berry/package.json",
+          "gitBlob": "648f65d22fcb4eb5ed934bf62a08bb896b5322e9",
+          "sha256": "709e1bec4a6c494d14f3bc71913113986db37ad4dd0a1afd1573cdf1e28ca1fb"
+        },
+        "test/fixtures/packager/yarn/package.json": {
+          "fixture": "tests/fixtures/ni/base/test/fixtures/packager/yarn/package.json",
+          "gitBlob": "d40a5aa8d35fa5d2c4b76511412fd8d442a82ecd",
+          "sha256": "302cec8abc84cc6d5c4f68d6b25d8a58bad9bf3d01ad02a563eb7c54ec2674a6"
+        }
+      }
+    },
+    "head": {
+      "revision": "0e9a94e76f28666161245da8bdf48c2b892f69ef",
+      "files": {
+        "package.json": {
+          "fixture": "tests/fixtures/ni/head/package.json",
+          "gitBlob": "50b294a9fc9518aeb1439962c148d392972e655a",
+          "sha256": "4672036546ce5a176030561565e3e34509061cc7137127c8b8a375649d7b6b17"
+        },
+        "pnpm-lock.yaml": {
+          "fixture": "tests/fixtures/ni/head/pnpm-lock.yaml",
+          "gitBlob": "8564bee3d318559ea58e6a6ac564aada7a47fd8f",
+          "sha256": "11722ace094c079231352ea3815b7a63a642c8a3a9876f3bd4d8043e149cf553"
+        },
+        "pnpm-workspace.yaml": {
+          "fixture": "tests/fixtures/ni/head/pnpm-workspace.yaml",
+          "gitBlob": "6933df93dbd4327476a115fb045047b40243878d",
+          "sha256": "d66856e3fdb4dd3bc2a1379a75a09c957479381e9d487ec452bfa135cb19866c"
+        },
+        "test/fixtures/catalog/pnpm-default-only/package.json": {
+          "fixture": "tests/fixtures/ni/head/test/fixtures/catalog/pnpm-default-only/package.json",
+          "gitBlob": "7ed871e7841f3aa85faa921a84bae083836a43a1",
+          "sha256": "16d8c9c7112a382293ce906134cfb57b3f9436c7f87b6353231e7d38074c1c7b"
+        },
+        "test/fixtures/catalog/pnpm/package.json": {
+          "fixture": "tests/fixtures/ni/head/test/fixtures/catalog/pnpm/package.json",
+          "gitBlob": "ebfa23c8515f4a71bab6888d580f10ec69de59e9",
+          "sha256": "9a74a90604666b0b07a32ab00ec8bf1312513098124d958e8cabc1dfc1bf1c3c"
+        },
+        "test/fixtures/catalog/pnpm/packages/app/package.json": {
+          "fixture": "tests/fixtures/ni/head/test/fixtures/catalog/pnpm/packages/app/package.json",
+          "gitBlob": "342134d1efe6246751861e27ad79174a85fcb043",
+          "sha256": "606666f411189a7641ddecd867d96a9a08fe52343d6f2fdf687b15f22558f4e9"
+        },
+        "test/fixtures/packager/bun/package.json": {
+          "fixture": "tests/fixtures/ni/head/test/fixtures/packager/bun/package.json",
+          "gitBlob": "02aefc50b092919d3f7a15c6a493ea47c286cdc3",
+          "sha256": "b1e42b570fd3129e75b4f1336946b2743e737e626432a263c66ef349c01dcaf8"
+        },
+        "test/fixtures/packager/npm/package.json": {
+          "fixture": "tests/fixtures/ni/head/test/fixtures/packager/npm/package.json",
+          "gitBlob": "dedd3ce885860c465a6d822c0dfd908f84f56686",
+          "sha256": "6f508c72496957287e50df79eb53ac581e7faf88ca8899fc6bbc949bb7d7f6a8"
+        },
+        "test/fixtures/packager/pnpm-version-range/package.json": {
+          "fixture": "tests/fixtures/ni/head/test/fixtures/packager/pnpm-version-range/package.json",
+          "gitBlob": "ada8c563d1421feab1e9c32715238a024581c5a4",
+          "sha256": "e67199c6135a27524bb54709e988c2f4312433bcbba82d1c0ffb05eb2e0e7eb1"
+        },
+        "test/fixtures/packager/pnpm@6/package.json": {
+          "fixture": "tests/fixtures/ni/head/test/fixtures/packager/pnpm@6/package.json",
+          "gitBlob": "92c2681ca47ba55798b3af59628da1cf53d13568",
+          "sha256": "d7b6340dab39ce554ebf292bc2fbdbd12ef6f93c7af66a39fafcae224a224d82"
+        },
+        "test/fixtures/packager/pnpm/package.json": {
+          "fixture": "tests/fixtures/ni/head/test/fixtures/packager/pnpm/package.json",
+          "gitBlob": "7f6782f493ba318c95fd21b88c0bc8257cff6256",
+          "sha256": "5c184cd1c4411505fc4a9e23949ab4c6f2f6d9b232407d00f97a7594b641deb2"
+        },
+        "test/fixtures/packager/unknown/package.json": {
+          "fixture": "tests/fixtures/ni/head/test/fixtures/packager/unknown/package.json",
+          "gitBlob": "a94fef91cc6947b27cdaab493228baf911c350bd",
+          "sha256": "c9d17a73ed858a5fb7c7a037fe5855fb76abfc651d3b19ff028b699b10b43e53"
+        },
+        "test/fixtures/packager/yarn@berry/package.json": {
+          "fixture": "tests/fixtures/ni/head/test/fixtures/packager/yarn@berry/package.json",
+          "gitBlob": "648f65d22fcb4eb5ed934bf62a08bb896b5322e9",
+          "sha256": "709e1bec4a6c494d14f3bc71913113986db37ad4dd0a1afd1573cdf1e28ca1fb"
+        },
+        "test/fixtures/packager/yarn/package.json": {
+          "fixture": "tests/fixtures/ni/head/test/fixtures/packager/yarn/package.json",
+          "gitBlob": "d40a5aa8d35fa5d2c4b76511412fd8d442a82ecd",
+          "sha256": "302cec8abc84cc6d5c4f68d6b25d8a58bad9bf3d01ad02a563eb7c54ec2674a6"
+        }
+      }
+    }
+  },
+  "analyzers": {
+    "baseline": {
+      "version": "0.1.0",
+      "sourceRevision": "440cdae7345b2aab7e3fd84b0ad5a318c3a98673",
+      "sourceSHA256": {
+        "package.json": "968b4527d853f3f1ec17489c3caf3eb768ce688d4a7987e2dd6ced7137f1d783",
+        "pnpm-lock.yaml": "6da98a729e804923b2aa95fba7f0ff3614042b4a056259326a2039dd63a2817e",
+        "src/analysis/cone.ts": "1bc39fc87994d7f54a4fcbb682d1810de3c05ebac9d2118a4d9e7a2b3f65c5e1",
+        "src/analysis/diff.ts": "acea1a46d5911396cf5229c010475535742de464bdaf2ea531cb093f70aa7a0f",
+        "src/analysis/explain.ts": "47dbddb7ae53ace512a944e92f5fcd0576aaa7e47f049a84a94028d1a5ddcfb1",
+        "src/cli/commands/diff.ts": "d5aff89cdf0dbcf018566113326a7c4639abbb0e8d40741d99b01eee75caaaa4",
+        "src/cli/index.ts": "2f6121f3c2afd20d455035a2611b9ffcf63e78ecd9e1fb29938f28e7e8dee342",
+        "src/git/repository.ts": "e72867a9405131e7392e8d9555693a0d26d95e3a54659ffcf388a4efad59a9bd",
+        "src/graph/dependency-graph.ts": "4bdf69629387d834828b10d328803480b1fd99260eb6779c044a83fefadb2789",
+        "src/graph/traversal.ts": "3c88e3d175cc841c17ba096f39282de47f06ff023a268e06af980eb176774999",
+        "src/manifests/package-json.ts": "fb037c3dfbcc439b814ab659424d3c11c964c69029cd94341beb8e628857d5f8",
+        "src/output/json.ts": "83fc424cec65a3f4b9686c9f4190549cc6b6a4e0a7c327aed311268e871f4c23",
+        "src/output/text.ts": "5c7f4f1bf86c722b1ac2c501b1fd96fa4d1f5f28b64e90df1b872912f0cc7e14",
+        "src/pnpm/dependency-graph.ts": "81736644196294a96459a82ebcf17144e7a047b4af7bbf35b54327ecbe68fef6",
+        "src/pnpm/lockfile-parser.ts": "bd66920a60b3118bc141b1bb41e574c3756c36b5e8ea23efec1cc431f8bd833a",
+        "src/sanitize.ts": "1736acf86f69880f6091541ede4de59f984a1f63baeb4b863573eaf6ab8f2afe",
+        "tsconfig.json": "a3b4f4ed831219dac11b1f8d2663671ed7264a04bb3fe946fab9e2a667fd48a5"
+      }
+    },
+    "v0.2": {
+      "version": "0.2.0",
+      "sourceRevision": null,
+      "sourceSHA256": {
+        "package.json": "2124f5a2aec5a56f38a222e79706f025ac28c93ac6111377012fd330bfdffd21",
+        "pnpm-lock.yaml": "6da98a729e804923b2aa95fba7f0ff3614042b4a056259326a2039dd63a2817e",
+        "src/analysis/cone.ts": "1bc39fc87994d7f54a4fcbb682d1810de3c05ebac9d2118a4d9e7a2b3f65c5e1",
+        "src/analysis/declarations.ts": "132cc0b4cc7e9aad3fec087c8ec25fb0ddf2a9589a9d99edb4f10a5c380a9fad",
+        "src/analysis/diff.ts": "373d55f0b3aa3892218b5e60f718cdf3557770d27eae90d880f7f3a2a1ad2963",
+        "src/analysis/explain.ts": "671a666a01532e84358b3a20c0c510a258bf8f4f865dfb54f13b981c401b53d7",
+        "src/cli/commands/diff.ts": "d5aff89cdf0dbcf018566113326a7c4639abbb0e8d40741d99b01eee75caaaa4",
+        "src/cli/index.ts": "2f6121f3c2afd20d455035a2611b9ffcf63e78ecd9e1fb29938f28e7e8dee342",
+        "src/git/repository.ts": "e72867a9405131e7392e8d9555693a0d26d95e3a54659ffcf388a4efad59a9bd",
+        "src/graph/dependency-graph.ts": "4bdf69629387d834828b10d328803480b1fd99260eb6779c044a83fefadb2789",
+        "src/graph/traversal.ts": "3c88e3d175cc841c17ba096f39282de47f06ff023a268e06af980eb176774999",
+        "src/manifests/package-json.ts": "fb037c3dfbcc439b814ab659424d3c11c964c69029cd94341beb8e628857d5f8",
+        "src/output/json.ts": "83fc424cec65a3f4b9686c9f4190549cc6b6a4e0a7c327aed311268e871f4c23",
+        "src/output/text.ts": "d7cf03bc2a2f1fab9faad98d761274b007afd07c7eec12fce5be3e55367ca9c2",
+        "src/pnpm/catalogs.ts": "151e0e315695067416947230e2508c47aecbdd1cd4923512df7d7ab2a66132f5",
+        "src/pnpm/dependency-graph.ts": "6319fee8ea8df2bd0db2cfe24649c584d635cb0a51e5449411996c079fe0bcdf",
+        "src/pnpm/lockfile-parser.ts": "bd66920a60b3118bc141b1bb41e574c3756c36b5e8ea23efec1cc431f8bd833a",
+        "src/pnpm/registry-range.ts": "b82383cf81a4ca43171554f7359eab0bc9e2dae13cadbcab50c70244bbd1b3da",
+        "src/sanitize.ts": "1736acf86f69880f6091541ede4de59f984a1f63baeb4b863573eaf6ab8f2afe",
+        "tsconfig.json": "a3b4f4ed831219dac11b1f8d2663671ed7264a04bb3fe946fab9e2a667fd48a5"
+      }
+    }
+  },
+  "nodeVersion": "v24.21.0",
+  "packageManager": "pnpm@12.5.1",
+  "commandPaths": {
+    "<project>": "LockCone checkout root",
+    "<temporary>": "Temporary clone/build directory created by the script",
+    "<upstream>": "Local ni repository containing both input commits",
+    "<node>": "Node.js executable used for this run"
+  },
+  "commands": [
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "a8da02adf4f6168a2b3cf7dbd30d24c5cbfbf186:package.json"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "a8da02adf4f6168a2b3cf7dbd30d24c5cbfbf186:pnpm-lock.yaml"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "a8da02adf4f6168a2b3cf7dbd30d24c5cbfbf186:pnpm-workspace.yaml"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "a8da02adf4f6168a2b3cf7dbd30d24c5cbfbf186:test/fixtures/catalog/pnpm-default-only/package.json"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "a8da02adf4f6168a2b3cf7dbd30d24c5cbfbf186:test/fixtures/catalog/pnpm/package.json"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "a8da02adf4f6168a2b3cf7dbd30d24c5cbfbf186:test/fixtures/catalog/pnpm/packages/app/package.json"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "a8da02adf4f6168a2b3cf7dbd30d24c5cbfbf186:test/fixtures/packager/bun/package.json"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "a8da02adf4f6168a2b3cf7dbd30d24c5cbfbf186:test/fixtures/packager/npm/package.json"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "a8da02adf4f6168a2b3cf7dbd30d24c5cbfbf186:test/fixtures/packager/pnpm-version-range/package.json"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "a8da02adf4f6168a2b3cf7dbd30d24c5cbfbf186:test/fixtures/packager/pnpm@6/package.json"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "a8da02adf4f6168a2b3cf7dbd30d24c5cbfbf186:test/fixtures/packager/pnpm/package.json"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "a8da02adf4f6168a2b3cf7dbd30d24c5cbfbf186:test/fixtures/packager/unknown/package.json"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "a8da02adf4f6168a2b3cf7dbd30d24c5cbfbf186:test/fixtures/packager/yarn@berry/package.json"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "a8da02adf4f6168a2b3cf7dbd30d24c5cbfbf186:test/fixtures/packager/yarn/package.json"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "0e9a94e76f28666161245da8bdf48c2b892f69ef:package.json"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "0e9a94e76f28666161245da8bdf48c2b892f69ef:pnpm-lock.yaml"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "0e9a94e76f28666161245da8bdf48c2b892f69ef:pnpm-workspace.yaml"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "0e9a94e76f28666161245da8bdf48c2b892f69ef:test/fixtures/catalog/pnpm-default-only/package.json"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "0e9a94e76f28666161245da8bdf48c2b892f69ef:test/fixtures/catalog/pnpm/package.json"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "0e9a94e76f28666161245da8bdf48c2b892f69ef:test/fixtures/catalog/pnpm/packages/app/package.json"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "0e9a94e76f28666161245da8bdf48c2b892f69ef:test/fixtures/packager/bun/package.json"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "0e9a94e76f28666161245da8bdf48c2b892f69ef:test/fixtures/packager/npm/package.json"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "0e9a94e76f28666161245da8bdf48c2b892f69ef:test/fixtures/packager/pnpm-version-range/package.json"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "0e9a94e76f28666161245da8bdf48c2b892f69ef:test/fixtures/packager/pnpm@6/package.json"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "0e9a94e76f28666161245da8bdf48c2b892f69ef:test/fixtures/packager/pnpm/package.json"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "0e9a94e76f28666161245da8bdf48c2b892f69ef:test/fixtures/packager/unknown/package.json"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "0e9a94e76f28666161245da8bdf48c2b892f69ef:test/fixtures/packager/yarn@berry/package.json"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "rev-parse",
+        "0e9a94e76f28666161245da8bdf48c2b892f69ef:test/fixtures/packager/yarn/package.json"
+      ],
+      "cwd": "<upstream>"
+    },
+    {
+      "command": "git",
+      "args": [
+        "archive",
+        "440cdae7345b2aab7e3fd84b0ad5a318c3a98673"
+      ],
+      "cwd": "<project>/"
+    },
+    {
+      "command": "tar",
+      "args": [
+        "-x",
+        "-C",
+        "<temporary>/baseline"
+      ],
+      "cwd": "<project>/"
+    },
+    {
+      "command": "<node>",
+      "args": [
+        "<project>/node_modules/typescript/bin/tsc",
+        "-p",
+        "<temporary>/baseline/tsconfig.json"
+      ],
+      "cwd": "<project>/"
+    },
+    {
+      "command": "<node>",
+      "args": [
+        "<temporary>/baseline/dist/cli/index.js",
+        "--version"
+      ],
+      "cwd": "<project>/"
+    },
+    {
+      "command": "<node>",
+      "args": [
+        "<temporary>/baseline/dist/cli/index.js",
+        "diff",
+        "--cwd",
+        "<upstream>",
+        "--base",
+        "a8da02adf4f6168a2b3cf7dbd30d24c5cbfbf186",
+        "--head",
+        "0e9a94e76f28666161245da8bdf48c2b892f69ef",
+        "--format",
+        "json"
+      ],
+      "cwd": "<project>/"
+    },
+    {
+      "command": "<node>",
+      "args": [
+        "<temporary>/baseline/dist/cli/index.js",
+        "diff",
+        "--cwd",
+        "<upstream>",
+        "--base",
+        "a8da02adf4f6168a2b3cf7dbd30d24c5cbfbf186",
+        "--head",
+        "0e9a94e76f28666161245da8bdf48c2b892f69ef",
+        "--format",
+        "text"
+      ],
+      "cwd": "<project>/"
+    },
+    {
+      "command": "<node>",
+      "args": [
+        "<project>/dist/cli/index.js",
+        "--version"
+      ],
+      "cwd": "<project>/"
+    },
+    {
+      "command": "<node>",
+      "args": [
+        "<project>/dist/cli/index.js",
+        "diff",
+        "--cwd",
+        "<upstream>",
+        "--base",
+        "a8da02adf4f6168a2b3cf7dbd30d24c5cbfbf186",
+        "--head",
+        "0e9a94e76f28666161245da8bdf48c2b892f69ef",
+        "--format",
+        "json"
+      ],
+      "cwd": "<project>/"
+    },
+    {
+      "command": "<node>",
+      "args": [
+        "<project>/dist/cli/index.js",
+        "diff",
+        "--cwd",
+        "<upstream>",
+        "--base",
+        "a8da02adf4f6168a2b3cf7dbd30d24c5cbfbf186",
+        "--head",
+        "0e9a94e76f28666161245da8bdf48c2b892f69ef",
+        "--format",
+        "text"
+      ],
+      "cwd": "<project>/"
+    }
+  ],
+  "reportSHA256": {
+    "baseline.json": "d2900e8bf7ec6b80548778c8d017475e7dee971f9a26093b4b7fac34bc323ae9",
+    "baseline.txt": "aed0c822c2517c948c194fa2479d0fdc435439fa0e6e458bc277dfc9e973981f",
+    "v0.2.json": "c3f9cc7f6d0be0b985d24c383cae9559ddc181770abecea9240e751e671950d3",
+    "v0.2.txt": "12beb2586c248c7bb8cc6ce240ce50d139dae98721ef662a60c0a2259ecee183"
+  },
+  "results": {
+    "baseline": {
+      "explained": 0,
+      "partially-explained": 0,
+      "unexplained": 0,
+      "unknown": 6
+    },
+    "v0.2": {
+      "explained": 2,
+      "partially-explained": 0,
+      "unexplained": 4,
+      "unknown": 0
+    }
+  },
+  "nonCatalogResults": {
+    "upgrade": {
+      "summary": {
+        "explained": 4,
+        "partially-explained": 0,
+        "unexplained": 2,
+        "unknown": 0
+      },
+      "classificationAndEvidenceEqual": true
+    },
+    "workspace": {
+      "summary": {
+        "explained": 3,
+        "partially-explained": 0,
+        "unexplained": 0,
+        "unknown": 0
+      },
+      "classificationAndEvidenceEqual": true
+    },
+    "peer": {
+      "summary": {
+        "explained": 2,
+        "partially-explained": 0,
+        "unexplained": 0,
+        "unknown": 2
+      },
+      "classificationAndEvidenceEqual": true
+    }
+  }
+}

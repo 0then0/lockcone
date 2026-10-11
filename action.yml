@@ -1,5 +1,5 @@
 name: LockCone
-description: Explain pnpm dependency changes using manifest roots and dependency paths.
+description: Explain pnpm dependency changes using declaration intent and dependency paths.
 inputs:
   base:
     description: Base commit available in the checked-out repository

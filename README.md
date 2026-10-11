@@ -1,171 +1,196 @@
+![LockCone: a changed root and its reachable dependency cone](assets/icon.svg)
+
 # LockCone
 
-**LockCone is git blame for dependency changes.**
+[![CI](https://img.shields.io/github/actions/workflow/status/0then0/lockcone/ci.yml?branch=main&label=CI)](https://github.com/0then0/lockcone/actions/workflows/ci.yml)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
+[![Node.js 22.12+](https://img.shields.io/badge/Node.js-%3E%3D22.12-43853d)](package.json)
+[![pnpm lockfile v9](https://img.shields.io/badge/pnpm-lockfile%20v9-f69220)](#supported-inputs)
 
-Explain a large pnpm lockfile diff through the dependencies you intended to
-change. LockCone compares two committed dependency graphs and shows paths from
-changed manifest roots to changed packages. Reachability is evidence, not proof
-of causality.
+LockCone explains pnpm dependency changes by comparing two committed dependency
+graphs. It shows which changed packages are reachable from the dependencies you
+changed, including updates made through catalogs in `pnpm-workspace.yaml`.
 
-## A quick example
+A path is evidence of reachability, not proof of why pnpm chose a version.
+Packages outside those paths remain visible in the report.
 
-You update `vitest` in `package.json`. The lockfile also updates `vite`, `esbuild`,
-and an unrelated `aws-sdk`:
+## Quick start
 
-```text
-Manifest intent:
-  vitest 4.1.10 → 4.1.11
-
-Reachable from changed root:
-  vitest → vite → esbuild
-
-Outside dependency cone:
-  aws-sdk 2.0.0 → 2.1.0
-  UNEXPLAINED_BY_MANIFEST_CHANGE
-  No path found from changed manifest dependencies.
-```
-
-This is an illustrative fixture, not a claim about those packages' published
-dependency trees. Run the actual report locally with `pnpm demo`. No Git setup,
-package downloads for the fixture, or AI service is needed.
-
-## Build and run
-
-Requires Node.js 22.12+ to run. Install a tagged release directly from its
-GitHub Release artifact:
-
-```bash
-npm install --global https://github.com/0then0/lockcone/releases/download/v0.1.0/lockcone-0.1.0.tgz
-lockcone --help
-```
-
-Each release also includes `SHA256SUMS` for verifying the downloaded archive.
-For development, use pnpm 12.5.1 and build from source:
+Use Node.js 22.12 or later and the pnpm version pinned in `package.json`.
+Build this checkout, then compare two commits in a repository:
 
 ```bash
 pnpm install --frozen-lockfile
 pnpm build
-node dist/cli/index.js --help
-node dist/cli/index.js diff main..HEAD
-node dist/cli/index.js diff --base origin/main --head HEAD
-node dist/cli/index.js why esbuild --base origin/main --head HEAD
-node dist/cli/index.js explain --format json
+node dist/cli/index.js diff --cwd /path/to/repository --base main --head HEAD
 ```
 
-Use `--cwd /path/to/repository` to analyze another checkout. The repository must
-have `package.json` and `pnpm-lock.yaml` at its Git root in both revisions.
-LockCone reads committed files through Git; it does not check out revisions,
-install target dependencies, run target scripts, or include uncommitted changes.
+Both commits must contain `package.json` and a pnpm v9 `pnpm-lock.yaml` at the
+Git root. LockCone reads committed files through Git. Uncommitted changes are
+not included, and target dependencies, scripts, and hooks are never executed.
 
-The release workflow runs on `v*` tags, requires the tag to match the package
-version, tests the packed archive by installing and invoking it, and attaches
-the installable tarball and its SHA-256 checksum to the GitHub Release.
+To install a published version, download its `.tgz` archive from
+[GitHub Releases](https://github.com/0then0/lockcone/releases) and install it:
 
-## Commands
+```bash
+npm install --global ./lockcone-VERSION.tgz
+lockcone --help
+```
 
-- `diff [base..head]`: compare exact commit states. A two-dot range does not use
-  a merge base; three-dot ranges are rejected.
-- `why <package>`: filter the report to that exact package name, including any
-  matching direct dependency entries. A missing or unchanged package produces
-  an empty change list and exit code 0.
-- `explain [base..head]`: the full report, equivalent to `diff` in v0.1.
+Replace `VERSION` with the archive's version. Each release includes `SHA256SUMS`
+for checking the download. Catalog support requires v0.2 or later.
+
+## Read a dependency report
+
+Suppose you update `vitest`, and the lockfile also changes `vite`, `esbuild`, and
+an unrelated `aws-sdk`. LockCone distinguishes the reachable changes from the
+rest:
+
+```text
+Changed dependency:
+  vitest 4.1.10 → 4.1.11
+
+Reachable path:
+  vitest → vite → esbuild
+
+Outside dependency cone:
+  aws-sdk 2.0.0 → 2.1.0
+```
+
+This example illustrates the bundled fixture, not the packages' published
+dependency trees. Run `pnpm demo` to see its complete report.
+
+Reports classify each change group as:
+
+- `explained`: all changed instances are reachable from changed declarations,
+  with no detected uncertainty.
+- `partially-explained`: some changed instances are reachable and others are not.
+- `unexplained`: no path was found from changed declarations, with no detected
+  modeling limitation.
+- `unknown`: peer context, unsupported resolution inputs, or incomplete data
+  prevent a confident classification. Available paths are still shown.
+
+Groups represent package names, importer/section/dependency entries, or
+workspace packages. Summary counts are groups, not unique packages or lockfile
+lines. A direct upgrade usually produces both an importer and a package group.
+Parallel versions remain separate instances; they are not arbitrarily paired as
+upgrades. Metadata and edge changes are reported even when versions stay equal.
+
+Unexplained changes are not automatically errors. Suggestions such as
+resolution updates or deduplication are hypotheses, not detected causes.
+
+## Commands and exit codes
+
+- `diff [base..head]`: compare two exact commit states.
+- `explain [base..head]`: the same full report as `diff`.
+- `why <package>`: show changes for that exact package name, matching direct
+  dependency entries, relevant declarations, and evidence paths.
 
 All commands accept `--base`, `--head`, `--cwd`, and `--format text|json`.
-Without refs, comparison defaults to `HEAD~1..HEAD`, including for `why` and
-`explain`. Ranges cannot be combined with explicit refs. Both commits must be
-available locally; shallow clones may need more history.
+Without refs they compare `HEAD~1..HEAD`. Two-dot ranges compare the named
+commits directly, without a merge base. Three-dot ranges are rejected, and a
+range cannot be combined with explicit refs. Both commits must be available
+locally; shallow clones may need additional history.
 
-Exit code **0** means analysis completed, even with unexplained or unknown
-changes. Exit code **1** means invalid input, an unsupported lockfile, missing
-files, or a Git/read/parse failure. LockCone does not call unexplained changes
-invalid lockfiles or decide whether a PR should merge.
+```bash
+lockcone diff main..HEAD
+lockcone why esbuild --base origin/main --head HEAD
+lockcone explain --format json
+```
 
-## How analysis works
+Exit code `0` means analysis completed, including reports with unexplained or
+unknown changes. A missing or unchanged package requested through `why` returns
+an empty change list and exit code `0`. Exit code `1` indicates invalid input,
+unsupported lockfiles, missing files, or a Git/read/parse failure.
 
-1. Read each revision's manifests, workspace configuration, and lockfile.
-2. Build separate graphs of exact package instances, importer dependency
-   entries, and workspace packages. Keep peer suffixes and parallel versions.
-3. Compare manifest dependency specifiers by workspace and dependency section.
-   Additions, removals, workspace identity/version changes, and peer declarations
-   are recorded as manifest intent. Workspace identity changes explain the
-   workspace record itself; they do not make dependency upgrades explained.
-4. Traverse each graph downward from changed roots. The old graph explains
-   removed instances; the new graph explains added instances. Workspace links
-   resolve relative to their importer and lead into that workspace's runtime and
-   optional dependencies. They do not inherit the target's development tools.
-5. Compare instances, dependency edges, and package metadata (including integrity)
-   and attach an evidence path for each reachable changed instance.
+## Catalog updates
 
-The report groups package instances by package name, direct dependency entries
-by importer/section/name, and workspace packages by path/name. `before` and
-`after` list all versions in a group; `changedNodes` lists only changed instances.
-Multiple versions are never arbitrarily paired as upgrades. An edge or integrity
-change can therefore show the same version on both sides.
+A manifest may keep `"package-manager-detector": "catalog:prod"` while the
+corresponding workspace entry changes:
 
-Summary counts are **change groups**, not lockfile lines, unique packages, or
-individual version transitions. A direct upgrade usually produces both an
-importer-resolution group and a package group. Metadata-only changes are reported;
-formatting and mapping order changes are ignored.
+```yaml
+catalogs:
+  prod:
+    package-manager-detector: ^1.7.0
+```
 
-### Confidence
+LockCone compares each revision's catalog entry and records effective dependency
+intent for every consuming importer. Reports keep three values separate:
 
-- `explained`: every changed instance is reachable from a changed root in its
-  corresponding graph, with no detected uncertainty.
-- `partially-explained`: some changed instances in a group are reachable and
-  others are outside the cone.
-- `unexplained`: no path was found from changed manifest roots, with no detected
-  modeling limitation. Reason: `UNEXPLAINED_BY_MANIFEST_CHANGE`.
-- `unknown`: peer context, unsupported resolution inputs, or an incomplete graph
-  prevent confident classification. Existing evidence paths are still included.
+```text
+Declared reference: catalog:prod
+Effective declaration: ^1.7.0
+Observed resolution: 1.7.0
+```
 
-Possible explanations such as resolver updates, deduplication, and lockfile
-regeneration are hypotheses, not detected causes. Unmodeled global configuration
-or unresolved edges conservatively make all change groups `unknown`. Peer
-uncertainty applies to affected instances and paths through them.
+The old graph supplies evidence for removals and the new graph for additions.
+Changing catalog origin while retaining the same effective range records an
+origin change, without creating a traversal root. A resolution change alone is
+not declaration intent. `why` still shows the unchanged catalog declaration
+and observed resolutions for a matching direct dependency.
 
-## Supported scope and limitations
+Unused supported catalog entries do not create dependency cones or global
+uncertainty. Catalog peers retain peer uncertainty and never become runtime
+traversal roots. See the [catalog reference](docs/catalog-contract.md) for range
+syntax, snapshot checks, and unsupported forms.
 
-- pnpm **lockfile v9**: one dependency document, optionally preceded by the pnpm
-  environment document used by newer pnpm versions. Environment configuration
-  changes produce a warning; that document is not analyzed as application packages.
-- `dependencies`, `devDependencies`, `optionalDependencies`, scoped packages,
-  npm aliases, and `workspace:*` links resolved as `link:` references.
-- Shared workspace lockfiles, with importer paths identifying resolved members.
-  Workspace membership supports `*`, `**`, `{a,b}`, and `!` package globs.
-  Unsupported glob syntax warns; a matching manifest without a lockfile importer
-  remains visible as manifest intent and warns that the lockfile is incomplete.
-- Peer suffixes are preserved, but peer resolution is not simulated. Changes to
-  catalogs, overrides, patches, custom pnpm configuration, or hooks produce
-  uncertainty rather than a claim of causality. Hooks are never executed.
-- Separate per-workspace lockfiles, custom lockfile locations, npm/yarn/Bun,
-  other ecosystems, and SARIF are not supported in v0.1.
-- Runtime/platform selection, global pnpm configuration, and external registry
-  state are not reconstructed. This is graph evidence, not a solver replay.
+## Supported inputs
 
-LockCone is not a vulnerability scanner, an `npm audit` or Renovate replacement,
-a package manager, a lockfile formatter, or an AI explanation system.
+- pnpm dependency lockfile v9, optionally preceded by the environment document
+  used by newer pnpm versions. Environment changes produce uncertainty.
+- Runtime, development, and optional dependencies, scoped names, literal npm
+  aliases, and workspace links resolved as `link:` references.
+- Shared workspace lockfiles. Workspace membership supports `*`, `**`, `{a,b}`,
+  and `!` globs. Unsupported syntax and missing importers produce warnings.
+- Default and named catalogs defined directly in root `pnpm-workspace.yaml`,
+  using stable registry ranges.
+- Parallel package versions, peer suffixes, metadata changes, and edge changes.
 
-## JSON and CI
+Traversal follows runtime and optional dependencies of linked workspaces; it
+never inherits their development dependencies. Workspace identity changes
+explain the workspace record itself, not its dependency upgrades.
+
+Catalog aliases, prerelease/build ranges, tags, local/workspace/Git/URL catalog
+values, external catalog files, and catalog override attribution are unsupported.
+Overrides, patches, hooks, unknown configuration, and incomplete edges retain
+conservative uncertainty. Hooks are never executed. Global unmodeled input
+changes can make all groups `unknown`; peer uncertainty applies to affected
+instances and paths.
+
+Separate workspace lockfiles, custom lockfile locations, other package managers,
+registry state, platform selection, global pnpm inputs, and resolver replay are
+not modeled. LockCone does not perform vulnerability scanning or decide whether
+a change should merge.
+
+## JSON reports
 
 ```bash
 lockcone diff --base origin/main --head HEAD --format json > lockcone-report.json
 ```
 
-The JSON object has `schemaVersion: 3`, resolved `base`/`head` commit IDs,
-`manifestChanges`, `changes`, `warnings`, and `summary`. Each change includes
-`kind`, `scope`, `change`, `before`, `after`, `changedNodes`, `confidence`, `reason`,
-`evidence`, `details`, and `possibleExplanations`. Evidence contains `side`,
-`node`, `root`, and a `pathId` into the shared `pathNodes` parent graph. Details
-list changed edges, metadata field names, and `metadataDiff` entries with before
-and after values (`null` means the field is absent). `manifestChanges.root` maps
-those paths back to the manifest and dependency section. If several changed
-roots reach one node, the report includes an evidence path for each root. No
-diagnostic text is mixed into successful JSON output; failures go to stderr.
+The JSON report uses `schemaVersion: 4` and includes resolved commit IDs,
+`manifestChanges`, `declarations`, `declarationChanges`, `catalogChanges`,
+`changes`, `pathNodes`, `warnings`, and `summary`.
 
-The repository includes a composite [GitHub Action](action.yml). Once hosted,
-replace `OWNER/lockcone@COMMIT_SHA` below with this repository and a reviewed
-commit SHA. It builds LockCone and writes a JSON artifact path to `outputs.report`.
-It does not install dependencies or run lifecycle scripts from the analyzed PR.
+`manifestChanges` contains actual manifest edits. `declarations.base/head`
+separates original specifiers, catalog origins, effective ranges, observed
+resolutions, and uncertainty. `declarationChanges` records intent and traversal
+eligibility. `catalogChanges` records changed entries and their consumer IDs.
+
+Each graph change includes before/after versions, changed instance IDs,
+confidence, a reason, evidence, and edge/metadata details. Follow `evidence.root`
+to a declaration on the same side; follow `pathId` through `pathNodes` to read
+the dependency path. Metadata differences use `null` for an absent field.
+
+Output is deterministic for equivalent input mappings. Successful JSON contains
+no diagnostic text; failures go to stderr. Consumers must explicitly support
+schema v4; schema v3 output is not available. See the
+[v0.2 compatibility notes](docs/release-notes-v0.2.md).
+
+## GitHub Actions
+
+The [composite action](action.yml) builds LockCone and exposes the JSON report
+path as `outputs.report`. Pin it to a reviewed commit SHA:
 
 ```yaml
 name: Dependency changes
@@ -174,12 +199,12 @@ permissions:
   contents: read
 jobs:
   lockcone:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: OWNER/lockcone@COMMIT_SHA
+      - uses: 0then0/lockcone@COMMIT_SHA
         id: lockcone
         with:
           base: ${{ github.event.pull_request.base.sha }}
@@ -190,27 +215,16 @@ jobs:
           path: ${{ steps.lockcone.outputs.report }}
 ```
 
-## Development
+Replace `COMMIT_SHA` with the selected LockCone revision. The action installs
+LockCone's build dependencies, but never installs dependencies or runs lifecycle
+scripts from the analyzed repository. Unknown or unexplained groups do not fail
+the action; apply any merge policy separately.
 
-```bash
-pnpm typecheck
-pnpm lint
-pnpm format:check
-pnpm test
-pnpm demo
-```
+## Examples and development
 
-The test fixtures cover direct and transitive upgrades, unrelated churn,
-workspaces, and peer context changes. Additional tests cover old-graph removals,
-parallel versions, cycles, aliases, malformed inputs, and the compiled CLI's
-text/JSON interface. CLI tests use a deterministic Git transport double and do
-not create commits or modify this repository's Git state.
+The [ni case study](docs/acceptance/ni/README.md) compares unchanged upstream
+commits: v0.1 reports six unknown groups; v0.2 reports two explained and four
+unexplained groups. The remaining reverse dependency edges are outside the cone.
 
-Code is separated into Git reads (`src/git`), manifest validation
-(`src/manifests`), the pnpm adapter (`src/pnpm`), graph traversal (`src/graph`),
-analysis (`src/analysis`), rendering (`src/output`), and CLI commands (`src/cli`).
-The graph model and traversal have no pnpm parser dependency; future package
-manager adapters can provide the same graph structure.
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines. Licensed
-under [Apache-2.0](LICENSE).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for checks, fixtures, and release procedures.
+Licensed under [Apache-2.0](LICENSE).
