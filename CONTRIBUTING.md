@@ -65,6 +65,20 @@ Pull requests should explain the user-visible behavior, relevant limitations,
 and checks actually run. Use Conventional Commits with `feat`, `fix`, `refactor`,
 `chore`, `docs`, or `test` types.
 
+## Dependency maintenance
+
+Dependabot checks GitHub Actions in workflows and the root composite action on
+the first day of each month. Minor and patch updates are grouped; major updates
+receive separate pull requests. At most one version-update pull request is open
+at a time, and new releases have a seven-day cooldown before being considered.
+Review and merge updates after CI passes.
+
+The project uses pnpm 12.5.1. GitHub currently documents Dependabot support for
+pnpm 7–10, so npm dependency updates are not configured. Enable them once the
+project's pnpm version is supported. See GitHub's
+[supported ecosystems](https://docs.github.com/en/code-security/reference/supply-chain-security/supported-ecosystems-and-repositories)
+and the [Dependabot configuration](.github/dependabot.yml).
+
 ## Release a version
 
 Update `package.json` and the release notes, run the checks, and verify the
