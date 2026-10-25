@@ -201,7 +201,7 @@ jobs:
   lockcone:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - uses: 0then0/lockcone@COMMIT_SHA
