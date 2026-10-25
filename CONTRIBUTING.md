@@ -1,5 +1,10 @@
 # Contributing to LockCone
 
+Read the [code of conduct](CODE_OF_CONDUCT.md) before participating. Use the
+[issue forms](https://github.com/0then0/lockcone/issues/new/choose) for bugs and
+feature requests. Report vulnerabilities privately as described in
+[SECURITY.md](SECURITY.md).
+
 ## Set up the project
 
 Use Node.js 22.12 or later and the pnpm version pinned in `package.json`:
@@ -24,6 +29,12 @@ pnpm demo
 
 `pnpm test` builds the CLI before running Vitest. `pnpm format:check` checks
 formatting without changing files; `pnpm format` applies formatting.
+
+EditorConfig uses UTF-8, LF, and two-space indentation to match Biome. Git
+normalizes text line endings, except under `tests/fixtures`, where original
+bytes are preserved. Do not normalize or reformat fixtures to satisfy editor
+defaults. Keep generated `dist`, release archives, and local environment files
+out of commits; commit dependency lockfiles.
 
 Add regression tests for meaningful behavior changes. Tests should verify the
 reported result, uncertainty, and evidence rather than just implementation
@@ -62,7 +73,9 @@ uncertainty policy.
 ## Submit a change
 
 Pull requests should explain the user-visible behavior, relevant limitations,
-and checks actually run. Use Conventional Commits with `feat`, `fix`, `refactor`,
+and checks actually run, using the pull request template. Record user-visible
+changes under `Unreleased` in [CHANGELOG.md](CHANGELOG.md).
+Use Conventional Commits with `feat`, `fix`, `refactor`,
 `chore`, `docs`, or `test` types.
 
 ## Dependency maintenance
@@ -81,11 +94,14 @@ and the [Dependabot configuration](.github/dependabot.yml).
 
 ## Release a version
 
-Update `package.json` and the release notes, run the checks, and verify the
+Update `package.json`, the changelog, and any detailed release notes. Move the
+relevant `Unreleased` entries into a versioned section and update comparison
+links. Run the checks and verify the
 packed archive in a disposable directory. Match the `vVERSION` tag to the
 package version. The [release workflow](.github/workflows/release.yml) rejects a
 mismatch, packs the package, installs and invokes it, and attaches the archive
 and `SHA256SUMS` to a GitHub Release.
 
-Release archives include the CLI, README, license, icon, and documentation.
+Release archives include the CLI, README, license, icon, changelog, project
+policies, and documentation.
 Tagging and publishing are separate from committing or pushing source changes.

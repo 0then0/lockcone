@@ -226,5 +226,10 @@ The [ni case study](docs/acceptance/ni/README.md) compares unchanged upstream
 commits: v0.1 reports six unknown groups; v0.2 reports two explained and four
 unexplained groups. The remaining reverse dependency edges are outside the cone.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for checks, fixtures, and release procedures.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for checks, fixtures, and release procedures,
+and [CHANGELOG.md](CHANGELOG.md) for release history. Use the GitHub issue forms
+for bugs and feature requests; report vulnerabilities privately through
+[SECURITY.md](SECURITY.md). Participation follows the
+[code of conduct](CODE_OF_CONDUCT.md).
+
 Licensed under [Apache-2.0](LICENSE).

@@ -1,0 +1,5 @@
+# Keep source and documentation consistent across platforms.
+* text=auto eol=lf
+
+# Fixtures are evidence: do not normalize their original line endings.
+tests/fixtures/** -text

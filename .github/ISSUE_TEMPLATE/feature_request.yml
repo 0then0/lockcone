@@ -1,0 +1,23 @@
+name: Feature request
+description: Propose an improvement to dependency analysis or the CLI.
+title: '[Feature]: '
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: Describe the task you cannot currently complete and who it affects.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Include an example input, command, or expected report where possible.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives and limitations
+      description: Describe any workaround and relevant compatibility or uncertainty concerns.

@@ -1,0 +1,43 @@
+name: Bug report
+description: Report a CLI failure, incorrect classification, or missing evidence.
+title: '[Bug]: '
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For vulnerabilities, use the [security policy](https://github.com/0then0/lockcone/security/policy) instead.
+        Remove secrets and private repository data from examples and logs.
+  - type: input
+    id: version
+    attributes:
+      label: LockCone version or commit
+      placeholder: 'Output of lockcone --version, or the action commit SHA'
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Include Node.js, operating system, and the pnpm version used to generate the analyzed lockfile.
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior
+      description: Explain what is incorrect. Unexplained changes are not automatically errors.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Include the command, base/head refs, and a minimal public example or sanitized manifest/workspace/lockfile snippets.
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Relevant output
+      description: Paste the error or the affected part of the text/JSON report.
+      render: text
