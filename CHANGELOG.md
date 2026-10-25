@@ -5,6 +5,11 @@ release or the corresponding comparison of commits.
 
 ## [Unreleased]
 
+### Security
+
+- Update Zod from 4.6.5 to 4.6.7, which includes the fix for collection-validation
+  memory exhaustion ([GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)).
+
 ### Added
 
 - Monthly Dependabot checks for GitHub Actions, with grouped minor/patch updates,
