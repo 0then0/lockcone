@@ -1,0 +1,199 @@
+{
+  "content-change": {
+    "base": {
+      "pnpm": "11.28.9",
+      "files": {
+        "package.json": "2c4fdb9353aae8df7056ab9415b311fd04d0b074a6e486d16d027262eb2ec359",
+        "packages/a/package.json": "b367e4389b80771dec22fd9a8523bba4affcf14885af7e2755d02a615922b860",
+        "packages/b/package.json": "d584b45d7105773cd36208d89d8fa1578f3f29689230d8cc06dd8e4bdf0f60c5",
+        "patches/is-odd@3.0.1.patch": "107afd3e72a5667037193a94884d150f2866001db6ca57481529fefd2ac78c19",
+        "pnpm-lock.yaml": "374730a19f273742f6eb98d316b4655286ca9b0074737d7d8c3d48335cb0b578",
+        "pnpm-workspace.yaml": "86eed806fcae6843b92f89cb180fc48fa322ac5646f5dd46ed31cb9d179be7ab"
+      }
+    },
+    "head": {
+      "pnpm": "11.28.9",
+      "files": {
+        "package.json": "2c4fdb9353aae8df7056ab9415b311fd04d0b074a6e486d16d027262eb2ec359",
+        "packages/a/package.json": "b367e4389b80771dec22fd9a8523bba4affcf14885af7e2755d02a615922b860",
+        "packages/b/package.json": "d584b45d7105773cd36208d89d8fa1578f3f29689230d8cc06dd8e4bdf0f60c5",
+        "patches/is-odd@3.0.1.patch": "62b2426c5b83bc4916ed5bcd66669c4df70b96d820be97bf4de2a4739ec93f8d",
+        "pnpm-lock.yaml": "7cbe73dc5293c1cafc73489e11cfcfd187ae88ef07000552f74283733c90596e",
+        "pnpm-workspace.yaml": "86eed806fcae6843b92f89cb180fc48fa322ac5646f5dd46ed31cb9d179be7ab"
+      }
+    }
+  },
+  "path-only": {
+    "base": {
+      "pnpm": "11.28.9",
+      "files": {
+        "package.json": "2c4fdb9353aae8df7056ab9415b311fd04d0b074a6e486d16d027262eb2ec359",
+        "packages/a/package.json": "b367e4389b80771dec22fd9a8523bba4affcf14885af7e2755d02a615922b860",
+        "packages/b/package.json": "d584b45d7105773cd36208d89d8fa1578f3f29689230d8cc06dd8e4bdf0f60c5",
+        "patches/is-odd.patch": "107afd3e72a5667037193a94884d150f2866001db6ca57481529fefd2ac78c19",
+        "pnpm-lock.yaml": "374730a19f273742f6eb98d316b4655286ca9b0074737d7d8c3d48335cb0b578",
+        "pnpm-workspace.yaml": "73f69deafdf3e3e87ae4580604fa0561626f004aabd7c07863a8b10f639cb2dd"
+      }
+    },
+    "head": {
+      "pnpm": "11.28.9",
+      "files": {
+        "package.json": "2c4fdb9353aae8df7056ab9415b311fd04d0b074a6e486d16d027262eb2ec359",
+        "packages/a/package.json": "b367e4389b80771dec22fd9a8523bba4affcf14885af7e2755d02a615922b860",
+        "packages/b/package.json": "d584b45d7105773cd36208d89d8fa1578f3f29689230d8cc06dd8e4bdf0f60c5",
+        "patches/odd/is-odd.patch": "107afd3e72a5667037193a94884d150f2866001db6ca57481529fefd2ac78c19",
+        "pnpm-lock.yaml": "374730a19f273742f6eb98d316b4655286ca9b0074737d7d8c3d48335cb0b578",
+        "pnpm-workspace.yaml": "84079494ce92a5161acb2438d684196a73c096fc8654cb4dfa43318d0c54b740"
+      }
+    }
+  },
+  "declaration-added": {
+    "base": {
+      "pnpm": "11.28.9",
+      "files": {
+        "package.json": "2c4fdb9353aae8df7056ab9415b311fd04d0b074a6e486d16d027262eb2ec359",
+        "packages/a/package.json": "b367e4389b80771dec22fd9a8523bba4affcf14885af7e2755d02a615922b860",
+        "packages/b/package.json": "d584b45d7105773cd36208d89d8fa1578f3f29689230d8cc06dd8e4bdf0f60c5",
+        "pnpm-lock.yaml": "8581c707e7bc26003952077b6030d95278acd985831f4a05ac43907c66aee3d9",
+        "pnpm-workspace.yaml": "d115dc6c83ba283a7d17146ad456056f3f70b003edb8c312a52880b48b034001"
+      }
+    },
+    "head": {
+      "pnpm": "11.28.9",
+      "files": {
+        "package.json": "2c4fdb9353aae8df7056ab9415b311fd04d0b074a6e486d16d027262eb2ec359",
+        "packages/a/package.json": "b367e4389b80771dec22fd9a8523bba4affcf14885af7e2755d02a615922b860",
+        "packages/b/package.json": "d584b45d7105773cd36208d89d8fa1578f3f29689230d8cc06dd8e4bdf0f60c5",
+        "patches/is-odd.patch": "107afd3e72a5667037193a94884d150f2866001db6ca57481529fefd2ac78c19",
+        "pnpm-lock.yaml": "374730a19f273742f6eb98d316b4655286ca9b0074737d7d8c3d48335cb0b578",
+        "pnpm-workspace.yaml": "73f69deafdf3e3e87ae4580604fa0561626f004aabd7c07863a8b10f639cb2dd"
+      }
+    }
+  },
+  "line-endings": {
+    "base": {
+      "pnpm": "11.28.9",
+      "files": {
+        "package.json": "2c4fdb9353aae8df7056ab9415b311fd04d0b074a6e486d16d027262eb2ec359",
+        "packages/a/package.json": "b367e4389b80771dec22fd9a8523bba4affcf14885af7e2755d02a615922b860",
+        "packages/b/package.json": "d584b45d7105773cd36208d89d8fa1578f3f29689230d8cc06dd8e4bdf0f60c5",
+        "patches/is-odd.patch": "107afd3e72a5667037193a94884d150f2866001db6ca57481529fefd2ac78c19",
+        "pnpm-lock.yaml": "374730a19f273742f6eb98d316b4655286ca9b0074737d7d8c3d48335cb0b578",
+        "pnpm-workspace.yaml": "73f69deafdf3e3e87ae4580604fa0561626f004aabd7c07863a8b10f639cb2dd"
+      }
+    },
+    "head": {
+      "pnpm": "11.28.9",
+      "files": {
+        "package.json": "2c4fdb9353aae8df7056ab9415b311fd04d0b074a6e486d16d027262eb2ec359",
+        "packages/a/package.json": "b367e4389b80771dec22fd9a8523bba4affcf14885af7e2755d02a615922b860",
+        "packages/b/package.json": "d584b45d7105773cd36208d89d8fa1578f3f29689230d8cc06dd8e4bdf0f60c5",
+        "patches/is-odd.patch": "dfa3bccedc0b15d1ed3ad201221f5e221abe9fb06c69befa701fa8e581460cc6",
+        "pnpm-lock.yaml": "374730a19f273742f6eb98d316b4655286ca9b0074737d7d8c3d48335cb0b578",
+        "pnpm-workspace.yaml": "73f69deafdf3e3e87ae4580604fa0561626f004aabd7c07863a8b10f639cb2dd"
+      }
+    }
+  },
+  "multi-version": {
+    "base": {
+      "pnpm": "11.28.9",
+      "files": {
+        "package.json": "2c4fdb9353aae8df7056ab9415b311fd04d0b074a6e486d16d027262eb2ec359",
+        "packages/b/package.json": "dc5e2e5061a0c581f4de90a24dc98f967ae1a69796e8d8a17542a706d0dba164",
+        "packages/c/package.json": "52f17f318b38e75c879f12658913ad74c6b2aca078e279a9fc40eacf5349a335",
+        "packages/d/package.json": "972d6540da0f3b4bb4c64dbca3896c7790918892a4223adedad5ca4d238ce9c1",
+        "patches/ms.patch": "107afd3e72a5667037193a94884d150f2866001db6ca57481529fefd2ac78c19",
+        "patches/types-ms.patch": "55b1cad85dcfca8677daaca387fa00dfebc7846f8d9605700830b20d25c02614",
+        "pnpm-lock.yaml": "5e2465ff25f7a834b0a880a96556eb923d29fcc92d2aa6814414ae79ebb22c05",
+        "pnpm-workspace.yaml": "43f1bccac5d6cf0c33bfd8d0d9a5b9b8c206521f98c5a4fea625d45222837c59"
+      }
+    },
+    "head": {
+      "pnpm": "11.28.9",
+      "files": {
+        "package.json": "2c4fdb9353aae8df7056ab9415b311fd04d0b074a6e486d16d027262eb2ec359",
+        "packages/b/package.json": "dc5e2e5061a0c581f4de90a24dc98f967ae1a69796e8d8a17542a706d0dba164",
+        "packages/c/package.json": "52f17f318b38e75c879f12658913ad74c6b2aca078e279a9fc40eacf5349a335",
+        "packages/d/package.json": "972d6540da0f3b4bb4c64dbca3896c7790918892a4223adedad5ca4d238ce9c1",
+        "patches/ms.patch": "62b2426c5b83bc4916ed5bcd66669c4df70b96d820be97bf4de2a4739ec93f8d",
+        "patches/types-ms.patch": "59ad72631d9bc6faaca0a3a0139e99b3eb434e1219a812a501d7fbfed29896e2",
+        "pnpm-lock.yaml": "90417b87db1002bd97c14b3780d962c1d4bdfe9d013103d81ebe8cf3f3a259f8",
+        "pnpm-workspace.yaml": "43f1bccac5d6cf0c33bfd8d0d9a5b9b8c206521f98c5a4fea625d45222837c59"
+      }
+    }
+  },
+  "shared": {
+    "base": {
+      "pnpm": "11.28.9",
+      "files": {
+        "package.json": "2c4fdb9353aae8df7056ab9415b311fd04d0b074a6e486d16d027262eb2ec359",
+        "packages/a/package.json": "b367e4389b80771dec22fd9a8523bba4affcf14885af7e2755d02a615922b860",
+        "packages/d/package.json": "972d6540da0f3b4bb4c64dbca3896c7790918892a4223adedad5ca4d238ce9c1",
+        "packages/e/package.json": "8eec059679144edaca5f89ad48d46804bd3df45b3420a55e58f9043446717198",
+        "patches/is-number.patch": "107afd3e72a5667037193a94884d150f2866001db6ca57481529fefd2ac78c19",
+        "pnpm-lock.yaml": "80a6c5dce9477fba186e364f82b2599c19a1830032b95b3b8d51011d155f643d",
+        "pnpm-workspace.yaml": "6fc95929ebf07fe21df3908cf06aafc210c459b357fde9227ffc01a54be08b57"
+      }
+    },
+    "head": {
+      "pnpm": "11.28.9",
+      "files": {
+        "package.json": "2c4fdb9353aae8df7056ab9415b311fd04d0b074a6e486d16d027262eb2ec359",
+        "packages/a/package.json": "b367e4389b80771dec22fd9a8523bba4affcf14885af7e2755d02a615922b860",
+        "packages/d/package.json": "972d6540da0f3b4bb4c64dbca3896c7790918892a4223adedad5ca4d238ce9c1",
+        "packages/e/package.json": "8eec059679144edaca5f89ad48d46804bd3df45b3420a55e58f9043446717198",
+        "patches/is-number.patch": "62b2426c5b83bc4916ed5bcd66669c4df70b96d820be97bf4de2a4739ec93f8d",
+        "pnpm-lock.yaml": "87d30e1642b842d3896cf891fe408ed8b187abc24c3fec283270a98ab88e097d",
+        "pnpm-workspace.yaml": "6fc95929ebf07fe21df3908cf06aafc210c459b357fde9227ffc01a54be08b57"
+      }
+    }
+  },
+  "peers": {
+    "base": {
+      "pnpm": "11.28.9",
+      "files": {
+        "package.json": "2c4fdb9353aae8df7056ab9415b311fd04d0b074a6e486d16d027262eb2ec359",
+        "packages/a/package.json": "9f603204604f21fe62ef7be31ba18701087ba2d0f68795237d390b9ae3721142",
+        "packages/b/package.json": "a69363fe8baf5b88e1183af16988b7ca4628f4bb7898ece9a52d9e2fa7a4358a",
+        "patches/store.patch": "107afd3e72a5667037193a94884d150f2866001db6ca57481529fefd2ac78c19",
+        "pnpm-lock.yaml": "8eef62c1ce525b49f1c8061054e577a6985375296fee1b083279c07a12a24153",
+        "pnpm-workspace.yaml": "bb634e75471f27d197ddc81faedfbc192503292aafc593e14b27f5cd3b2d0533"
+      }
+    },
+    "head": {
+      "pnpm": "11.28.9",
+      "files": {
+        "package.json": "2c4fdb9353aae8df7056ab9415b311fd04d0b074a6e486d16d027262eb2ec359",
+        "packages/a/package.json": "9f603204604f21fe62ef7be31ba18701087ba2d0f68795237d390b9ae3721142",
+        "packages/b/package.json": "a69363fe8baf5b88e1183af16988b7ca4628f4bb7898ece9a52d9e2fa7a4358a",
+        "patches/store.patch": "62b2426c5b83bc4916ed5bcd66669c4df70b96d820be97bf4de2a4739ec93f8d",
+        "pnpm-lock.yaml": "8411abeb56d0e848de4d0eaa076a612b92033afaf333d6787a758cb6789aa11e",
+        "pnpm-workspace.yaml": "bb634e75471f27d197ddc81faedfbc192503292aafc593e14b27f5cd3b2d0533"
+      }
+    }
+  },
+  "pnpm10": {
+    "base": {
+      "pnpm": "10.34.9",
+      "files": {
+        "package.json": "683f93856dbe46f6e76289d53bf77fadf34aa166b3af8d8f3c8331d75b165070",
+        "packages/a/package.json": "b367e4389b80771dec22fd9a8523bba4affcf14885af7e2755d02a615922b860",
+        "packages/b/package.json": "d584b45d7105773cd36208d89d8fa1578f3f29689230d8cc06dd8e4bdf0f60c5",
+        "patches/is-odd@3.0.1.patch": "107afd3e72a5667037193a94884d150f2866001db6ca57481529fefd2ac78c19",
+        "pnpm-lock.yaml": "28bb4279a2188f17c615b0271200a1e231f80322b28dbcbd88fb60b5b3e5fb2a",
+        "pnpm-workspace.yaml": "d115dc6c83ba283a7d17146ad456056f3f70b003edb8c312a52880b48b034001"
+      }
+    },
+    "head": {
+      "pnpm": "10.34.9",
+      "files": {
+        "package.json": "683f93856dbe46f6e76289d53bf77fadf34aa166b3af8d8f3c8331d75b165070",
+        "packages/a/package.json": "b367e4389b80771dec22fd9a8523bba4affcf14885af7e2755d02a615922b860",
+        "packages/b/package.json": "d584b45d7105773cd36208d89d8fa1578f3f29689230d8cc06dd8e4bdf0f60c5",
+        "patches/is-odd@3.0.1.patch": "62b2426c5b83bc4916ed5bcd66669c4df70b96d820be97bf4de2a4739ec93f8d",
+        "pnpm-lock.yaml": "9bad356d321254abdb31bff2dbae3a0fb240d36226962b83b49631d3ce16da71",
+        "pnpm-workspace.yaml": "d115dc6c83ba283a7d17146ad456056f3f70b003edb8c312a52880b48b034001"
+      }
+    }
+  }
+}

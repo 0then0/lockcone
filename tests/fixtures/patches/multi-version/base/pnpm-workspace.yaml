@@ -1,0 +1,5 @@
+packages:
+  - packages/*
+patchedDependencies:
+  ms: patches/ms.patch
+  '@types/ms@2.1.0': patches/types-ms.patch

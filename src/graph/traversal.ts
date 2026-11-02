@@ -65,3 +65,43 @@ export function dependencyPath(id: string, visits: Map<string, Visit>): string[]
   }
   return path.reverse();
 }
+
+// Reverse reachability over the same edges as traverseAll. A node's `next` is the
+// following hop toward the target on one shortest path; `depth` counts edges.
+export interface ReverseVisit {
+  depth: number;
+  next: string | null;
+}
+
+export function reverseIndex(graph: DependencyGraph): Map<string, string[]> {
+  const predecessors = new Map<string, Set<string>>();
+  for (const node of graph.nodes.values()) {
+    for (const edge of node.edges) {
+      if (!graph.nodes.has(edge.target)) continue;
+      const sources = predecessors.get(edge.target) ?? new Set<string>();
+      sources.add(node.id);
+      predecessors.set(edge.target, sources);
+    }
+  }
+  return new Map(
+    [...predecessors].map(([id, sources]) => [id, [...sources].sort()] as const),
+  );
+}
+
+export function reverseVisits(
+  index: Map<string, string[]>,
+  target: string,
+): Map<string, ReverseVisit> {
+  const visits = new Map<string, ReverseVisit>([[target, { depth: 0, next: null }]]);
+  const queue = [target];
+  for (let position = 0; position < queue.length; position++) {
+    const id = queue[position]!;
+    const depth = visits.get(id)!.depth + 1;
+    for (const source of index.get(id) ?? []) {
+      if (visits.has(source)) continue;
+      visits.set(source, { depth, next: id });
+      queue.push(source);
+    }
+  }
+  return visits;
+}

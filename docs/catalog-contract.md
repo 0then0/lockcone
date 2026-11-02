@@ -124,7 +124,9 @@ Only supported workspace catalog entries are removed from the global workspace
 config comparison. Only consistent cache entries with the two known fields are
 removed from the global lockfile config comparison. Unknown cache fields,
 unsupported values, other top-level fields, environment changes, overrides,
-patches, and missing graph edges retain conservative behavior.
+patches, and missing graph edges retain conservative behavior. Patch changes are
+additionally reported in `patches`, which never changes this classification; see
+the [patch reference](patch-contract.md).
 An unchanged catalog reference in unmodeled configuration, including overrides,
 can change meaning when that catalog changes, and receives global uncertainty.
 This check is conservative at catalog-name granularity and does not resolve

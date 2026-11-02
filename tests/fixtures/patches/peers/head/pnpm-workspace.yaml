@@ -1,0 +1,4 @@
+packages:
+  - packages/*
+patchedDependencies:
+  'use-sync-external-store@1.2.0': patches/store.patch

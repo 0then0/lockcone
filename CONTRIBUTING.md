@@ -45,6 +45,14 @@ To regenerate the upstream catalog example, follow the
 [ni reproduction instructions](docs/acceptance/ni/README.md). That script updates
 fixtures, reports, and provenance; review those files together.
 
+Patch fixtures under `tests/fixtures/patches` come from pinned pnpm releases.
+`node examples/patch-fixtures.mjs` regenerates them with `pnpm install
+--lockfile-only --ignore-scripts` in a temporary directory; it needs network access
+and is separate from analysis. The external
+[radix-ui/primitives case](docs/acceptance/radix-primitives/README.md) is checked
+with `node examples/patch-acceptance.mjs` after `pnpm build`. Patch fixtures keep
+their exact bytes, including CRLF.
+
 ## Preserve the analysis contract
 
 Keep changes focused. Preserve deterministic output, exact package identities,
@@ -56,16 +64,18 @@ Keep responsibilities in the existing modules:
 
 - `src/git`: committed repository reads.
 - `src/manifests`: manifest validation.
-- `src/pnpm`: lockfile and workspace interpretation.
+- `src/pnpm`: lockfile, workspace, and patch metadata interpretation.
 - `src/graph`: package instances and traversal.
-- `src/analysis`: intent, graph comparison, and classification.
+- `src/analysis`: intent, graph comparison, patch reports, and classification.
 - `src/output` and `src/cli`: reports and command interfaces.
 
 The graph and traversal modules do not depend on the pnpm parser. Core analysis
 must not query registries, install target packages, execute hooks, use AI services,
 or introduce an automatic merge policy.
 
-Discuss incompatible report changes before changing `schemaVersion`. Update
+Patch reports describe committed metadata and never change classification.
+Discuss incompatible report changes before changing `schemaVersion`; additive
+sections such as `patches` carry their own `reportVersion`. Update
 consumers, CI validators, tests, and documentation together. The
 [catalog reference](docs/catalog-contract.md) describes the current schema and
 uncertainty policy.

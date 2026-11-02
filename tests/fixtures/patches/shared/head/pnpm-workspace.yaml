@@ -1,0 +1,4 @@
+packages:
+  - packages/*
+patchedDependencies:
+  'is-number@^6.0.0': patches/is-number.patch

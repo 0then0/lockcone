@@ -1,0 +1,67 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+patchedDependencies:
+  '@types/ms@2.1.0': 59ad72631d9bc6faaca0a3a0139e99b3eb434e1219a812a501d7fbfed29896e2
+  ms: 62b2426c5b83bc4916ed5bcd66669c4df70b96d820be97bf4de2a4739ec93f8d
+
+importers:
+
+  .: {}
+
+  packages/b:
+    dependencies:
+      '@types/ms':
+        specifier: 2.1.0
+        version: 2.1.0(patch_hash=59ad72631d9bc6faaca0a3a0139e99b3eb434e1219a812a501d7fbfed29896e2)
+      ms:
+        specifier: 2.1.3
+        version: 2.1.3(patch_hash=62b2426c5b83bc4916ed5bcd66669c4df70b96d820be97bf4de2a4739ec93f8d)
+
+  packages/c:
+    dependencies:
+      ms:
+        specifier: 2.0.0
+        version: 2.0.0(patch_hash=62b2426c5b83bc4916ed5bcd66669c4df70b96d820be97bf4de2a4739ec93f8d)
+
+  packages/d:
+    dependencies:
+      is-odd:
+        specifier: 3.0.1
+        version: 3.0.1
+
+packages:
+
+  '@types/ms@2.1.0':
+    resolution: {integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==}
+
+  is-number@6.0.0:
+    resolution: {integrity: sha512-Wu1VHeILBK8KAWJUAiSZQX94GmOE45Rg6/538fKwiloUu21KncEkYGPqob2oSZ5mUT73vLGrHQjKw3KMPwfDzg==}
+    engines: {node: '>=0.10.0'}
+
+  is-odd@3.0.1:
+    resolution: {integrity: sha512-CQpnWPrDwmP1+SMHXZhtLtJv90yiyVfluGsX5iNCVkrhQtU3TQHsUWPG9wkdk9Lgd5yNpAg9jQEo90CBaXgWMA==}
+    engines: {node: '>=4'}
+
+  ms@2.0.0:
+    resolution: {integrity: sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A==}
+
+  ms@2.1.3:
+    resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
+
+snapshots:
+
+  '@types/ms@2.1.0(patch_hash=59ad72631d9bc6faaca0a3a0139e99b3eb434e1219a812a501d7fbfed29896e2)': {}
+
+  is-number@6.0.0: {}
+
+  is-odd@3.0.1:
+    dependencies:
+      is-number: 6.0.0
+
+  ms@2.0.0(patch_hash=62b2426c5b83bc4916ed5bcd66669c4df70b96d820be97bf4de2a4739ec93f8d): {}
+
+  ms@2.1.3(patch_hash=62b2426c5b83bc4916ed5bcd66669c4df70b96d820be97bf4de2a4739ec93f8d): {}

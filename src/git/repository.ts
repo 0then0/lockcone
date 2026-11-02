@@ -1,10 +1,67 @@
 import { execFileSync, spawn } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { posix } from 'node:path';
 import { parse, parseAllDocuments } from 'yaml';
+
+// Patch files are hashed from the exact committed bytes. Larger files are not read;
+// their Git blob ID still distinguishes changed from identical bytes.
+export const maxPatchBytes = 8 * 1024 * 1024;
+export const maxPatchFiles = 256;
+
+export type PatchFile =
+  | { status: 'present'; blob: string | null; size: number; sha256: string }
+  | { status: 'oversized'; blob: string | null; size: number }
+  | { status: 'missing' }
+  | { status: 'unsupported'; reason: string };
 
 export interface RepositoryState {
   revision: string;
   files: Map<string, string>;
+  // Committed state of every configured patch path. Hand-built states may omit it.
+  patchFiles?: Map<string, PatchFile>;
+}
+
+export function normalizePatchPath(path: string): string {
+  return posix.normalize(path.replaceAll('\\', '/'));
+}
+
+// A patch reference must name a file inside the repository snapshot.
+export function patchPathProblem(path: string): string | undefined {
+  if (!path || path === '.' || path.endsWith('/'))
+    return 'the path does not name a file';
+  if (path.includes('\0')) return 'the path contains a NUL byte';
+  if (posix.isAbsolute(path) || /^[A-Za-z]:/.test(path)) return 'the path is absolute';
+  if (path === '..' || path.startsWith('../')) return 'the path leaves the repository';
+  return undefined;
+}
+
+export function patchFile(state: RepositoryState, path: string): PatchFile {
+  const read = state.patchFiles?.get(path);
+  if (read) return read;
+  const problem = patchPathProblem(path);
+  if (problem) return { status: 'unsupported', reason: problem };
+  const content = state.files.get(path);
+  if (content === undefined) return { status: 'missing' };
+  const bytes = Buffer.from(content, 'utf8');
+  return {
+    status: 'present',
+    blob: null,
+    size: bytes.length,
+    sha256: createHash('sha256').update(bytes).digest('hex'),
+  };
+}
+
+// True only when both sides prove identical or different bytes.
+export function sameFileBytes(left: PatchFile, right: PatchFile): boolean | undefined {
+  if (
+    (left.status !== 'present' && left.status !== 'oversized') ||
+    (right.status !== 'present' && right.status !== 'oversized')
+  )
+    return undefined;
+  if (left.blob !== null && right.blob !== null) return left.blob === right.blob;
+  if (left.status === 'present' && right.status === 'present')
+    return left.sha256 === right.sha256;
+  return undefined;
 }
 
 export const resolutionFiles = new Set(['.npmrc', '.pnpmfile.cjs', 'pnpmfile.cjs']);
@@ -14,7 +71,7 @@ function patchPaths(value: unknown, lockfileFormat: boolean): Set<string> {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return paths;
   for (const patch of Object.values(value)) {
     if (typeof patch === 'string') {
-      if (!lockfileFormat) paths.add(posix.normalize(patch.replaceAll('\\', '/')));
+      if (!lockfileFormat) paths.add(normalizePatchPath(patch));
     } else if (
       lockfileFormat &&
       patch !== null &&
@@ -22,7 +79,7 @@ function patchPaths(value: unknown, lockfileFormat: boolean): Set<string> {
       'path' in patch &&
       typeof patch.path === 'string'
     ) {
-      paths.add(posix.normalize(patch.path.replaceAll('\\', '/')));
+      paths.add(normalizePatchPath(patch.path));
     }
   }
   return paths;
@@ -93,6 +150,8 @@ function git(cwd: string, args: string[]): string {
 export interface TreeEntry {
   object: string;
   path: string;
+  mode: string;
+  type: string;
 }
 
 export async function parseTreeBatch(
@@ -122,7 +181,7 @@ export async function parseTreeBatch(
       ) {
         throw new Error('Git returned a malformed tree entry.');
       }
-      entries.push({ object, path: record.slice(separator + 1) });
+      entries.push({ object, path: record.slice(separator + 1), mode, type });
       start = end + 1;
     }
   }
@@ -130,11 +189,17 @@ export async function parseTreeBatch(
   return entries;
 }
 
-export async function parseBlobBatch(
-  entries: TreeEntry[],
-  chunks: AsyncIterable<Buffer>,
-): Promise<Map<string, string>> {
-  const blobs = new Map<string, string>();
+type BlobRequest = Pick<TreeEntry, 'object' | 'path'>;
+
+interface BlobReader {
+  header(entry: BlobRequest): Promise<number>;
+  bytes(size: number): Promise<Buffer>;
+  skip(size: number): Promise<void>;
+  boundary(entry: BlobRequest): Promise<void>;
+  finish(): Promise<void>;
+}
+
+function blobReader(chunks: AsyncIterable<Buffer>): BlobReader {
   const iterator = chunks[Symbol.asyncIterator]();
   let chunk: Buffer<ArrayBufferLike> = Buffer.alloc(0);
   let offset = 0;
@@ -172,27 +237,84 @@ export async function parseBlobBatch(
     }
     return Buffer.concat(parts, size);
   }
-
-  for (const entry of entries) {
-    const [object, type, sizeText, extra] = (await readLine()).split(' ');
-    const size = Number(sizeText);
-    if (
-      object !== entry.object ||
-      type !== 'blob' ||
-      extra !== undefined ||
-      !Number.isSafeInteger(size) ||
-      size < 0
-    ) {
-      throw new Error(`Git did not return a valid blob for ${entry.path}.`);
+  async function skipBytes(size: number): Promise<void> {
+    let remaining = size;
+    while (remaining > 0) {
+      await fill();
+      const length = Math.min(remaining, chunk.length - offset);
+      offset += length;
+      remaining -= length;
     }
-    const content = await readBytes(size);
-    if ((await readBytes(1))[0] !== 0x0a)
-      throw new Error(`Git returned a malformed blob boundary for ${entry.path}.`);
+  }
+  return {
+    async header(entry) {
+      const [object, type, sizeText, extra] = (await readLine()).split(' ');
+      const size = Number(sizeText);
+      if (
+        object !== entry.object ||
+        type !== 'blob' ||
+        extra !== undefined ||
+        !Number.isSafeInteger(size) ||
+        size < 0
+      ) {
+        throw new Error(`Git did not return a valid blob for ${entry.path}.`);
+      }
+      return size;
+    },
+    bytes: readBytes,
+    skip: skipBytes,
+    async boundary(entry) {
+      if ((await readBytes(1))[0] !== 0x0a)
+        throw new Error(`Git returned a malformed blob boundary for ${entry.path}.`);
+    },
+    async finish() {
+      if (offset < chunk.length || !(await iterator.next()).done)
+        throw new Error('Git returned unexpected data after the blob batch.');
+    },
+  };
+}
+
+export async function parseBlobBatch(
+  entries: BlobRequest[],
+  chunks: AsyncIterable<Buffer>,
+): Promise<Map<string, string>> {
+  const blobs = new Map<string, string>();
+  const reader = blobReader(chunks);
+  for (const entry of entries) {
+    const content = await reader.bytes(await reader.header(entry));
+    await reader.boundary(entry);
     blobs.set(entry.path, content.toString('utf8'));
   }
-  if (offset < chunk.length || !(await iterator.next()).done)
-    throw new Error('Git returned unexpected data after the blob batch.');
+  await reader.finish();
   return blobs;
+}
+
+// Hashes exact blob bytes. Blobs above the limit are consumed but never retained.
+export async function parsePatchBatch(
+  entries: BlobRequest[],
+  chunks: AsyncIterable<Buffer>,
+  limit = maxPatchBytes,
+): Promise<Map<string, PatchFile>> {
+  const files = new Map<string, PatchFile>();
+  const reader = blobReader(chunks);
+  for (const entry of entries) {
+    const size = await reader.header(entry);
+    if (size > limit) {
+      await reader.skip(size);
+      files.set(entry.path, { status: 'oversized', blob: entry.object, size });
+    } else {
+      const content = await reader.bytes(size);
+      files.set(entry.path, {
+        status: 'present',
+        blob: entry.object,
+        size,
+        sha256: createHash('sha256').update(content).digest('hex'),
+      });
+    }
+    await reader.boundary(entry);
+  }
+  await reader.finish();
+  return files;
 }
 
 export async function streamGit<T>(
@@ -242,17 +364,52 @@ async function listTree(cwd: string, revision: string): Promise<TreeEntry[]> {
   );
 }
 
-async function readBlobs(
+async function readBlobs<T>(
   cwd: string,
   entries: TreeEntry[],
-): Promise<Map<string, string>> {
+  parse: (
+    entries: TreeEntry[],
+    stdout: AsyncIterable<Buffer>,
+  ) => Promise<Map<string, T>>,
+): Promise<Map<string, T>> {
   if (!entries.length) return new Map();
   return streamGit(
     cwd,
     ['cat-file', '--batch'],
     `${entries.map(({ object }) => object).join('\n')}\n`,
-    (stdout) => parseBlobBatch(entries, stdout),
+    (stdout) => parse(entries, stdout),
   );
+}
+
+// Resolve each configured patch path in the committed tree only. Symlinks,
+// submodules, and over-limit requests are reported instead of followed.
+async function readPatchFiles(
+  cwd: string,
+  tree: TreeEntry[],
+  paths: Set<string>,
+): Promise<Map<string, PatchFile>> {
+  const byPath = new Map(tree.map((entry) => [entry.path, entry]));
+  const files = new Map<string, PatchFile>();
+  const readable: TreeEntry[] = [];
+  for (const path of [...paths].sort()) {
+    const entry = byPath.get(path);
+    const problem = patchPathProblem(path);
+    if (problem) files.set(path, { status: 'unsupported', reason: problem });
+    else if (!entry) files.set(path, { status: 'missing' });
+    else if (entry.mode === '120000')
+      files.set(path, { status: 'unsupported', reason: 'the path is a symlink' });
+    else if (entry.type !== 'blob')
+      files.set(path, { status: 'unsupported', reason: 'the path is a submodule' });
+    else if (readable.length >= maxPatchFiles)
+      files.set(path, {
+        status: 'unsupported',
+        reason: `more than ${maxPatchFiles} patch files are configured`,
+      });
+    else readable.push(entry);
+  }
+  for (const [path, file] of await readBlobs(cwd, readable, parsePatchBatch))
+    files.set(path, file);
+  return files;
 }
 
 export async function readRepository(
@@ -275,14 +432,13 @@ export async function readRepository(
       path.endsWith('/package.json') ||
       resolutionFiles.has(path),
   );
-  const initial = await readBlobs(root, candidates);
-  const patches = configuredPatches(initial);
-  const patchEntries = tree.filter(({ path }) => patches.has(path));
-  const files = new Map([...initial, ...(await readBlobs(root, patchEntries))]);
+  const initial = await readBlobs(root, candidates, parseBlobBatch);
+  const patchFiles = await readPatchFiles(root, tree, configuredPatches(initial));
+  const files = initial;
   if (!files.has('package.json') || !files.has('pnpm-lock.yaml')) {
     throw new Error(
       `Revision ${ref} needs package.json and pnpm-lock.yaml at the repository root.`,
     );
   }
-  return { revision, files };
+  return { revision, files, patchFiles };
 }

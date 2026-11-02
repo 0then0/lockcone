@@ -1,0 +1,48 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+patchedDependencies:
+  is-number@^6.0.0: 62b2426c5b83bc4916ed5bcd66669c4df70b96d820be97bf4de2a4739ec93f8d
+
+importers:
+
+  .: {}
+
+  packages/a:
+    dependencies:
+      is-odd:
+        specifier: 3.0.1
+        version: 3.0.1
+
+  packages/d:
+    dependencies:
+      is-odd:
+        specifier: 3.0.1
+        version: 3.0.1
+
+  packages/e:
+    dependencies:
+      a:
+        specifier: workspace:*
+        version: link:../a
+
+packages:
+
+  is-number@6.0.0:
+    resolution: {integrity: sha512-Wu1VHeILBK8KAWJUAiSZQX94GmOE45Rg6/538fKwiloUu21KncEkYGPqob2oSZ5mUT73vLGrHQjKw3KMPwfDzg==}
+    engines: {node: '>=0.10.0'}
+
+  is-odd@3.0.1:
+    resolution: {integrity: sha512-CQpnWPrDwmP1+SMHXZhtLtJv90yiyVfluGsX5iNCVkrhQtU3TQHsUWPG9wkdk9Lgd5yNpAg9jQEo90CBaXgWMA==}
+    engines: {node: '>=4'}
+
+snapshots:
+
+  is-number@6.0.0(patch_hash=62b2426c5b83bc4916ed5bcd66669c4df70b96d820be97bf4de2a4739ec93f8d): {}
+
+  is-odd@3.0.1:
+    dependencies:
+      is-number: 6.0.0(patch_hash=62b2426c5b83bc4916ed5bcd66669c4df70b96d820be97bf4de2a4739ec93f8d)

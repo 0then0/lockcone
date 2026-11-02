@@ -1,0 +1,11 @@
+{
+  "name": "patch-fixture",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@10.34.9",
+  "pnpm": {
+    "patchedDependencies": {
+      "is-odd@3.0.1": "patches/is-odd@3.0.1.patch"
+    }
+  }
+}

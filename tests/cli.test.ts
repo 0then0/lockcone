@@ -85,7 +85,7 @@ describe('compiled CLI', () => {
     ).toContain('Git blame for dependency changes');
     expect(
       execFileSync(process.execPath, [cli, '--version'], { encoding: 'utf8' }).trim(),
-    ).toBe('0.2.0');
+    ).toBe('0.3.0');
   });
 
   it('reads both Git states and emits parseable JSON, keeping unexplained changes non-fatal', () => {
@@ -142,6 +142,43 @@ describe('compiled CLI', () => {
     expect(report.warnings).toContain(
       'Resolution input changed: patches/aws-sdk.patch',
     );
+  });
+
+  it('reports patch changes without making them a failure', () => {
+    const args = ['--base', 'patch-base', '--head', 'patch-head'];
+    const json = spawnSync(
+      process.execPath,
+      [cli, 'diff', ...args, '--format', 'json'],
+      {
+        env,
+        encoding: 'utf8',
+      },
+    );
+    expect(json.status).toBe(0);
+    const report = JSON.parse(json.stdout);
+    expect(report.schemaVersion).toBe(4);
+    expect(report.patches.reportVersion).toBe(1);
+    expect(report.patches.changes).toHaveLength(1);
+    const [change] = report.patches.changes;
+    expect(change.selector).toEqual({ base: 'aws-sdk@2', head: 'aws-sdk@2' });
+    expect(change.events).toEqual(['content-changed']);
+    expect(change.head.file.path).toBe('patches/aws-sdk.patch');
+    expect(change.head.instances[0].association).toBe('selector-applicable');
+    expect(change.head.instances[0].consumers[0]).toMatchObject({
+      workspace: '.',
+      relation: 'direct',
+      basis: 'selector-applicable',
+    });
+
+    const text = (command: string[]): string =>
+      execFileSync(process.execPath, [cli, ...command, ...args], {
+        env,
+        encoding: 'utf8',
+      });
+    expect(text(['diff'])).toContain('aws-sdk@2: content-changed');
+    expect(text(['explain'])).toContain('aws-sdk@2: content-changed');
+    expect(text(['why', 'aws-sdk'])).toContain('aws-sdk@2: content-changed');
+    expect(text(['why', 'vite'])).not.toContain('Patch changes');
   });
 
   it.each([

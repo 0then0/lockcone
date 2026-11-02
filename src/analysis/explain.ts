@@ -1,5 +1,6 @@
 import type { RepositoryState } from '../git/repository.js';
 import { buildPnpmState } from '../pnpm/dependency-graph.js';
+import { parseInstance } from '../pnpm/patches.js';
 import type { EvidencePathNode, Report } from './diff.js';
 import { diff, summarize } from './diff.js';
 
@@ -57,6 +58,24 @@ export function why(report: Report, name: string): Report {
           head: change.affectedDeclarations.head.filter((root) => roots.has(root)),
         },
       })),
+    patches: {
+      ...report.patches,
+      unlinked: {
+        base: report.patches.unlinked.base.filter(
+          (item) => parseInstance(item.instance)?.name === name,
+        ),
+        head: report.patches.unlinked.head.filter(
+          (item) => parseInstance(item.instance)?.name === name,
+        ),
+      },
+      changes: report.patches.changes.filter(
+        (change) =>
+          change.name === name ||
+          [change.base, change.head].some((side) =>
+            side?.instances.some((instance) => instance.name === name),
+          ),
+      ),
+    },
     pathNodes,
     summary: summarize(changes),
   };

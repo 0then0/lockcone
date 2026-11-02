@@ -1,0 +1,7 @@
+diff --git a/index.js b/index.js
+--- a/index.js
++++ b/index.js
+@@ -1,2 +1,3 @@
++// patch one
+ 'use strict';
+ 

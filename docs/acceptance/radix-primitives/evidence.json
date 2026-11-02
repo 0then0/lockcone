@@ -1,0 +1,277 @@
+{
+  "repository": "https://github.com/radix-ui/primitives.git",
+  "base": "da4175faf82a3f0bbf8d290b1caddf47ced7a4e7",
+  "head": "3bc7532514ef1451d09648fc98d3ed8ddfcc55f4",
+  "patchPath": "patches/@changesets__apply-release-plan.patch",
+  "lockcone": {
+    "command": "lockcone explain --format json --base BASE --head HEAD"
+  },
+  "independent": {
+    "base": {
+      "revision": "da4175faf82a3f0bbf8d290b1caddf47ced7a4e7",
+      "packageManager": "pnpm@10.2.0",
+      "packageJsonPatchedDependencies": {
+        "@changesets/apply-release-plan": "patches/@changesets__apply-release-plan.patch"
+      },
+      "workspacePatchedDependencies": null,
+      "lockfileSelector": "@changesets/apply-release-plan",
+      "lockfileEntry": {
+        "hash": "399787ec1c6014117f9421a96735a7b7c8728145b949949e7c8c8273a5e693eb",
+        "path": "patches/@changesets__apply-release-plan.patch"
+      },
+      "lockfileHash": "399787ec1c6014117f9421a96735a7b7c8728145b949949e7c8c8273a5e693eb",
+      "snapshot": "@changesets/apply-release-plan@7.0.13(patch_hash=399787ec1c6014117f9421a96735a7b7c8728145b949949e7c8c8273a5e693eb)",
+      "patchBlob": "1b82cab37a4b52dd844b5501bf2e0a758e276d14",
+      "patchSha256": "399787ec1c6014117f9421a96735a7b7c8728145b949949e7c8c8273a5e693eb",
+      "patchBytes": 2182,
+      "consumers": [
+        {
+          "importer": ".",
+          "section": "devDependencies",
+          "path": [
+            "@changesets/cli@2.29.7(@types/node@24.12.4)",
+            "@changesets/apply-release-plan@7.0.13(patch_hash=399787ec1c6014117f9421a96735a7b7c8728145b949949e7c8c8273a5e693eb)"
+          ]
+        }
+      ]
+    },
+    "head": {
+      "revision": "3bc7532514ef1451d09648fc98d3ed8ddfcc55f4",
+      "packageManager": "pnpm@11.5.0",
+      "packageJsonPatchedDependencies": null,
+      "workspacePatchedDependencies": {
+        "@changesets/apply-release-plan": "patches/@changesets__apply-release-plan.patch"
+      },
+      "lockfileSelector": "@changesets/apply-release-plan",
+      "lockfileEntry": "07a08c92a179c60bea9ec7b945a1c1c57ecfc8fdaa76edfb99ed9ea2f46808ea",
+      "lockfileHash": "07a08c92a179c60bea9ec7b945a1c1c57ecfc8fdaa76edfb99ed9ea2f46808ea",
+      "snapshot": "@changesets/apply-release-plan@7.1.1(patch_hash=07a08c92a179c60bea9ec7b945a1c1c57ecfc8fdaa76edfb99ed9ea2f46808ea)",
+      "patchBlob": "abc9f837fc2621871906cd88634cef8ef0b41c1a",
+      "patchSha256": "07a08c92a179c60bea9ec7b945a1c1c57ecfc8fdaa76edfb99ed9ea2f46808ea",
+      "patchBytes": 2184,
+      "consumers": [
+        {
+          "importer": ".",
+          "section": "devDependencies",
+          "path": [
+            "@changesets/cli@2.31.0(@types/node@24.12.4)",
+            "@changesets/apply-release-plan@7.1.1(patch_hash=07a08c92a179c60bea9ec7b945a1c1c57ecfc8fdaa76edfb99ed9ea2f46808ea)"
+          ]
+        }
+      ]
+    }
+  },
+  "patches": {
+    "reportVersion": 1,
+    "pnpm": {
+      "base": {
+        "declared": "pnpm@10.2.0",
+        "major": 10
+      },
+      "head": {
+        "declared": "pnpm@11.5.0",
+        "major": 11
+      }
+    },
+    "notes": {
+      "base": [],
+      "head": []
+    },
+    "changes": [
+      {
+        "id": "[\"@changesets/apply-release-plan\",\"@changesets/apply-release-plan\"]",
+        "name": "@changesets/apply-release-plan",
+        "selector": {
+          "base": "@changesets/apply-release-plan",
+          "head": "@changesets/apply-release-plan"
+        },
+        "selectorKind": {
+          "base": "name",
+          "head": "name"
+        },
+        "events": [
+          "source-changed",
+          "content-changed",
+          "lockfile-hash-changed",
+          "lockfile-shape-changed"
+        ],
+        "content": {
+          "status": "changed",
+          "basis": "git-blob"
+        },
+        "base": {
+          "declarations": [
+            {
+              "source": "package.json#pnpm",
+              "sourceStatus": "active",
+              "reference": "patches/@changesets__apply-release-plan.patch",
+              "path": "patches/@changesets__apply-release-plan.patch",
+              "problem": null
+            }
+          ],
+          "file": {
+            "path": "patches/@changesets__apply-release-plan.patch",
+            "status": "present",
+            "sha256": "399787ec1c6014117f9421a96735a7b7c8728145b949949e7c8c8273a5e693eb",
+            "size": 2182,
+            "gitBlob": "1b82cab37a4b52dd844b5501bf2e0a758e276d14",
+            "reason": null
+          },
+          "lockfile": {
+            "hash": "399787ec1c6014117f9421a96735a7b7c8728145b949949e7c8c8273a5e693eb",
+            "hashAlgorithm": "unconfirmed",
+            "path": "patches/@changesets__apply-release-plan.patch",
+            "shape": "object"
+          },
+          "instances": [
+            {
+              "id": "@changesets/apply-release-plan@7.0.13(patch_hash=399787ec1c6014117f9421a96735a7b7c8728145b949949e7c8c8273a5e693eb)",
+              "name": "@changesets/apply-release-plan",
+              "version": "7.0.13",
+              "peerContext": null,
+              "patchHash": "399787ec1c6014117f9421a96735a7b7c8728145b949949e7c8c8273a5e693eb",
+              "association": "lockfile-confirmed",
+              "reasons": [
+                "The instance patch_hash equals the lockfile entry for this selector."
+              ],
+              "counterpart": null,
+              "consumers": [
+                {
+                  "workspace": ".",
+                  "name": "primitives",
+                  "relation": "transitive",
+                  "basis": "lockfile-confirmed",
+                  "section": "devDependencies",
+                  "path": [
+                    "dependency:[\".\",\"devDependencies\",\"@changesets/cli\"]",
+                    "@changesets/cli@2.29.7(@types/node@24.12.4)",
+                    "@changesets/apply-release-plan@7.0.13(patch_hash=399787ec1c6014117f9421a96735a7b7c8728145b949949e7c8c8273a5e693eb)"
+                  ],
+                  "uncertain": true,
+                  "uncertainty": [
+                    "dependency:[\".\",\"devDependencies\",\"@changesets/cli\"]: the dependency entry is marked uncertain (a declaration issue or an uncertain resolved package)",
+                    "@changesets/cli@2.29.7(@types/node@24.12.4): peer context (@types/node@24.12.4)",
+                    "@changesets/cli@2.29.7(@types/node@24.12.4): the snapshot lists transitive peer dependencies",
+                    "@changesets/apply-release-plan@7.0.13(patch_hash=399787ec1c6014117f9421a96735a7b7c8728145b949949e7c8c8273a5e693eb): the patch_hash suffix is treated as resolution context by the existing classifier"
+                  ]
+                }
+              ],
+              "consumersOmitted": 0,
+              "consumersNote": null
+            }
+          ],
+          "instancesOmitted": 0,
+          "notes": []
+        },
+        "head": {
+          "declarations": [
+            {
+              "source": "pnpm-workspace.yaml",
+              "sourceStatus": "active",
+              "reference": "patches/@changesets__apply-release-plan.patch",
+              "path": "patches/@changesets__apply-release-plan.patch",
+              "problem": null
+            }
+          ],
+          "file": {
+            "path": "patches/@changesets__apply-release-plan.patch",
+            "status": "present",
+            "sha256": "07a08c92a179c60bea9ec7b945a1c1c57ecfc8fdaa76edfb99ed9ea2f46808ea",
+            "size": 2184,
+            "gitBlob": "abc9f837fc2621871906cd88634cef8ef0b41c1a",
+            "reason": null
+          },
+          "lockfile": {
+            "hash": "07a08c92a179c60bea9ec7b945a1c1c57ecfc8fdaa76edfb99ed9ea2f46808ea",
+            "hashAlgorithm": "unconfirmed",
+            "path": null,
+            "shape": "hash"
+          },
+          "instances": [
+            {
+              "id": "@changesets/apply-release-plan@7.1.1(patch_hash=07a08c92a179c60bea9ec7b945a1c1c57ecfc8fdaa76edfb99ed9ea2f46808ea)",
+              "name": "@changesets/apply-release-plan",
+              "version": "7.1.1",
+              "peerContext": null,
+              "patchHash": "07a08c92a179c60bea9ec7b945a1c1c57ecfc8fdaa76edfb99ed9ea2f46808ea",
+              "association": "lockfile-confirmed",
+              "reasons": [
+                "The instance patch_hash equals the lockfile entry for this selector."
+              ],
+              "counterpart": null,
+              "consumers": [
+                {
+                  "workspace": ".",
+                  "name": "primitives",
+                  "relation": "transitive",
+                  "basis": "lockfile-confirmed",
+                  "section": "devDependencies",
+                  "path": [
+                    "dependency:[\".\",\"devDependencies\",\"@changesets/cli\"]",
+                    "@changesets/cli@2.31.0(@types/node@24.12.4)",
+                    "@changesets/apply-release-plan@7.1.1(patch_hash=07a08c92a179c60bea9ec7b945a1c1c57ecfc8fdaa76edfb99ed9ea2f46808ea)"
+                  ],
+                  "uncertain": true,
+                  "uncertainty": [
+                    "dependency:[\".\",\"devDependencies\",\"@changesets/cli\"]: the dependency entry is marked uncertain (a declaration issue or an uncertain resolved package)",
+                    "@changesets/cli@2.31.0(@types/node@24.12.4): peer context (@types/node@24.12.4)",
+                    "@changesets/cli@2.31.0(@types/node@24.12.4): the snapshot lists transitive peer dependencies",
+                    "@changesets/apply-release-plan@7.1.1(patch_hash=07a08c92a179c60bea9ec7b945a1c1c57ecfc8fdaa76edfb99ed9ea2f46808ea): the patch_hash suffix is treated as resolution context by the existing classifier"
+                  ]
+                }
+              ],
+              "consumersOmitted": 0,
+              "consumersNote": null
+            }
+          ],
+          "instancesOmitted": 0,
+          "notes": []
+        },
+        "observations": []
+      }
+    ],
+    "unlinked": {
+      "base": [],
+      "head": []
+    },
+    "limits": {
+      "instancesPerSide": 100,
+      "consumersPerInstance": 50
+    },
+    "truncated": []
+  },
+  "textExcerpt": [
+    "Patch changes (committed bytes and metadata only; nothing is applied or installed):",
+    "  @changesets/apply-release-plan: source-changed, content-changed, lockfile-hash-changed, lockfile-shape-changed",
+    "    base declaration: package.json#pnpm → \"patches/@changesets__apply-release-plan.patch\"",
+    "    head declaration: pnpm-workspace.yaml → \"patches/@changesets__apply-release-plan.patch\"",
+    "    patch bytes: changed",
+    "      base: patches/@changesets__apply-release-plan.patch: sha256 399787ec1c6014117f9421a96735a7b7c8728145b949949e7c8c8273a5e693eb, 2182 bytes",
+    "      head: patches/@changesets__apply-release-plan.patch: sha256 07a08c92a179c60bea9ec7b945a1c1c57ecfc8fdaa76edfb99ed9ea2f46808ea, 2184 bytes",
+    "    base lockfile metadata: hash 399787ec1c6014117f9421a96735a7b7c8728145b949949e7c8c8273a5e693eb (algorithm unconfirmed), path patches/@changesets__apply-release-plan.patch",
+    "    head lockfile metadata: hash 07a08c92a179c60bea9ec7b945a1c1c57ecfc8fdaa76edfb99ed9ea2f46808ea (algorithm unconfirmed)",
+    "    base instances:",
+    "      @changesets/apply-release-plan@7.0.13(patch_hash=399787ec1c60…) [lockfile-confirmed; no counterpart with the same name, version, and peer context]",
+    "        The instance patch_hash equals the lockfile entry for this selector.",
+    "    head instances:",
+    "      @changesets/apply-release-plan@7.1.1(patch_hash=07a08c92a179…) [lockfile-confirmed; no counterpart with the same name, version, and peer context]",
+    "        The instance patch_hash equals the lockfile entry for this selector.",
+    "    Workspace consumers (graph reachability, not runtime usage or proof of application):",
+    "      base: . (primitives): transitive consumer via devDependencies; link lockfile-confirmed; uncertain (reasons: explain)",
+    "      head: . (primitives): transitive consumer via devDependencies; link lockfile-confirmed; uncertain (reasons: explain)"
+  ],
+  "warnings": [
+    "Lockfile resolution configuration changed.",
+    "Resolution input changed: patches/@changesets__apply-release-plan.patch",
+    "Unmodeled manifest resolution input changed: . engines",
+    "Unmodeled manifest resolution input changed: . packageManager",
+    "Unmodeled manifest resolution input changed: . pnpm",
+    "Workspace configuration changed; resolution effects are not modeled."
+  ],
+  "summary": {
+    "explained": 0,
+    "partially-explained": 0,
+    "unexplained": 0,
+    "unknown": 864
+  }
+}

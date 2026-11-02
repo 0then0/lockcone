@@ -1,4 +1,9 @@
-import { configuredPatches, resolutionFiles } from '../git/repository.js';
+import {
+  configuredPatches,
+  patchFile,
+  resolutionFiles,
+  sameFileBytes,
+} from '../git/repository.js';
 import type { GraphNode, NodeKind } from '../graph/dependency-graph.js';
 import { fingerprint, stable } from '../graph/dependency-graph.js';
 import type { Visit } from '../graph/traversal.js';
@@ -14,6 +19,8 @@ import type { ManifestChange } from './cone.js';
 import { manifestChanges } from './cone.js';
 import type { CatalogChange, DeclarationChange } from './declarations.js';
 import { catalogChanges, declarationChanges } from './declarations.js';
+import type { PatchReport } from './patches.js';
+import { patchReport } from './patches.js';
 
 export type Confidence =
   | 'explained'
@@ -61,6 +68,8 @@ export interface Report {
   declarations: { base: Declaration[]; head: Declaration[] };
   declarationChanges: DeclarationChange[];
   catalogChanges: CatalogChange[];
+  // Added in 0.3.0 without changing schemaVersion; see patches.reportVersion.
+  patches: PatchReport;
   changes: Change[];
   pathNodes: Record<string, EvidencePathNode>;
   warnings: string[];
@@ -305,16 +314,19 @@ export function diff(base: PnpmState, head: PnpmState): Report {
   }
   const basePatches = configuredPatches(base.files);
   const headPatches = configuredPatches(head.files);
-  for (const path of new Set([...basePatches, ...headPatches])) {
-    if (
-      (basePatches.has(path) && !base.files.has(path)) ||
-      (headPatches.has(path) && !head.files.has(path))
-    )
+  for (const path of [...new Set([...basePatches, ...headPatches])].sort()) {
+    const files = [
+      basePatches.has(path) ? patchFile(base, path) : null,
+      headPatches.has(path) ? patchFile(head, path) : null,
+    ];
+    const unsupported = files.find((file) => file?.status === 'unsupported');
+    if (files.some((file) => file?.status === 'missing'))
       warnings.add(`Configured patch file is missing: ${path}`);
-    else if (
-      basePatches.has(path) !== headPatches.has(path) ||
-      base.files.get(path) !== head.files.get(path)
-    )
+    else if (unsupported?.status === 'unsupported')
+      warnings.add(
+        `Configured patch file is unsupported: ${path} (${unsupported.reason})`,
+      );
+    else if (!files[0] || !files[1] || sameFileBytes(files[0], files[1]) !== true)
       warnings.add(`Resolution input changed: ${path}`);
   }
   if (
@@ -463,6 +475,7 @@ export function diff(base: PnpmState, head: PnpmState): Report {
     },
     declarationChanges: declarations,
     catalogChanges: catalogs,
+    patches: patchReport(base, head),
     changes,
     pathNodes,
     warnings: [...warnings].sort(),

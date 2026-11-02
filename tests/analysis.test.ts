@@ -347,6 +347,13 @@ describe('dependency cone analysis', () => {
             { [`a@${version}`]: {}, [`b@${version}`]: {} },
           ),
         ).declarations,
+        patches: {
+          packageManager: { declared: null, major: null },
+          subjects: new Map(),
+          instances: new Map(),
+          unlinked: [],
+          notes: [],
+        },
         files: new Map(),
       };
     };
@@ -607,10 +614,8 @@ describe('dependency cone analysis', () => {
         { [`a@${version}`]: {} },
         { packages: { [`a@${version}`]: { resolution: { integrity } } } },
       );
-    const change = explain(
-      build('1.0.0', 'old-hash'),
-      build('2.0.0', 'new-hash'),
-    ).changes.find((item) => item.kind === 'package')!;
+    const full = explain(build('1.0.0', 'old-hash'), build('2.0.0', 'new-hash'));
+    const change = full.changes.find((item) => item.kind === 'package')!;
     expect(
       change.details.find((detail) => detail.side === 'head')?.metadataDiff,
     ).toContainEqual({
@@ -627,6 +632,7 @@ describe('dependency cone analysis', () => {
         declarations: { base: [], head: [] },
         declarationChanges: [],
         catalogChanges: [],
+        patches: full.patches,
         changes: [change],
         pathNodes: {},
         warnings: [],
@@ -825,8 +831,8 @@ describe('dependency cone analysis', () => {
         yield output.subarray(offset, offset + 5);
     }
     await expect(parseTreeBatch(chunks())).resolves.toEqual([
-      { object: 'object-a', path: 'package.json' },
-      { object: 'object-b', path: 'packages/ui' },
+      { object: 'object-a', path: 'package.json', mode: '100644', type: 'blob' },
+      { object: 'object-b', path: 'packages/ui', mode: '160000', type: 'commit' },
     ]);
   });
 

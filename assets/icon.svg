@@ -9,19 +9,28 @@
   <title id="title">LockCone</title>
   <desc
     id="description"
-  >A lock marks a changed dependency root. A cone highlights its reachable dependency graph, with one node outside the cone.</desc>
+  >A lock at the apex of a cone marks a changed dependency root. The cone contains the dependency graph reachable from it; one node outside the cone is not reachable.</desc>
   <rect width="112" height="112" rx="24" fill="#101827" />
-  <path d="M56 34 18 94h76Z" fill="#38bdf8" opacity=".12" />
+  <path
+    d="M56 34 98 96H14Z"
+    fill="#38bdf8"
+    fill-opacity=".14"
+    stroke="#38bdf8"
+    stroke-opacity=".5"
+    stroke-width="2"
+    stroke-linejoin="round"
+  />
   <g fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round">
-    <path d="M56 38v17m0 0L35 76m21-21 21 21M35 76l-10 17m10-17 15 17m27-17-11 17m11-17 11 17" />
-    <path d="M48 28v-7a8 8 0 0 1 16 0v7" />
+    <path d="M56 44v14M56 58 35.5 74M56 58l20.5 16M35.5 74 24 90m11.5-16L47 90m29.5-16L65 90m11.5-16L88 90" />
+    <path d="M49.5 28v-6a6.5 6.5 0 0 1 13 0v6" stroke-width="3.5" />
   </g>
-  <rect x="43" y="27" width="26" height="20" rx="5" fill="#38bdf8" />
-  <circle cx="56" cy="36" r="3" fill="#101827" />
+  <rect x="45" y="28" width="22" height="17" rx="4.5" fill="#38bdf8" />
+  <circle cx="56" cy="36" r="2.8" fill="#101827" />
   <g fill="#38bdf8">
-    <circle cx="56" cy="55" r="5" /><circle cx="35" cy="76" r="5" />
-    <circle cx="77" cy="76" r="5" /><circle cx="25" cy="93" r="4" />
-    <circle cx="50" cy="93" r="4" /><circle cx="66" cy="93" r="4" /><circle cx="88" cy="93" r="4" />
+    <circle cx="56" cy="58" r="5.5" /><circle cx="35.5" cy="74" r="5.5" />
+    <circle cx="76.5" cy="74" r="5.5" />
+    <circle cx="24" cy="90" r="4.5" /><circle cx="47" cy="90" r="4.5" />
+    <circle cx="65" cy="90" r="4.5" /><circle cx="88" cy="90" r="4.5" />
   </g>
-  <circle cx="92" cy="52" r="5" fill="none" stroke="#94a3b8" stroke-width="2.5" />
+  <circle cx="96" cy="48" r="5" fill="none" stroke="#94a3b8" stroke-width="2.5" />
 </svg>

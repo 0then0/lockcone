@@ -31,10 +31,11 @@ async function output(
   range: string | undefined,
   opts: Options,
   name?: string,
+  detail = false,
 ): Promise<void> {
   const report = await runDiff(range, opts, name);
   process.stdout.write(
-    `${opts.format === 'json' ? renderJson(report) : renderText(report)}\n`,
+    `${opts.format === 'json' ? renderJson(report) : renderText(report, { detail })}\n`,
   );
 }
 
@@ -47,12 +48,14 @@ options(
   program
     .command('why <package>')
     .description('Show evidence for changes to one package'),
-).action((name: string, opts: Options) => output(undefined, opts, name));
+).action((name: string, opts: Options) => output(undefined, opts, name, true));
 options(
   program
     .command('explain [range]')
-    .description('Show the full dependency change report'),
-).action((range: string | undefined, opts: Options) => output(range, opts));
+    .description('Show the full dependency change report with complete paths'),
+).action((range: string | undefined, opts: Options) =>
+  output(range, opts, undefined, true),
+);
 
 try {
   await program.parseAsync();

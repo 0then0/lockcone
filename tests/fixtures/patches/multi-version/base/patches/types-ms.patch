@@ -1,0 +1,7 @@
+diff --git a/index.d.ts b/index.d.ts
+--- a/index.d.ts
++++ b/index.d.ts
+@@ -1,2 +1,3 @@
++// types patch one
+ 'use strict';
+ 

@@ -1,5 +1,11 @@
 import type { Confidence, Report } from '../analysis/diff.js';
 import { evidencePath } from '../analysis/diff.js';
+import type {
+  FileEvidence,
+  InstanceEvidence,
+  PatchChange,
+  PatchSide,
+} from '../analysis/patches.js';
 import type { Declaration } from '../pnpm/catalogs.js';
 import { sanitizeTerminalControls } from '../sanitize.js';
 
@@ -21,7 +27,114 @@ function declarationLines(entry: Declaration | null, side: 'base' | 'head'): str
   ];
 }
 
-export function renderText(report: Report): string {
+const shortHash = (value: string): string =>
+  value.replace(/patch_hash=([0-9a-f]{12})[0-9a-f]+/g, 'patch_hash=$1…');
+
+function fileLine(file: FileEvidence | null): string {
+  if (!file) return '(no file reference)';
+  if (file.status === 'present')
+    return `${file.path}: sha256 ${file.sha256}, ${file.size} bytes`;
+  if (file.status === 'oversized')
+    return `${file.path}: not read (${file.size} bytes), Git blob ${file.gitBlob}`;
+  return `${file.path}: ${file.reason ?? file.status}`;
+}
+
+function instanceLine(instance: InstanceEvidence, detail: boolean): string {
+  const id = detail ? instance.id : shortHash(instance.id);
+  const counterpart =
+    instance.counterpart === null
+      ? 'no counterpart with the same name, version, and peer context'
+      : `counterpart ${detail ? instance.counterpart : shortHash(instance.counterpart)}`;
+  return `${id} [${instance.association}; ${counterpart}]`;
+}
+
+function patchLines(change: PatchChange, detail: boolean): string[] {
+  const selectors =
+    change.selector.base === change.selector.head
+      ? change.selector.head
+      : `${change.selector.base ?? '(absent)'} → ${change.selector.head ?? '(absent)'}`;
+  const lines = [`  ${selectors}: ${change.events.join(', ')}`];
+  const sides = [
+    ['base', change.base],
+    ['head', change.head],
+  ] as const;
+  const declared = (side: PatchSide | null): string =>
+    side?.declarations.length
+      ? side.declarations
+          .map(
+            (item) =>
+              `${item.source} → ${JSON.stringify(item.reference)}${item.sourceStatus === 'active' ? '' : ` (${item.sourceStatus} source)`}`,
+          )
+          .join('; ')
+      : '(no declaration)';
+  for (const [label, side] of sides)
+    lines.push(`    ${label} declaration: ${declared(side)}`);
+  lines.push(`    patch bytes: ${change.content.status}`);
+  for (const [label, side] of sides)
+    if (side?.file) lines.push(`      ${label}: ${fileLine(side.file)}`);
+  for (const [label, side] of sides)
+    lines.push(
+      `    ${label} lockfile metadata: ${
+        side?.lockfile
+          ? `hash ${side.lockfile.hash ?? '(unrecognized)'} (algorithm unconfirmed)${side.lockfile.path ? `, path ${side.lockfile.path}` : ''}`
+          : '(no entry)'
+      }`,
+    );
+  for (const [label, side] of sides) {
+    if (!side) continue;
+    lines.push(
+      `    ${label} instances: ${side.instances.length ? '' : '(none linked)'}${side.instancesOmitted ? ` (+${side.instancesOmitted} not listed)` : ''}`.trimEnd(),
+    );
+    for (const instance of side.instances) {
+      lines.push(`      ${instanceLine(instance, detail)}`);
+      for (const reason of instance.reasons) lines.push(`        ${reason}`);
+    }
+  }
+  const consumers = sides.flatMap(([label, side]) =>
+    (side?.instances ?? []).flatMap((instance) =>
+      instance.consumers.map((consumer) => ({ label, instance, consumer })),
+    ),
+  );
+  if (consumers.length || sides.some(([, side]) => side?.instances.length)) {
+    lines.push(
+      '    Workspace consumers (graph reachability, not runtime usage or proof of application):',
+    );
+    if (!consumers.length) lines.push('      (none reach a linked instance)');
+    for (const { label, instance, consumer } of consumers) {
+      const owner =
+        consumer.name && consumer.name !== consumer.workspace
+          ? ` (${consumer.name})`
+          : '';
+      lines.push(
+        `      ${label}: ${consumer.workspace}${owner}: ${consumer.relation} consumer via ${consumer.section}; link ${consumer.basis}${consumer.uncertain ? (detail ? '; uncertain' : '; uncertain (reasons: explain)') : ''}`,
+      );
+      if (detail) {
+        lines.push(`        instance ${instance.id}`);
+        lines.push(`        path ${consumer.path.join(' → ')}`);
+        for (const reason of consumer.uncertainty)
+          lines.push(`        Uncertainty: ${reason}`);
+      }
+    }
+    for (const [label, side] of sides)
+      for (const instance of side?.instances ?? []) {
+        if (instance.consumersOmitted)
+          lines.push(
+            `      ${label}: ${instance.consumersOmitted} more consumers of ${shortHash(instance.id)} not listed`,
+          );
+        if (instance.consumersNote)
+          lines.push(`      ${label}: ${instance.consumersNote}`);
+      }
+  }
+  for (const item of change.observations)
+    lines.push(`    Observation: ${item.message}`);
+  for (const [label, side] of sides)
+    for (const item of side?.notes ?? [])
+      lines.push(`    ${label} note: ${item.message}`);
+  return lines;
+}
+
+export function renderText(report: Report, options: { detail?: boolean } = {}): string {
+  const detail = options.detail ?? false;
   const lines = [`LockCone: ${report.base}..${report.head}`, '', 'Manifest changes:'];
   if (!report.manifestChanges.length) lines.push('  None.');
   for (const change of report.manifestChanges) {
@@ -83,6 +196,26 @@ export function renderText(report: Report): string {
         );
       }
     }
+  }
+  const patches = report.patches;
+  if (
+    patches.changes.length ||
+    patches.unlinked.base.length ||
+    patches.unlinked.head.length ||
+    patches.truncated.length
+  ) {
+    lines.push(
+      '',
+      'Patch changes (committed bytes and metadata only; nothing is applied or installed):',
+    );
+    for (const change of patches.changes) lines.push(...patchLines(change, detail));
+    if (!patches.changes.length) lines.push('  None.');
+    for (const side of ['base', 'head'] as const)
+      for (const item of patches.unlinked[side])
+        lines.push(
+          `  ${side}: patched instance ${shortHash(item.instance)} has no matching selector: ${item.reasons.join(' ')}`,
+        );
+    for (const message of patches.truncated) lines.push(`  ${message}`);
   }
   for (const confidence of Object.keys(headings) as Confidence[]) {
     const changes = report.changes.filter((change) => change.confidence === confidence);
