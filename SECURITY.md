@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Security fixes target the latest patch release in the 0.2 series. Older series
+Security fixes target the latest patch release in the 0.3 series. Older series
 are not maintained; upgrade to a supported release before reporting an issue
 that has already been fixed.
 
