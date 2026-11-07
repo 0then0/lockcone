@@ -43,8 +43,7 @@ lockcone --help
 
 Replace `VERSION` with the archive's version. Each release includes `SHA256SUMS`
 for checking the download. Catalog support requires v0.2 or later, and patch
-reports require v0.3 or later. Override reports are not in a release yet; see the
-[changelog](CHANGELOG.md).
+reports require v0.3 or later, and override reports require v0.4 or later.
 
 ## Read a dependency report
 
@@ -290,7 +289,7 @@ confidence, a reason, evidence, and edge/metadata details. Follow `evidence.root
 to a declaration on the same side; follow `pathId` through `pathNodes` to read
 the dependency path. Metadata differences use `null` for an absent field.
 
-`patches` was added in 0.3.0 and `overrides` after it, both without changing the
+`patches` was added in 0.3.0 and `overrides` in 0.4.0, both without changing the
 schema version. Each carries its own `reportVersion` (currently `1`). An evidence
 entry gets a `via` field only when its path starts at an override edge; evidence of
 declarations, catalogs, and patches is unchanged. Schema v4 consumers that ignore

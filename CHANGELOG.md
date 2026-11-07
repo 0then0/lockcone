@@ -5,6 +5,8 @@ release or the corresponding comparison of commits.
 
 ## [Unreleased]
 
+## [0.4.0]
+
 ### Added
 
 - Override change reports for pnpm `overrides`, separate from version changes:
@@ -110,7 +112,8 @@ See the [v0.2 release notes](docs/release-notes-v0.2.md) for compatibility and l
 - Conservative classification for peer context and unsupported resolution inputs.
 - A composite GitHub Action and release archives with SHA-256 checksums.
 
-[Unreleased]: https://github.com/0then0/lockcone/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/0then0/lockcone/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/0then0/lockcone/releases/tag/v0.4.0
 [0.3.0]: https://github.com/0then0/lockcone/releases/tag/v0.3.0
 [0.2.0]: https://github.com/0then0/lockcone/releases/tag/v0.2.0
 [0.1.0]: https://github.com/0then0/lockcone/releases/tag/v0.1.0
