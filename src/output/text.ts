@@ -1,6 +1,12 @@
 import type { Confidence, Report } from '../analysis/diff.js';
 import { evidencePath } from '../analysis/diff.js';
 import type {
+  OverrideChange,
+  OverrideEdge,
+  OverrideEdgeSide,
+  OverrideSide,
+} from '../analysis/overrides.js';
+import type {
   FileEvidence,
   InstanceEvidence,
   PatchChange,
@@ -133,6 +139,104 @@ function patchLines(change: PatchChange, detail: boolean): string[] {
   return lines;
 }
 
+function selectorLabel(change: OverrideChange): string {
+  const part = (item: { name: string; range: string | null } | null): string =>
+    item
+      ? `${item.name}${item.range === null ? '' : `@${item.range}`}`
+      : '(unreadable)';
+  return change.parent
+    ? `${part(change.parent)} > ${part(change.target)}`
+    : part(change.target);
+}
+
+function overrideSideLines(label: string, side: OverrideSide | null): string[] {
+  const declaration = side?.declaration;
+  const lines = [
+    `    ${label} declaration: ${
+      declaration
+        ? `${declaration.source} → ${JSON.stringify(declaration.value)}${declaration.supported ? ` (${declaration.valueKind})` : ' (outside the supported model)'}${declaration.sourceStatus === 'active' ? '' : ` (${declaration.sourceStatus} source)`}`
+        : '(none)'
+    }`,
+    `    ${label} lockfile record: ${side?.lockfile ? JSON.stringify(side.lockfile.value) : '(none)'}`,
+  ];
+  if (side && side.consistency !== 'consistent' && side.consistency !== 'not-declared')
+    lines.push(`      ${label} consistency: ${side.consistency}`);
+  return lines;
+}
+
+function overrideEdgeLines(edge: OverrideEdge, detail: boolean): string[] {
+  const sample = (edge.head ?? edge.base)!;
+  const holder =
+    sample.parent.kind === 'workspace'
+      ? `${sample.parent.id.slice('workspace:'.length)} [${edge.section}]`
+      : sample.parent.id;
+  const target = (side: OverrideEdgeSide | null): string =>
+    side?.target === undefined || side === null
+      ? '(absent)'
+      : (side.target ?? '(unresolved)');
+  const lines = [
+    `      ${holder} ${edge.alias}: ${target(edge.base)} → ${target(edge.head)} (${edge.change}${edge.pairing === 'holder-changed' ? ', dependent changed' : ''})`,
+  ];
+  if (edge.attributed) {
+    lines.push('        Evidence path starts at this edge.');
+    for (const reason of edge.reasons) lines.push(`        Uncertainty: ${reason}`);
+  } else
+    lines.push(
+      `        Not attributed: ${edge.reasons.join(' ') || 'see attribution'}`,
+    );
+  for (const [label, side] of [
+    ['base', edge.base],
+    ['head', edge.head],
+  ] as const) {
+    if (!side) continue;
+    lines.push(
+      `        ${label}: ${side.state}${side.observed ? `; resolution ${side.observed} the value` : ''}${side.declared === null ? '' : `; declared ${side.declared}`}`,
+    );
+    for (const reason of side.reasons) lines.push(`          ${reason}`);
+    for (const consumer of side.consumers) {
+      const owner =
+        consumer.name && consumer.name !== consumer.workspace
+          ? ` (${consumer.name})`
+          : '';
+      lines.push(
+        `          consumer ${label}: ${consumer.workspace}${owner}: ${consumer.relation} via ${consumer.section}${consumer.uncertain ? (detail ? '; uncertain' : '; uncertain (reasons: explain)') : ''}`,
+      );
+      if (detail) {
+        lines.push(`            path ${consumer.path.join(' → ')}`);
+        for (const reason of consumer.uncertainty)
+          lines.push(`            Uncertainty: ${reason}`);
+      }
+    }
+    if (side.consumersOmitted)
+      lines.push(`          ${side.consumersOmitted} more consumers not listed`);
+    if (side.consumersNote) lines.push(`          ${side.consumersNote}`);
+  }
+  return lines;
+}
+
+function overrideLines(change: OverrideChange, detail: boolean): string[] {
+  const lines = [`  ${selectorLabel(change)}: ${change.events.join(', ')}`];
+  lines.push(`    selector: ${change.selector}`);
+  lines.push(...overrideSideLines('base', change.base));
+  lines.push(...overrideSideLines('head', change.head));
+  lines.push(
+    `    attribution: ${change.attribution.level}${change.attribution.level === 'complete' ? '' : ' (kept uncertain)'}`,
+  );
+  for (const reason of change.attribution.reasons)
+    lines.push(`      Uncertainty: ${reason}`);
+  if (change.edges.length) {
+    lines.push(
+      '    Affected edges (committed graph; reachability, not proof that the rule caused every update):',
+    );
+    for (const edge of change.edges) lines.push(...overrideEdgeLines(edge, detail));
+  }
+  if (change.edgesOmitted)
+    lines.push(`    ${change.edgesOmitted} more edges not listed`);
+  for (const item of change.observations)
+    lines.push(`    Observation: ${item.message}`);
+  return lines;
+}
+
 export function renderText(report: Report, options: { detail?: boolean } = {}): string {
   const detail = options.detail ?? false;
   const lines = [`LockCone: ${report.base}..${report.head}`, '', 'Manifest changes:'];
@@ -217,6 +321,16 @@ export function renderText(report: Report, options: { detail?: boolean } = {}): 
         );
     for (const message of patches.truncated) lines.push(`  ${message}`);
   }
+  const overrides = report.overrides;
+  if (overrides.changes.length || overrides.truncated.length) {
+    lines.push(
+      '',
+      'Override changes (declarations, lockfile records, and committed edges only; nothing is resolved or installed):',
+    );
+    for (const change of overrides.changes)
+      lines.push(...overrideLines(change, detail));
+    for (const message of overrides.truncated) lines.push(`  ${message}`);
+  }
   for (const confidence of Object.keys(headings) as Confidence[]) {
     const changes = report.changes.filter((change) => change.confidence === confidence);
     if (!changes.length) continue;
@@ -271,9 +385,14 @@ export function renderText(report: Report, options: { detail?: boolean } = {}): 
         const origin = declaration?.catalog
           ? `pnpm-workspace.yaml ${declaration.catalog.name}.${declaration.catalog.entry} (${declaration.effectiveRange}) → `
           : '';
-        lines.push(
-          `    ${evidence.side}: ${origin}${evidencePath(report, evidence).join(' → ')}`,
-        );
+        const path = evidencePath(report, evidence);
+        if (evidence.via && path[0] === evidence.root)
+          path[0] = `override ${evidence.via.selector} (${evidence.via.attribution})`;
+        lines.push(`    ${evidence.side}: ${origin}${path.join(' → ')}`);
+        if (evidence.via?.reach === 'beyond-edge')
+          lines.push(
+            '      Reachable only beyond the governed edge: the rule does not show why this package changed.',
+          );
       }
       if (!change.evidence.length)
         lines.push('    No path found from changed dependency declarations.');

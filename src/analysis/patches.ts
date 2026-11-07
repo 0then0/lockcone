@@ -1,7 +1,5 @@
 import type { PatchFile } from '../git/repository.js';
 import { sameFileBytes } from '../git/repository.js';
-import type { DependencyGraph } from '../graph/dependency-graph.js';
-import { reverseIndex, reverseVisits } from '../graph/traversal.js';
 import type { PnpmState } from '../pnpm/dependency-graph.js';
 import type {
   Association,
@@ -13,11 +11,11 @@ import type {
   SourceName,
   SourceStatus,
 } from '../pnpm/patches.js';
-import { parseInstance } from '../pnpm/patches.js';
+import { ConsumerIndex, maxConsumersPerStart, maxStartsPerSide } from './consumers.js';
 
 // Limits keep reverse traversal linear in the graph for each reported instance.
-export const maxInstancesPerSide = 100;
-export const maxConsumersPerInstance = 50;
+export const maxInstancesPerSide = maxStartsPerSide;
+export const maxConsumersPerInstance = maxConsumersPerStart;
 
 export type PatchEvent =
   | 'declaration-added'
@@ -172,42 +170,15 @@ function effective(item: PatchSubject | null): Effective | null {
   return null;
 }
 
-function nodeUncertainty(graph: DependencyGraph, id: string): string[] {
-  const node = graph.nodes.get(id);
-  if (!node?.uncertain) return [];
-  if (node.kind === 'workspace')
-    return [`${id}: the workspace declares peer dependencies`];
-  if (node.kind === 'dependency')
-    return [
-      `${id}: the dependency entry is marked uncertain (a declaration issue or an uncertain resolved package)`,
-    ];
-  const instance = parseInstance(id);
-  const metadata = node.metadata as {
-    package?: { peerDependencies?: Record<string, string> };
-    snapshot?: { transitivePeerDependencies?: string[] };
-  };
-  const reasons: string[] = [];
-  if (instance?.peerContext) reasons.push(`peer context ${instance.peerContext}`);
-  if (Object.keys(metadata?.package?.peerDependencies ?? {}).length)
-    reasons.push('the package declares peer dependencies');
-  if (metadata?.snapshot?.transitivePeerDependencies?.length)
-    reasons.push('the snapshot lists transitive peer dependencies');
-  if (metadata?.snapshot === undefined) reasons.push('the package has no snapshot');
-  if (instance?.patchHash && !reasons.length)
-    reasons.push(
-      'the patch_hash suffix is treated as resolution context by the existing classifier',
-    );
-  if (!reasons.length) reasons.push('the package key carries a resolution context');
-  return reasons.map((reason) => `${id}: ${reason}`);
-}
-
 class Side {
-  private reverse: Map<string, string[]> | undefined;
-  private traversed = 0;
+  private consumerIndex: ConsumerIndex | undefined;
   private identities: Map<string, string | null> | undefined;
-  omitted = 0;
 
   constructor(readonly state: PnpmState) {}
+
+  get omitted(): number {
+    return this.consumerIndex?.omitted ?? 0;
+  }
 
   identity(identity: string): string | null {
     if (!this.identities) {
@@ -226,64 +197,21 @@ class Side {
     instance: string,
     basis: Association,
   ): Pick<InstanceEvidence, 'consumers' | 'consumersOmitted' | 'consumersNote'> {
-    const graph = this.state.graph;
-    if (this.traversed >= maxInstancesPerSide) {
-      this.omitted++;
-      return {
-        consumers: [],
-        consumersOmitted: 0,
-        consumersNote: `Consumers were not traversed: more than ${maxInstancesPerSide} instances on this side.`,
-      };
-    }
-    this.traversed++;
-    this.reverse ??= reverseIndex(graph);
-    const visits = reverseVisits(this.reverse, instance);
-    // One shortest path per consuming workspace importer.
-    const best = new Map<string, { id: string; depth: number }>();
-    for (const [id, visit] of visits) {
-      const node = graph.nodes.get(id);
-      if (node?.kind !== 'dependency') continue;
-      const cut = node.scope.lastIndexOf(':');
-      const workspace = node.scope.slice(0, cut);
-      const current = best.get(workspace);
-      if (
-        !current ||
-        visit.depth < current.depth ||
-        (visit.depth === current.depth && id < current.id)
-      )
-        best.set(workspace, { id, depth: visit.depth });
-    }
-    const all = [...best]
-      .map(([workspace, { id, depth }]) => {
-        const path: string[] = [];
-        for (let at: string | null = id; at !== null; at = visits.get(at)!.next)
-          path.push(at);
-        const node = graph.nodes.get(id)!;
-        const uncertainty = [
-          ...new Set(path.flatMap((hop) => nodeUncertainty(graph, hop))),
-        ];
-        const owner = graph.nodes.get(`workspace:${workspace}`);
-        return {
-          workspace,
-          name: owner?.name ?? null,
-          relation: depth === 1 ? ('direct' as const) : ('transitive' as const),
-          basis,
-          section: node.scope.slice(node.scope.lastIndexOf(':') + 1),
-          path,
-          uncertain: path.some((hop) => graph.nodes.get(hop)?.uncertain),
-          uncertainty,
-        };
-      })
-      .sort(
-        (a, b) =>
-          Number(a.relation === 'transitive') - Number(b.relation === 'transitive') ||
-          a.path.length - b.path.length ||
-          a.workspace.localeCompare(b.workspace),
-      );
+    this.consumerIndex ??= new ConsumerIndex(this.state.graph);
+    const found = this.consumerIndex.find(instance);
     return {
-      consumers: all.slice(0, maxConsumersPerInstance),
-      consumersOmitted: Math.max(0, all.length - maxConsumersPerInstance),
-      consumersNote: null,
+      consumers: found.consumers.map((consumer) => ({
+        workspace: consumer.workspace,
+        name: consumer.name,
+        relation: consumer.relation,
+        basis,
+        section: consumer.section,
+        path: consumer.path,
+        uncertain: consumer.uncertain,
+        uncertainty: consumer.uncertainty,
+      })),
+      consumersOmitted: found.omitted,
+      consumersNote: found.note,
     };
   }
 

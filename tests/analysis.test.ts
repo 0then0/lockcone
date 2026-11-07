@@ -354,6 +354,21 @@ describe('dependency cone analysis', () => {
           unlinked: [],
           notes: [],
         },
+        overrides: {
+          packageManager: { declared: null, major: null },
+          rules: [],
+          effective: new Map(),
+          unverified: [],
+          lockfile: new Map<string, unknown>(),
+          notes: [],
+          usable: true,
+          modeled: {
+            workspace: new Set<string>(),
+            manifestPnpm: new Set<string>(),
+            manifestResolutions: new Set<string>(),
+            lockfile: new Set<string>(),
+          },
+        },
         files: new Map(),
       };
     };
@@ -633,6 +648,7 @@ describe('dependency cone analysis', () => {
         declarationChanges: [],
         catalogChanges: [],
         patches: full.patches,
+        overrides: full.overrides,
         changes: [change],
         pathNodes: {},
         warnings: [],

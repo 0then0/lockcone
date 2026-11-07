@@ -1,0 +1,605 @@
+{
+  "repository": "https://github.com/nitsuah/farm-3j.git",
+  "pullRequest": "https://github.com/nitsuah/farm-3j/pull/416",
+  "base": "f509a0c41604139766ba0e6d4bfbe18413479625",
+  "head": "e9aa40fb36eaaf770587fbcfcc95d470abfd6fa7",
+  "merge": "d708cc7a55aa6fe12c0240db7976ca7a1bd7de3e",
+  "lockcone": {
+    "command": "lockcone explain --format json --base BASE --head HEAD"
+  },
+  "independent": {
+    "base": {
+      "revision": "f509a0c41604139766ba0e6d4bfbe18413479625",
+      "packageManager": "pnpm@9.0.0",
+      "declared": "8.5.32",
+      "declaredOverrideCount": 10,
+      "resolutions": null,
+      "workspaceOverrides": null,
+      "recorded": "8.5.31",
+      "recordedOverrideCount": 10,
+      "edges": [
+        {
+          "holder": "importer . devDependencies",
+          "specifier": "8.5.31",
+          "version": "8.5.31",
+          "peer": false
+        },
+        {
+          "holder": "@tailwindcss/postcss@4.3.3",
+          "specifier": null,
+          "version": "8.5.31",
+          "peer": false
+        },
+        {
+          "holder": "autoprefixer@10.6.1(postcss@8.5.31)",
+          "specifier": null,
+          "version": "8.5.31",
+          "peer": true
+        },
+        {
+          "holder": "next@16.4.2(@babel/core@7.29.7)(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)",
+          "specifier": null,
+          "version": "8.5.31",
+          "peer": false
+        },
+        {
+          "holder": "vite@8.3.5(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)",
+          "specifier": null,
+          "version": "8.5.31",
+          "peer": false
+        }
+      ]
+    },
+    "head": {
+      "revision": "e9aa40fb36eaaf770587fbcfcc95d470abfd6fa7",
+      "packageManager": "pnpm@9.0.0",
+      "declared": "8.5.32",
+      "declaredOverrideCount": 10,
+      "resolutions": null,
+      "workspaceOverrides": null,
+      "recorded": "8.5.32",
+      "recordedOverrideCount": 10,
+      "edges": [
+        {
+          "holder": "importer . devDependencies",
+          "specifier": "8.5.32",
+          "version": "8.5.32",
+          "peer": false
+        },
+        {
+          "holder": "@tailwindcss/postcss@4.3.3",
+          "specifier": null,
+          "version": "8.5.32",
+          "peer": false
+        },
+        {
+          "holder": "autoprefixer@10.6.2(postcss@8.5.32)",
+          "specifier": null,
+          "version": "8.5.32",
+          "peer": true
+        },
+        {
+          "holder": "next@16.4.3(@babel/core@7.29.7)(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)",
+          "specifier": null,
+          "version": "8.5.32",
+          "peer": false
+        },
+        {
+          "holder": "vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)",
+          "specifier": null,
+          "version": "8.5.32",
+          "peer": false
+        }
+      ]
+    }
+  },
+  "counts": {
+    "base": {
+      "edges": 5,
+      "peers": 1,
+      "governed": 4,
+      "violating": 4
+    },
+    "head": {
+      "edges": 5,
+      "peers": 1,
+      "governed": 4,
+      "violating": 0
+    }
+  },
+  "overrides": {
+    "reportVersion": 1,
+    "pnpm": {
+      "base": {
+        "declared": "pnpm@9.0.0",
+        "major": 9
+      },
+      "head": {
+        "declared": "pnpm@9.0.0",
+        "major": 9
+      }
+    },
+    "notes": {
+      "base": [],
+      "head": []
+    },
+    "changes": [
+      {
+        "id": "[\"postcss\"]",
+        "selector": "postcss",
+        "parent": null,
+        "target": {
+          "name": "postcss",
+          "range": null
+        },
+        "events": [
+          "lockfile-record-changed"
+        ],
+        "base": {
+          "declaration": {
+            "source": "package.json#pnpm",
+            "sourceStatus": "active",
+            "value": "8.5.32",
+            "valueKind": "exact",
+            "supported": true,
+            "problems": []
+          },
+          "lockfile": {
+            "value": "8.5.31"
+          },
+          "consistency": "record-differs",
+          "edges": {
+            "candidates": 5,
+            "governed": 4,
+            "shadowed": 0,
+            "ambiguous": 0,
+            "undecidable": 0,
+            "peer": 1,
+            "violating": 4
+          }
+        },
+        "head": {
+          "declaration": {
+            "source": "package.json#pnpm",
+            "sourceStatus": "active",
+            "value": "8.5.32",
+            "valueKind": "exact",
+            "supported": true,
+            "problems": []
+          },
+          "lockfile": {
+            "value": "8.5.32"
+          },
+          "consistency": "consistent",
+          "edges": {
+            "candidates": 5,
+            "governed": 4,
+            "shadowed": 0,
+            "ambiguous": 0,
+            "undecidable": 0,
+            "peer": 1,
+            "violating": 0
+          }
+        },
+        "attribution": {
+          "level": "incomplete",
+          "root": "override:[\"postcss\"]",
+          "reasons": [
+            "base: the lockfile records \"8.5.31\", but the declaration says \"8.5.32\".",
+            "base: 4 governed edge(s) resolve outside the value \"8.5.32\", for example @tailwindcss/postcss@4.3.3 -> postcss resolves to postcss@8.5.31."
+          ]
+        },
+        "edges": [
+          {
+            "alias": "postcss",
+            "section": "dependencies",
+            "change": "target-changed",
+            "pairing": "same-holder",
+            "attributed": true,
+            "reasons": [
+              "base: the resolution does not fit the value (violates)."
+            ],
+            "base": {
+              "holder": "@tailwindcss/postcss@4.3.3",
+              "parent": {
+                "id": "@tailwindcss/postcss@4.3.3",
+                "kind": "package",
+                "name": "@tailwindcss/postcss",
+                "version": "4.3.3"
+              },
+              "declared": null,
+              "target": "postcss@8.5.31",
+              "targetVersion": "8.5.31",
+              "state": "governed",
+              "observed": "violates",
+              "reasons": [],
+              "consumers": [
+                {
+                  "workspace": ".",
+                  "name": "farm-3j",
+                  "relation": "direct",
+                  "section": "devDependencies",
+                  "path": [
+                    "dependency:[\".\",\"devDependencies\",\"@tailwindcss/postcss\"]",
+                    "@tailwindcss/postcss@4.3.3",
+                    "postcss@8.5.31"
+                  ],
+                  "uncertain": false,
+                  "uncertainty": []
+                }
+              ],
+              "consumersOmitted": 0,
+              "consumersNote": null
+            },
+            "head": {
+              "holder": "@tailwindcss/postcss@4.3.3",
+              "parent": {
+                "id": "@tailwindcss/postcss@4.3.3",
+                "kind": "package",
+                "name": "@tailwindcss/postcss",
+                "version": "4.3.3"
+              },
+              "declared": null,
+              "target": "postcss@8.5.32",
+              "targetVersion": "8.5.32",
+              "state": "governed",
+              "observed": "satisfies",
+              "reasons": [],
+              "consumers": [
+                {
+                  "workspace": ".",
+                  "name": "farm-3j",
+                  "relation": "direct",
+                  "section": "devDependencies",
+                  "path": [
+                    "dependency:[\".\",\"devDependencies\",\"@tailwindcss/postcss\"]",
+                    "@tailwindcss/postcss@4.3.3",
+                    "postcss@8.5.32"
+                  ],
+                  "uncertain": false,
+                  "uncertainty": []
+                }
+              ],
+              "consumersOmitted": 0,
+              "consumersNote": null
+            }
+          },
+          {
+            "alias": "postcss",
+            "section": "devDependencies",
+            "change": "target-changed",
+            "pairing": "same-holder",
+            "attributed": false,
+            "reasons": [
+              "The dependent differs in more than this edge.",
+              "base: the resolution does not fit the value (violates)."
+            ],
+            "base": {
+              "holder": "dependency:[\".\",\"devDependencies\",\"postcss\"]",
+              "parent": {
+                "id": "workspace:.",
+                "kind": "workspace",
+                "name": "farm-3j",
+                "version": "0.1.0"
+              },
+              "declared": "8.5.32",
+              "target": "postcss@8.5.31",
+              "targetVersion": "8.5.31",
+              "state": "governed",
+              "observed": "violates",
+              "reasons": [],
+              "consumers": [
+                {
+                  "workspace": ".",
+                  "name": "farm-3j",
+                  "relation": "direct",
+                  "section": "devDependencies",
+                  "path": [
+                    "dependency:[\".\",\"devDependencies\",\"postcss\"]",
+                    "postcss@8.5.31"
+                  ],
+                  "uncertain": true,
+                  "uncertainty": [
+                    "dependency:[\".\",\"devDependencies\",\"postcss\"]: the dependency entry is marked uncertain (a declaration issue or an uncertain resolved package)"
+                  ]
+                }
+              ],
+              "consumersOmitted": 0,
+              "consumersNote": null
+            },
+            "head": {
+              "holder": "dependency:[\".\",\"devDependencies\",\"postcss\"]",
+              "parent": {
+                "id": "workspace:.",
+                "kind": "workspace",
+                "name": "farm-3j",
+                "version": "0.1.0"
+              },
+              "declared": "8.5.32",
+              "target": "postcss@8.5.32",
+              "targetVersion": "8.5.32",
+              "state": "governed",
+              "observed": "satisfies",
+              "reasons": [],
+              "consumers": [
+                {
+                  "workspace": ".",
+                  "name": "farm-3j",
+                  "relation": "direct",
+                  "section": "devDependencies",
+                  "path": [
+                    "dependency:[\".\",\"devDependencies\",\"postcss\"]",
+                    "postcss@8.5.32"
+                  ],
+                  "uncertain": false,
+                  "uncertainty": []
+                }
+              ],
+              "consumersOmitted": 0,
+              "consumersNote": null
+            }
+          },
+          {
+            "alias": "postcss",
+            "section": "dependencies",
+            "change": "target-changed",
+            "pairing": "holder-changed",
+            "attributed": false,
+            "reasons": [
+              "The dependent changed too, so the edge may have changed for another reason.",
+              "base: the resolution does not fit the value (violates)."
+            ],
+            "base": {
+              "holder": "next@16.4.2(@babel/core@7.29.7)(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)",
+              "parent": {
+                "id": "next@16.4.2(@babel/core@7.29.7)(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)",
+                "kind": "package",
+                "name": "next",
+                "version": "16.4.2"
+              },
+              "declared": null,
+              "target": "postcss@8.5.31",
+              "targetVersion": "8.5.31",
+              "state": "governed",
+              "observed": "violates",
+              "reasons": [],
+              "consumers": [
+                {
+                  "workspace": ".",
+                  "name": "farm-3j",
+                  "relation": "direct",
+                  "section": "dependencies",
+                  "path": [
+                    "dependency:[\".\",\"dependencies\",\"next\"]",
+                    "next@16.4.2(@babel/core@7.29.7)(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)",
+                    "postcss@8.5.31"
+                  ],
+                  "uncertain": true,
+                  "uncertainty": [
+                    "dependency:[\".\",\"dependencies\",\"next\"]: the dependency entry is marked uncertain (a declaration issue or an uncertain resolved package)",
+                    "next@16.4.2(@babel/core@7.29.7)(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1): peer context (@babel/core@7.29.7)(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)",
+                    "next@16.4.2(@babel/core@7.29.7)(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1): the package declares peer dependencies",
+                    "next@16.4.2(@babel/core@7.29.7)(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1): the snapshot lists transitive peer dependencies"
+                  ]
+                }
+              ],
+              "consumersOmitted": 0,
+              "consumersNote": null
+            },
+            "head": {
+              "holder": "next@16.4.3(@babel/core@7.29.7)(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)",
+              "parent": {
+                "id": "next@16.4.3(@babel/core@7.29.7)(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)",
+                "kind": "package",
+                "name": "next",
+                "version": "16.4.3"
+              },
+              "declared": null,
+              "target": "postcss@8.5.32",
+              "targetVersion": "8.5.32",
+              "state": "governed",
+              "observed": "satisfies",
+              "reasons": [],
+              "consumers": [
+                {
+                  "workspace": ".",
+                  "name": "farm-3j",
+                  "relation": "direct",
+                  "section": "dependencies",
+                  "path": [
+                    "dependency:[\".\",\"dependencies\",\"next\"]",
+                    "next@16.4.3(@babel/core@7.29.7)(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)",
+                    "postcss@8.5.32"
+                  ],
+                  "uncertain": true,
+                  "uncertainty": [
+                    "dependency:[\".\",\"dependencies\",\"next\"]: the dependency entry is marked uncertain (a declaration issue or an uncertain resolved package)",
+                    "next@16.4.3(@babel/core@7.29.7)(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1): peer context (@babel/core@7.29.7)(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)",
+                    "next@16.4.3(@babel/core@7.29.7)(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1): the package declares peer dependencies",
+                    "next@16.4.3(@babel/core@7.29.7)(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1): the snapshot lists transitive peer dependencies"
+                  ]
+                }
+              ],
+              "consumersOmitted": 0,
+              "consumersNote": null
+            }
+          },
+          {
+            "alias": "postcss",
+            "section": "dependencies",
+            "change": "target-changed",
+            "pairing": "holder-changed",
+            "attributed": false,
+            "reasons": [
+              "The dependent changed too, so the edge may have changed for another reason.",
+              "base: the resolution does not fit the value (violates)."
+            ],
+            "base": {
+              "holder": "vite@8.3.5(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)",
+              "parent": {
+                "id": "vite@8.3.5(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)",
+                "kind": "package",
+                "name": "vite",
+                "version": "8.3.5"
+              },
+              "declared": null,
+              "target": "postcss@8.5.31",
+              "targetVersion": "8.5.31",
+              "state": "governed",
+              "observed": "violates",
+              "reasons": [],
+              "consumers": [
+                {
+                  "workspace": ".",
+                  "name": "farm-3j",
+                  "relation": "direct",
+                  "section": "devDependencies",
+                  "path": [
+                    "dependency:[\".\",\"devDependencies\",\"vite\"]",
+                    "vite@8.3.5(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)",
+                    "postcss@8.5.31"
+                  ],
+                  "uncertain": true,
+                  "uncertainty": [
+                    "dependency:[\".\",\"devDependencies\",\"vite\"]: the dependency entry is marked uncertain (a declaration issue or an uncertain resolved package)",
+                    "vite@8.3.5(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1): peer context (@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)",
+                    "vite@8.3.5(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1): the package declares peer dependencies"
+                  ]
+                }
+              ],
+              "consumersOmitted": 0,
+              "consumersNote": null
+            },
+            "head": {
+              "holder": "vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)",
+              "parent": {
+                "id": "vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)",
+                "kind": "package",
+                "name": "vite",
+                "version": "8.3.5"
+              },
+              "declared": null,
+              "target": "postcss@8.5.32",
+              "targetVersion": "8.5.32",
+              "state": "governed",
+              "observed": "satisfies",
+              "reasons": [],
+              "consumers": [
+                {
+                  "workspace": ".",
+                  "name": "farm-3j",
+                  "relation": "direct",
+                  "section": "devDependencies",
+                  "path": [
+                    "dependency:[\".\",\"devDependencies\",\"vite\"]",
+                    "vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)",
+                    "postcss@8.5.32"
+                  ],
+                  "uncertain": true,
+                  "uncertainty": [
+                    "dependency:[\".\",\"devDependencies\",\"vite\"]: the dependency entry is marked uncertain (a declaration issue or an uncertain resolved package)",
+                    "vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1): peer context (@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)",
+                    "vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1): the package declares peer dependencies"
+                  ]
+                }
+              ],
+              "consumersOmitted": 0,
+              "consumersNote": null
+            }
+          }
+        ],
+        "edgesOmitted": 0,
+        "observations": [
+          {
+            "code": "RECORD_CHANGED_DECLARATION_UNCHANGED",
+            "message": "Only the lockfile record changed; the declared value is identical on both sides."
+          },
+          {
+            "code": "PEER_EDGES_NOT_MODELED",
+            "message": "1 changed edge(s) come from peer dependencies; peer resolution is not modeled and they are not attributed."
+          }
+        ]
+      }
+    ],
+    "limits": {
+      "edgesPerRule": 100,
+      "consumersPerEdge": 50,
+      "edgeTraversalsPerSide": 100
+    },
+    "truncated": []
+  },
+  "groupsLinkedToOverride": [
+    {
+      "name": "@tailwindcss/postcss",
+      "kind": "package",
+      "confidence": "unknown"
+    },
+    {
+      "name": "postcss",
+      "kind": "package",
+      "confidence": "unknown"
+    }
+  ],
+  "warnings": [
+    "Manifest/lockfile mismatch: . dependencies.@hookform/resolvers",
+    "Manifest/lockfile mismatch: . dependencies.autoprefixer",
+    "Manifest/lockfile mismatch: . dependencies.lucide-react",
+    "Manifest/lockfile mismatch: . dependencies.next",
+    "Manifest/lockfile mismatch: . dependencies.react-hook-form",
+    "Manifest/lockfile mismatch: . dependencies.react-resizable-panels",
+    "Manifest/lockfile mismatch: . devDependencies.@types/node",
+    "Manifest/lockfile mismatch: . devDependencies.eslint-config-next",
+    "Manifest/lockfile mismatch: . devDependencies.postcss",
+    "Manifest/lockfile mismatch: . devDependencies.typescript-eslint",
+    "Override postcss (base): 4 governed edge(s) resolve outside the value \"8.5.32\", for example @tailwindcss/postcss@4.3.3 -> postcss resolves to postcss@8.5.31.",
+    "Override postcss (base): the lockfile records \"8.5.31\", but the declaration says \"8.5.32\"."
+  ],
+  "summary": {
+    "explained": 0,
+    "partially-explained": 0,
+    "unexplained": 0,
+    "unknown": 63
+  },
+  "groups": 63,
+  "textExcerpt": [
+    "Override changes (declarations, lockfile records, and committed edges only; nothing is resolved or installed):",
+    "  postcss: lockfile-record-changed",
+    "    selector: postcss",
+    "    base declaration: package.json#pnpm → \"8.5.32\" (exact)",
+    "    base lockfile record: \"8.5.31\"",
+    "      base consistency: record-differs",
+    "    head declaration: package.json#pnpm → \"8.5.32\" (exact)",
+    "    head lockfile record: \"8.5.32\"",
+    "    attribution: incomplete (kept uncertain)",
+    "      Uncertainty: base: the lockfile records \"8.5.31\", but the declaration says \"8.5.32\".",
+    "      Uncertainty: base: 4 governed edge(s) resolve outside the value \"8.5.32\", for example @tailwindcss/postcss@4.3.3 -> postcss resolves to postcss@8.5.31.",
+    "    Affected edges (committed graph; reachability, not proof that the rule caused every update):",
+    "      @tailwindcss/postcss@4.3.3 postcss: postcss@8.5.31 → postcss@8.5.32 (target-changed)",
+    "        Evidence path starts at this edge.",
+    "        Uncertainty: base: the resolution does not fit the value (violates).",
+    "        base: governed; resolution violates the value",
+    "          consumer base: . (farm-3j): direct via devDependencies",
+    "        head: governed; resolution satisfies the value",
+    "          consumer head: . (farm-3j): direct via devDependencies",
+    "      . [devDependencies] postcss: postcss@8.5.31 → postcss@8.5.32 (target-changed)",
+    "        Not attributed: The dependent differs in more than this edge. base: the resolution does not fit the value (violates).",
+    "        base: governed; resolution violates the value; declared 8.5.32",
+    "          consumer base: . (farm-3j): direct via devDependencies; uncertain (reasons: explain)",
+    "        head: governed; resolution satisfies the value; declared 8.5.32",
+    "          consumer head: . (farm-3j): direct via devDependencies",
+    "      next@16.4.3(@babel/core@7.29.7)(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1) postcss: postcss@8.5.31 → postcss@8.5.32 (target-changed, dependent changed)",
+    "        Not attributed: The dependent changed too, so the edge may have changed for another reason. base: the resolution does not fit the value (violates).",
+    "        base: governed; resolution violates the value",
+    "          consumer base: . (farm-3j): direct via dependencies; uncertain (reasons: explain)",
+    "        head: governed; resolution satisfies the value",
+    "          consumer head: . (farm-3j): direct via dependencies; uncertain (reasons: explain)",
+    "      vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1) postcss: postcss@8.5.31 → postcss@8.5.32 (target-changed, dependent changed)",
+    "        Not attributed: The dependent changed too, so the edge may have changed for another reason. base: the resolution does not fit the value (violates).",
+    "        base: governed; resolution violates the value",
+    "          consumer base: . (farm-3j): direct via devDependencies; uncertain (reasons: explain)",
+    "        head: governed; resolution satisfies the value",
+    "          consumer head: . (farm-3j): direct via devDependencies; uncertain (reasons: explain)",
+    "    Observation: Only the lockfile record changed; the declared value is identical on both sides.",
+    "    Observation: 1 changed edge(s) come from peer dependencies; peer resolution is not modeled and they are not attributed."
+  ]
+}

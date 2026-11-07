@@ -8,6 +8,8 @@ import type { CatalogSnapshots, Catalogs, Declaration } from './catalogs.js';
 import { declaration, parseCatalogSnapshots, parseCatalogs } from './catalogs.js';
 import type { Lockfile } from './lockfile-parser.js';
 import { parseLockfile, parseWorkspace } from './lockfile-parser.js';
+import type { OverrideState } from './overrides.js';
+import { buildOverrideState } from './overrides.js';
 import type { PatchState } from './patches.js';
 import { buildPatchState } from './patches.js';
 
@@ -20,6 +22,7 @@ export interface PnpmState extends RepositoryState {
   catalogSnapshots: CatalogSnapshots;
   declarations: Map<string, Declaration>;
   patches: PatchState;
+  overrides: OverrideState;
 }
 
 function identity(
@@ -371,6 +374,7 @@ export function buildPnpmState(repository: RepositoryState): PnpmState {
     catalogSnapshots,
     declarations,
     patches: buildPatchState({ repository, lockfile, workspace, manifests, graph }),
+    overrides: buildOverrideState({ lockfile, workspace, manifests }),
   };
 }
 

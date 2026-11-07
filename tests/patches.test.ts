@@ -989,11 +989,12 @@ describe('reports', () => {
   it('keeps pre-0.3 fields of the catalog case study identical', () => {
     const root = fileURLToPath(new URL('../docs/acceptance/ni/', import.meta.url));
     const expected = JSON.parse(readFileSync(join(root, 'v0.2.json'), 'utf8'));
-    const { patches, ...actual } = explain(
+    const { patches, overrides, ...actual } = explain(
       fixture('ni', 'base'),
       fixture('ni', 'head'),
     );
     expect(patches.changes).toEqual([]);
+    expect(overrides.changes).toEqual([]);
     expect({
       ...JSON.parse(JSON.stringify(actual)),
       base: expected.base,

@@ -5,6 +5,39 @@ release or the corresponding comparison of commits.
 
 ## [Unreleased]
 
+### Added
+
+- Override change reports for pnpm `overrides`, separate from version changes:
+  declaration, source, and lockfile record are independent events, and a changed
+  rule is matched to the dependency edges it governs on both sides, with the paths
+  to the workspace projects that reach them. Supported rules are `name`,
+  `name@range`, and `parent>child` selectors, scoped names included, with an exact
+  stable version or a stable registry range as the value.
+- The configuration source follows `packageManager`: `pnpm-workspace.yaml` for pnpm
+  11 and later, `pnpm.overrides` and `resolutions` for pnpm 9 and 10. Other sources
+  and unsupported values keep their warnings.
+- Evidence paths that start at a governed edge, marked with `via` on the evidence
+  entry. A complete rule can make the dependent and the new package `explained`;
+  packages reachable only beyond the edge stay `unknown`, and unrelated updates in
+  the same lockfile stay `unexplained`.
+- An `overrides` JSON section with its own `reportVersion` (currently `1`), override
+  evidence in text output and in `why`/`explain`, and an
+  [override reference](docs/override-contract.md).
+- A case study of a PostCSS override repair in nitsuah/farm-3j
+  (`examples/override-acceptance.mjs`), and a registry-range intersection check
+  compared with node-semver.
+
+### Changed
+
+- A rule that the override report interprets no longer produces the global
+  `Workspace configuration changed`, `Unmodeled manifest resolution input changed`,
+  or `Lockfile resolution configuration changed` warnings. A rule that is not fully
+  accounted for produces an `Override SELECTOR (base|head): …` warning instead, so
+  its groups stay `unknown`. Unsupported rules, hooks, unchanged `catalog:`
+  overrides, and manifest/lockfile mismatches keep their warnings.
+- Workspace consumer lookup is shared by the patch and override reports. Patch output
+  is unchanged.
+
 ## [0.3.0]
 
 ### Security

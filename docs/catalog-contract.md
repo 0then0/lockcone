@@ -123,14 +123,16 @@ retaining observed paths. They never allow `explained`.
 Only supported workspace catalog entries are removed from the global workspace
 config comparison. Only consistent cache entries with the two known fields are
 removed from the global lockfile config comparison. Unknown cache fields,
-unsupported values, other top-level fields, environment changes, overrides,
-patches, and missing graph edges retain conservative behavior. Patch changes are
+unsupported values, other top-level fields, environment changes, unsupported
+overrides, patches, and missing graph edges retain conservative behavior.
+Supported overrides are interpreted by the [override reference](override-contract.md). Patch changes are
 additionally reported in `patches`, which never changes this classification; see
 the [patch reference](patch-contract.md).
-An unchanged catalog reference in unmodeled configuration, including overrides,
-can change meaning when that catalog changes, and receives global uncertainty.
-This check is conservative at catalog-name granularity and does not resolve
-override selectors. Used catalog changes with an existing pnpm hook also remain
+An unchanged catalog reference in unmodeled configuration, including an override
+with a `catalog:` value, can change meaning when that catalog changes, and receives
+global uncertainty. Such an override is outside the supported override model, so it
+keeps this behavior. The check is conservative at catalog-name granularity and does
+not resolve override selectors. Used catalog changes with an existing pnpm hook also remain
 unknown, since hooks can inspect config; hooks are never executed. Unused entry
 changes alone do not activate this hook warning. As before, merely having
 unchanged non-catalog overrides or hooks is not proof of an effect.

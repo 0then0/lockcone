@@ -149,12 +149,26 @@ export function declaration(
   };
 }
 
+function isMapping(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
 // Only modeled entries are removed from the global configuration comparison.
 // Other fields and unsupported values retain the existing conservative behavior.
-export function workspaceResolutionInputs(workspace: Record<string, unknown>): unknown {
+export function workspaceResolutionInputs(
+  workspace: Record<string, unknown>,
+  modeledOverrides: Set<string> = new Set(),
+): unknown {
   const remaining: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(workspace)) {
-    if (key === 'catalog') {
+    if (key === 'overrides' && modeledOverrides.size && isMapping(value)) {
+      // Selectors that the override report interprets leave the global comparison.
+      const unmodeled = Object.fromEntries(
+        Object.entries(value).filter(([selector]) => !modeledOverrides.has(selector)),
+      );
+      if (Object.keys(unmodeled).length) remaining[key] = unmodeled;
+      else if (!Object.keys(value).length) remaining[key] = value;
+    } else if (key === 'catalog') {
       const unsupported = Object.fromEntries(
         Object.entries(value as Record<string, string>).filter(
           ([, range]) => !supportedRegistryRange(range),

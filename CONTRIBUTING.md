@@ -53,6 +53,14 @@ and is separate from analysis. The external
 with `node examples/patch-acceptance.mjs` after `pnpm build`. Patch fixtures keep
 their exact bytes, including CRLF.
 
+Override tests build their repositories by hand, because a real pnpm run queries a
+registry. The [farm-3j case](docs/acceptance/farm-3j/README.md) is checked with
+`node examples/override-acceptance.mjs` after `pnpm build`; it needs network access
+and rewrites its evidence file. Override matching follows the pnpm sources listed in
+the [override reference](docs/override-contract.md#references). Check a change to
+the matching rules against those sources, and compare changed range code with
+node-semver in a scratch directory; it is not a dependency.
+
 ## Preserve the analysis contract
 
 Keep changes focused. Preserve deterministic output, exact package identities,
@@ -64,7 +72,7 @@ Keep responsibilities in the existing modules:
 
 - `src/git`: committed repository reads.
 - `src/manifests`: manifest validation.
-- `src/pnpm`: lockfile, workspace, and patch metadata interpretation.
+- `src/pnpm`: lockfile, workspace, patch, and override metadata interpretation.
 - `src/graph`: package instances and traversal.
 - `src/analysis`: intent, graph comparison, patch reports, and classification.
 - `src/output` and `src/cli`: reports and command interfaces.

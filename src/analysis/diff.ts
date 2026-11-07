@@ -19,6 +19,8 @@ import type { ManifestChange } from './cone.js';
 import { manifestChanges } from './cone.js';
 import type { CatalogChange, DeclarationChange } from './declarations.js';
 import { catalogChanges, declarationChanges } from './declarations.js';
+import type { OverrideReport } from './overrides.js';
+import { compareOverrides } from './overrides.js';
 import type { PatchReport } from './patches.js';
 import { patchReport } from './patches.js';
 
@@ -32,6 +34,17 @@ export interface Evidence {
   node: string;
   root: string;
   pathId: string;
+  // Present only when the path starts at an edge governed by a pnpm override instead
+  // of a changed declaration. `attribution` is that override's level in `overrides`.
+  // `reach` is `edge` for the dependent that holds the governed edge and the package
+  // it resolves to, and `beyond-edge` for packages only reachable from that package:
+  // a matching rule does not show why those changed, so they never become `explained`.
+  via?: {
+    kind: 'override';
+    selector: string;
+    attribution: 'complete' | 'incomplete';
+    reach: 'edge' | 'beyond-edge';
+  };
 }
 export interface EvidencePathNode {
   side: 'base' | 'head';
@@ -70,10 +83,45 @@ export interface Report {
   catalogChanges: CatalogChange[];
   // Added in 0.3.0 without changing schemaVersion; see patches.reportVersion.
   patches: PatchReport;
+  // Added after 0.3.0 without changing schemaVersion; see overrides.reportVersion.
+  overrides: OverrideReport;
   changes: Change[];
   pathNodes: Record<string, EvidencePathNode>;
   warnings: string[];
   summary: Record<Confidence, number>;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+// Drops the entries that the override report interprets. Everything else stays in the
+// conservative comparison. Nothing is dropped when no selector is modeled.
+function withoutSelectors(value: unknown, modeled: Set<string>): unknown {
+  if (!isRecord(value) || !modeled.size) return value;
+  const kept = Object.entries(value).filter(([selector]) => !modeled.has(selector));
+  if (kept.length === Object.keys(value).length) return value;
+  return kept.length ? Object.fromEntries(kept) : undefined;
+}
+
+function manifestInput(state: PnpmState, path: string, field: string): unknown {
+  const value: unknown = state.manifests.get(path)?.[field];
+  if (
+    path !== '.' ||
+    field !== 'pnpm' ||
+    !isRecord(value) ||
+    !isRecord(value.overrides)
+  )
+    return value;
+  const overrides = withoutSelectors(
+    value.overrides,
+    state.overrides.modeled.manifestPnpm,
+  );
+  if (overrides === value.overrides) return value;
+  const { overrides: _removed, ...rest } = value;
+  if (isRecord(overrides) && Object.keys(overrides).length)
+    return { ...rest, overrides };
+  return Object.keys(rest).length ? rest : undefined;
 }
 
 function metadataFields(value: unknown, prefix = '$'): Map<string, string> {
@@ -241,6 +289,30 @@ export function diff(base: PnpmState, head: PnpmState): Report {
     }
   }
   const warnings = new Set([...base.graph.warnings, ...head.graph.warnings]);
+  // Overrides are matched to the edges they govern. Their paths join the cone visits;
+  // whatever the match cannot establish stays a warning.
+  const overrides = compareOverrides(base, head);
+  for (const side of ['base', 'head'] as const) {
+    for (const [id, added] of overrides.visits[side])
+      visits[side].set(
+        id,
+        [...(visits[side].get(id) ?? []), ...added].sort(
+          (a, b) =>
+            Number(a.uncertain) - Number(b.uncertain) || a.root.localeCompare(b.root),
+        ),
+      );
+  }
+  for (const message of overrides.warnings) warnings.add(message);
+  const overrideBasis = new Map(
+    overrides.report.changes.map((change) => [
+      change.attribution.root,
+      {
+        kind: 'override' as const,
+        selector: change.selector,
+        attribution: change.attribution.level,
+      },
+    ]),
+  );
   // A catalog reference in an unmodeled configuration input may change meaning
   // even if that input's text did not change. Do not attribute overrides to cones.
   const referencesCatalog = (value: unknown, name: string): boolean => {
@@ -284,24 +356,34 @@ export function diff(base: PnpmState, head: PnpmState): Report {
       );
   }
   if (
-    stable(workspaceResolutionInputs(base.workspace)) !==
-    stable(workspaceResolutionInputs(head.workspace))
+    stable(
+      workspaceResolutionInputs(base.workspace, base.overrides.modeled.workspace),
+    ) !==
+    stable(workspaceResolutionInputs(head.workspace, head.overrides.modeled.workspace))
   )
     warnings.add(
       'Workspace configuration changed; resolution effects are not modeled.',
     );
   const configuration = (state: PnpmState): unknown => ({
     ...Object.fromEntries(
-      Object.entries(state.lockfile).filter(
-        ([key]) =>
-          ![
-            'importers',
-            'packages',
-            'snapshots',
-            'lockfileVersion',
-            'catalogs',
-          ].includes(key),
-      ),
+      Object.entries(state.lockfile)
+        .filter(
+          ([key]) =>
+            ![
+              'importers',
+              'packages',
+              'snapshots',
+              'lockfileVersion',
+              'catalogs',
+            ].includes(key),
+        )
+        .map(([key, value]) => [
+          key,
+          key === 'overrides'
+            ? withoutSelectors(value, state.overrides.modeled.lockfile)
+            : value,
+        ])
+        .filter(([, value]) => value !== undefined),
     ),
     catalogs: unmodeledCatalogSnapshots(state.catalogs, state.catalogSnapshots),
   });
@@ -348,8 +430,8 @@ export function diff(base: PnpmState, head: PnpmState): Report {
       'pnpm',
     ]) {
       if (
-        stable(base.manifests.get(path)?.[field]) !==
-        stable(head.manifests.get(path)?.[field])
+        stable(manifestInput(base, path, field)) !==
+        stable(manifestInput(head, path, field))
       ) {
         warnings.add(`Unmodeled manifest resolution input changed: ${path} ${field}`);
       }
@@ -417,7 +499,23 @@ export function diff(base: PnpmState, head: PnpmState): Report {
             };
             current = currentVisit.parent;
           }
-          evidence.push({ side, node: item.id, root: visit.root, pathId });
+          const via = overrideBasis.get(visit.root);
+          evidence.push({
+            side,
+            node: item.id,
+            root: visit.root,
+            pathId,
+            ...(via
+              ? {
+                  via: {
+                    ...via,
+                    reach: overrides.edgeNodes[side].get(visit.root)?.has(item.id)
+                      ? ('edge' as const)
+                      : ('beyond-edge' as const),
+                  },
+                }
+              : {}),
+          });
         }
       }
     }
@@ -476,6 +574,7 @@ export function diff(base: PnpmState, head: PnpmState): Report {
     declarationChanges: declarations,
     catalogChanges: catalogs,
     patches: patchReport(base, head),
+    overrides: overrides.report,
     changes,
     pathNodes,
     warnings: [...warnings].sort(),

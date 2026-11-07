@@ -11,7 +11,9 @@ LockCone explains pnpm dependency changes by comparing two committed dependency
 graphs. It shows which changed packages are reachable from the dependencies you
 changed, including updates made through catalogs in `pnpm-workspace.yaml`. It
 also reports pnpm patch changes: what changed in a patch, which package
-instances it is tied to, and which workspace projects reach them.
+instances it is tied to, and which workspace projects reach them. For `overrides`,
+it ties a changed rule to the dependency edges it governs and shows the paths
+to the workspace projects that reach them.
 
 A path is evidence of reachability, not proof of why pnpm chose a version.
 Packages outside those paths remain visible in the report.
@@ -41,7 +43,8 @@ lockcone --help
 
 Replace `VERSION` with the archive's version. Each release includes `SHA256SUMS`
 for checking the download. Catalog support requires v0.2 or later, and patch
-reports require v0.3 or later.
+reports require v0.3 or later. Override reports are not in a release yet; see the
+[changelog](CHANGELOG.md).
 
 ## Read a dependency report
 
@@ -88,8 +91,8 @@ resolution updates or deduplication are hypotheses, not detected causes.
 - `explain [base..head]`: the same report as `diff`, with the complete dependency
   path and uncertainty reasons for each patch consumer.
 - `why <package>`: show changes for that exact package name, matching direct
-  dependency entries, relevant declarations, evidence paths, and patch changes
-  that name the package.
+  dependency entries, relevant declarations, evidence paths, and patch and
+  override changes that name the package.
 
 All commands accept `--base`, `--head`, `--cwd`, and `--format text|json`.
 Without refs they compare `HEAD~1..HEAD`. Two-dot ranges compare the named
@@ -179,6 +182,53 @@ a patched instance stays `unknown`, and the global `Resolution input changed`
 warnings remain. The [patch reference](docs/patch-contract.md) lists the
 supported forms, evidence rules, JSON fields, and limits.
 
+## Override changes
+
+A rule in `overrides` can change a dependency without any manifest edit. In a
+workspace where `a` and `b` both depend on `leaf`, the rule `a>leaf: 2.0.0` moves
+`leaf` for `a` only. LockCone matches the rule to the edges of the committed
+graph, on both sides:
+
+```text
+Override changes (declarations, lockfile records, and committed edges only; nothing is resolved or installed):
+  a > leaf: declaration-added, lockfile-record-added
+    head declaration: pnpm-workspace.yaml → "2.0.0" (exact)
+    head lockfile record: "2.0.0"
+    attribution: complete
+    Affected edges (committed graph; reachability, not proof that the rule caused every update):
+      a@1.0.0 leaf: leaf@1.0.0 → leaf@2.0.0 (target-changed)
+        Evidence path starts at this edge.
+        head: governed; resolution satisfies the value
+          consumer head: . (root): direct via dependencies
+```
+
+This output abbreviates a hand-built test case. The edge of `b` is not listed,
+because the parent selector does not match it, and `b` keeps its version.
+
+- A declaration, its lockfile record, and the observed graph are separate. Events
+  are `declaration-added/removed/changed`, `source-changed`, and
+  `lockfile-record-added/removed/changed`. A rule whose lockfile record changed
+  while the declaration did not is reported as exactly that, with the record
+  mismatch as a warning.
+- The source follows `packageManager`: `pnpm-workspace.yaml` for pnpm 11 and later;
+  `pnpm.overrides` and `resolutions` in `package.json` for pnpm 9 and 10. Other
+  sources are shown and stay `unknown`.
+- A selector range restricts the range that the dependent declares, not the
+  resolved version, and a parent range restricts the dependent's own version. The
+  lockfile does not record what a package declares, so target ranges are decided
+  on workspace dependencies only. Edges are never matched by the name of the
+  package they resolve to.
+- When the declaration and record agree and every matching edge is decided, the
+  rule's edge can make the dependent and the new package `explained`. Packages
+  reachable only beyond that edge keep `unknown` with their path, because a
+  matching rule does not show why they changed. Overlapping rules, undecidable
+  edges, mismatches, hooks, and unsupported rules keep their warnings.
+
+Supported rules are `name`, `name@range`, and `parent>child` selectors, scoped
+names included, with an exact stable version or a stable registry range as the
+value. See the [override reference](docs/override-contract.md) for the evidence
+rules, JSON fields, and limits.
+
 ## Supported inputs
 
 - pnpm dependency lockfile v9, optionally preceded by the environment document
@@ -195,6 +245,10 @@ supported forms, evidence rules, JSON fields, and limits.
   `{ hash, path }` object, with name, exact-version, and registry-range selectors.
   Whether a source is read depends on `packageManager`; see the
   [patch reference](docs/patch-contract.md#supported-forms).
+- Overrides declared in `pnpm-workspace.yaml`, `package.json` `pnpm.overrides`, or
+  `resolutions`, recorded in the lockfile `overrides` map, with name, `name@range`,
+  and `parent>child` selectors and an exact stable version or stable range as the
+  value. See the [override reference](docs/override-contract.md#configuration-sources).
 
 Traversal follows runtime and optional dependencies of linked workspaces; it
 never inherits their development dependencies. Workspace identity changes
@@ -202,9 +256,13 @@ explain the workspace record itself, not its dependency upgrades.
 
 Catalog aliases, prerelease/build ranges, tags, local/workspace/Git/URL catalog
 values, external catalog files, and catalog override attribution are unsupported.
-Overrides, hooks, unknown configuration, and incomplete edges retain conservative
-uncertainty. Patches are reported in detail, but their global warnings remain. Hooks are never executed. Global unmodeled input
-changes can make all groups `unknown`; peer uncertainty applies to affected
+Override values such as `-`, `link:`, `workspace:`, `npm:`, `catalog:`, `$name`, tags,
+and prerelease versions, convergence selectors (`name@`), peer edges, and per-project
+overrides are not modeled, and neither are hooks, unknown configuration, and
+incomplete edges: they retain conservative uncertainty. An unchanged `catalog:`
+override whose catalog changed stays global uncertainty. Patches are reported in
+detail, but their global warnings remain. Hooks are never executed. Global unmodeled
+input changes can make all groups `unknown`; peer uncertainty applies to affected
 instances and paths.
 
 Separate workspace lockfiles, custom lockfile locations, other package managers,
@@ -220,7 +278,7 @@ lockcone diff --base origin/main --head HEAD --format json > lockcone-report.jso
 
 The JSON report uses `schemaVersion: 4` and includes resolved commit IDs,
 `manifestChanges`, `declarations`, `declarationChanges`, `catalogChanges`,
-`patches`, `changes`, `pathNodes`, `warnings`, and `summary`.
+`patches`, `overrides`, `changes`, `pathNodes`, `warnings`, and `summary`.
 
 `manifestChanges` contains actual manifest edits. `declarations.base/head`
 separates original specifiers, catalog origins, effective ranges, observed
@@ -232,9 +290,11 @@ confidence, a reason, evidence, and edge/metadata details. Follow `evidence.root
 to a declaration on the same side; follow `pathId` through `pathNodes` to read
 the dependency path. Metadata differences use `null` for an absent field.
 
-`patches` was added in 0.3.0 without changing the schema version, and carries its
-own `reportVersion` (currently `1`). Schema v4 consumers that ignore unknown
-fields keep working.
+`patches` was added in 0.3.0 and `overrides` after it, both without changing the
+schema version. Each carries its own `reportVersion` (currently `1`). An evidence
+entry gets a `via` field only when its path starts at an override edge; evidence of
+declarations, catalogs, and patches is unchanged. Schema v4 consumers that ignore
+unknown fields keep working.
 
 Output is deterministic for equivalent input mappings. Successful JSON contains
 no diagnostic text; failures go to stderr. Consumers must explicitly support
@@ -281,7 +341,10 @@ commits: v0.1 reports six unknown groups; v0.2 reports two explained and four
 unexplained groups. The remaining reverse dependency edges are outside the cone.
 The [radix-ui/primitives case](docs/acceptance/radix-primitives/README.md) checks a
 real patch change, a moved declaration, and the lockfile format change of a pnpm 11
-migration against Git and the raw lockfile.
+migration against Git and the raw lockfile. The
+[nitsuah/farm-3j case](docs/acceptance/farm-3j/README.md) checks a PostCSS override
+repair: what the override analysis explains, and the manifest/lockfile mismatches
+that keep every group `unknown`.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for checks, fixtures, and release procedures,
 and [CHANGELOG.md](CHANGELOG.md) for release history. Use the GitHub issue forms

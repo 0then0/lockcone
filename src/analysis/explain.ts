@@ -58,6 +58,23 @@ export function why(report: Report, name: string): Report {
           head: change.affectedDeclarations.head.filter((root) => roots.has(root)),
         },
       })),
+    overrides: {
+      ...report.overrides,
+      changes: report.overrides.changes.filter(
+        (change) =>
+          change.target?.name === name ||
+          change.parent?.name === name ||
+          change.edges.some((edge) =>
+            [edge.base, edge.head].some(
+              (side) =>
+                side !== null &&
+                (edge.alias === name ||
+                  side.parent.name === name ||
+                  (side.target !== null && parseInstance(side.target)?.name === name)),
+            ),
+          ),
+      ),
+    },
     patches: {
       ...report.patches,
       unlinked: {
