@@ -5,6 +5,10 @@ release or the corresponding comparison of commits.
 
 ## [Unreleased]
 
+## [0.5.0]
+
+See the [v0.5 release notes](docs/release-notes-v0.5.md) for compatibility and limits.
+
 ### Added
 
 - Peer context reports for package instances whose name and version exist on both
@@ -30,6 +34,12 @@ release or the corresponding comparison of commits.
 
 - JSON reports gain the `peerBindings` section. `schemaVersion` stays `4`, and no
   existing field, classification, or warning changes.
+
+### Security
+
+- Update the development dependencies Vitest (5.0.5), Vite (8.3.7), and
+  source-map-js (1.2.2) for published advisories. Runtime dependencies and the
+  release archive are unaffected.
 
 ## [0.4.0]
 
@@ -138,7 +148,8 @@ See the [v0.2 release notes](docs/release-notes-v0.2.md) for compatibility and l
 - Conservative classification for peer context and unsupported resolution inputs.
 - A composite GitHub Action and release archives with SHA-256 checksums.
 
-[Unreleased]: https://github.com/0then0/lockcone/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/0then0/lockcone/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/0then0/lockcone/releases/tag/v0.5.0
 [0.4.0]: https://github.com/0then0/lockcone/releases/tag/v0.4.0
 [0.3.0]: https://github.com/0then0/lockcone/releases/tag/v0.3.0
 [0.2.0]: https://github.com/0then0/lockcone/releases/tag/v0.2.0

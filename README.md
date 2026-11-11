@@ -42,8 +42,9 @@ lockcone --help
 ```
 
 Replace `VERSION` with the archive's version. Each release includes `SHA256SUMS`
-for checking the download. Catalog support requires v0.2 or later, and patch
-reports require v0.3 or later, and override reports require v0.4 or later.
+for checking the download. Catalog support requires v0.2 or later, patch reports
+require v0.3 or later, override reports require v0.4 or later, and peer context
+reports require v0.5 or later.
 
 ## Read a dependency report
 
@@ -332,7 +333,7 @@ confidence, a reason, evidence, and edge/metadata details. Follow `evidence.root
 to a declaration on the same side; follow `pathId` through `pathNodes` to read
 the dependency path. Metadata differences use `null` for an absent field.
 
-`patches` was added in 0.3.0, `overrides` in 0.4.0, and `peerBindings` after 0.4.0,
+`patches` was added in 0.3.0, `overrides` in 0.4.0, and `peerBindings` in 0.5.0,
 all without changing the schema version. Each carries its own `reportVersion`
 (currently `1`). `peerBindings` changes no other field. An evidence
 entry gets a `via` field only when its path starts at an override edge; evidence of

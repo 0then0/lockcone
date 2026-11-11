@@ -87,7 +87,7 @@ export interface Report {
   patches: PatchReport;
   // Added after 0.3.0 without changing schemaVersion; see overrides.reportVersion.
   overrides: OverrideReport;
-  // Added after 0.4.0 without changing schemaVersion; see peerBindings.reportVersion.
+  // Added in 0.5.0 without changing schemaVersion; see peerBindings.reportVersion.
   // Observed peer contexts only: it never changes a group's confidence or the warnings.
   peerBindings: PeerBindingReport;
   changes: Change[];
