@@ -31,6 +31,9 @@ beforeAll(() => {
       '\npatchedDependencies:\n  aws-sdk@2: stable-hash\n';
     states[side]['patches/aws-sdk.patch'] = side === 'patchBase' ? 'before' : 'after';
   }
+  // pnpm 12.4.1 lockfiles of two consecutive `pnpm update` passes (pnpm/pnpm#14895).
+  for (const side of ['pass1', 'pass2'] as const)
+    states[`peer${side}`] = Object.fromEntries(fixture('peers/pnpm-14895', side).files);
   writeFileSync(join(temporary, 'states.json'), JSON.stringify(states));
   const shim = join(temporary, 'git');
   writeFileSync(
@@ -42,7 +45,7 @@ const args = process.argv.slice(2);
 if (args[0] === 'rev-parse' && args[1] === '--show-toplevel') process.stdout.write(process.cwd());
 else if (args[0] === 'rev-parse') {
   const ref = args.at(-1).replace(/\\^\\{commit\\}$/, '');
-  const side = ({ 'main': 'base', 'HEAD~1': 'base', 'HEAD': 'head', 'patch-base': 'patchBase', 'patch-head': 'patchHead' })[ref];
+  const side = ({ 'main': 'base', 'HEAD~1': 'base', 'HEAD': 'head', 'patch-base': 'patchBase', 'patch-head': 'patchHead', 'peer-pass1': 'peerpass1', 'peer-pass2': 'peerpass2' })[ref];
   if (!side) { process.stderr.write('unknown revision'); process.exit(128); }
   process.stdout.write(side);
 } else if (args[0] === 'ls-tree') {
@@ -179,6 +182,56 @@ describe('compiled CLI', () => {
     expect(text(['explain'])).toContain('aws-sdk@2: content-changed');
     expect(text(['why', 'aws-sdk'])).toContain('aws-sdk@2: content-changed');
     expect(text(['why', 'vite'])).not.toContain('Patch changes');
+  });
+
+  it('explains a peer context change at unchanged package versions', () => {
+    const run = (...args: string[]) =>
+      spawnSync(process.execPath, [cli, ...args], { env, encoding: 'utf8' });
+    const json = run('diff', 'peer-pass1..peer-pass2', '--format', 'json');
+    expect(json.stderr).toBe('');
+    expect(json.status).toBe(0);
+    const report = JSON.parse(json.stdout);
+    expect(report.schemaVersion).toBe(4);
+    expect(report.peerBindings.reportVersion).toBe(1);
+    expect(
+      report.peerBindings.changes.map(
+        (change: { name: string; version: string; events: string[] }) => [
+          change.name,
+          change.version,
+          change.events,
+        ],
+      ),
+    ).toEqual([
+      ['debug', '4.4.3', ['provider-added']],
+      ['vite-plugin-node', '8.0.0', ['provider-added']],
+    ]);
+    // The observation explains nothing by itself: every group stays unknown.
+    expect(report.summary).toEqual({
+      explained: 0,
+      'partially-explained': 0,
+      unexplained: 0,
+      unknown: 3,
+    });
+
+    const diff = run('diff', 'peer-pass1..peer-pass2').stdout;
+    expect(diff).toContain(
+      'debug@4.4.3 → debug@4.4.3(supports-color@7.2.0) [holder-rekeyed]',
+    );
+    expect(diff).not.toContain('head edge:');
+    const why = run('why', 'debug', '--base', 'peer-pass1', '--head', 'peer-pass2');
+    expect(why.stdout).toContain(
+      'head edge: debug@4.4.3(supports-color@7.2.0) -- optionalDependencies.supports-color -> supports-color@7.2.0',
+    );
+    expect(why.stdout).toContain(
+      'path dependency:[".","devDependencies","vite-plugin-node"] → vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7) → debug@4.4.3(supports-color@7.2.0)',
+    );
+    expect(why.stdout).not.toContain('vite-plugin-node@8.0.0: provider-added');
+    // The same revision on both sides is the control.
+    const same = run('diff', 'peer-pass2..peer-pass2', '--format', 'json');
+    expect(JSON.parse(same.stdout).peerBindings.changes).toEqual([]);
+    expect(
+      run('why', 'express', '--base', 'main', '--head', 'HEAD').stdout,
+    ).not.toContain('Peer context changes');
   });
 
   it.each([

@@ -1,6 +1,7 @@
 import type { RepositoryState } from '../git/repository.js';
 import { buildPnpmState } from '../pnpm/dependency-graph.js';
 import { parseInstance } from '../pnpm/patches.js';
+import { parsePeerContext } from '../pnpm/peers.js';
 import type { EvidencePathNode, Report } from './diff.js';
 import { diff, summarize } from './diff.js';
 
@@ -90,6 +91,23 @@ export function why(report: Report, name: string): Report {
           change.name === name ||
           [change.base, change.head].some((side) =>
             side?.instances.some((instance) => instance.name === name),
+          ),
+      ),
+    },
+    // The named package's own contexts, and the contexts that name it as a provider.
+    peerBindings: {
+      ...report.peerBindings,
+      changes: report.peerBindings.changes.filter(
+        (change) =>
+          change.name === name ||
+          [...change.base, ...change.head].some(
+            (instance) =>
+              instance.changed &&
+              instance.bindings.some(
+                (binding) =>
+                  binding.provider !== null &&
+                  parsePeerContext(binding.provider)?.name === name,
+              ),
           ),
       ),
     },

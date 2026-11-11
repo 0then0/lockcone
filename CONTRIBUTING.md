@@ -61,6 +61,12 @@ the [override reference](docs/override-contract.md#references). Check a change t
 the matching rules against those sources, and compare changed range code with
 node-semver in a scratch directory; it is not a dependency.
 
+Peer context tests build their repositories by hand, except
+`tests/fixtures/peers/pnpm-14895`, which holds lockfiles written by pnpm 12.4.1. The
+[pnpm/pnpm#14895 case](docs/acceptance/pnpm-14895/README.md) records the commands,
+and `node examples/peer-acceptance.mjs` checks the public CLI against those lockfiles
+after `pnpm build`, without network access. It rewrites its evidence file.
+
 ## Preserve the analysis contract
 
 Keep changes focused. Preserve deterministic output, exact package identities,
@@ -81,9 +87,10 @@ The graph and traversal modules do not depend on the pnpm parser. Core analysis
 must not query registries, install target packages, execute hooks, use AI services,
 or introduce an automatic merge policy.
 
-Patch reports describe committed metadata and never change classification.
+Patch and peer context reports describe committed metadata and never change
+classification.
 Discuss incompatible report changes before changing `schemaVersion`; additive
-sections such as `patches` carry their own `reportVersion`. Update
+sections such as `patches` and `peerBindings` carry their own `reportVersion`. Update
 consumers, CI validators, tests, and documentation together. The
 [catalog reference](docs/catalog-contract.md) describes the current schema and
 uncertainty policy.

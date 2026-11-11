@@ -1,0 +1,653 @@
+{
+  "issue": "https://github.com/pnpm/pnpm/issues/14895",
+  "fixture": "https://github.com/orgads/pnpm-update-optional-peer-fixture",
+  "fixtureRevision": "dbbfb3ef5afa82bf9c0419ff7f4db1e873fa0e35",
+  "inputs": {
+    "initial": {
+      "package.json": "43ebeba5af2b1ac586e5061f9739aa190cd7729d2c9900acfbe4a8721be5dea0",
+      "pnpm-workspace.yaml": "9edf936f4328acebeb577710691806b3b4b0dae3af9c48b5e5ca7546fda5c75e",
+      "pnpm-lock.yaml": "e0a85913139a007800b168a0c41ea88fcf9813c5ccc0a3e16b20d73a1b510e09"
+    },
+    "pass1": {
+      "package.json": "6e14b54d5b038f302054038b3e184234d8d20f411395ca8292d55f1e535f3ded",
+      "pnpm-workspace.yaml": "9edf936f4328acebeb577710691806b3b4b0dae3af9c48b5e5ca7546fda5c75e",
+      "pnpm-lock.yaml": "e2f224f8f8bca57ab7ea9ec2c65a04c88fe0e0853c81a51e595c77957fc49174"
+    },
+    "pass2": {
+      "package.json": "6e14b54d5b038f302054038b3e184234d8d20f411395ca8292d55f1e535f3ded",
+      "pnpm-workspace.yaml": "9edf936f4328acebeb577710691806b3b4b0dae3af9c48b5e5ca7546fda5c75e",
+      "pnpm-lock.yaml": "768e066162b5d043ba2fe23868b21d4db932c322a5bfca0044efa727d00a3dbe"
+    },
+    "control": {
+      "package.json": "6e14b54d5b038f302054038b3e184234d8d20f411395ca8292d55f1e535f3ded",
+      "pnpm-workspace.yaml": "9edf936f4328acebeb577710691806b3b4b0dae3af9c48b5e5ca7546fda5c75e",
+      "pnpm-lock.yaml": "768e066162b5d043ba2fe23868b21d4db932c322a5bfca0044efa727d00a3dbe"
+    }
+  },
+  "upstreamLockfileHashes": {
+    "pass1": "26efc464356b21b3ea02317e7cc3c18860491948eeeb0eb44e2eefccac206adf",
+    "pass2": "fad156b8804d51f7e5a8f875f347cbb08969c0131712b48e016f050f95e4635e"
+  },
+  "matchesUpstreamLockfiles": false,
+  "lockcone": {
+    "command": "lockcone diff PASS1..PASS2 --format json"
+  },
+  "snapshotKeys": {
+    "removed": [
+      "debug@4.4.3",
+      "vite-plugin-node@8.0.0(vite@8.3.7)"
+    ],
+    "added": [
+      "debug@4.4.3(supports-color@7.2.0)",
+      "vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7)"
+    ]
+  },
+  "independent": {
+    "debug": {
+      "declaration": "*",
+      "optional": true,
+      "baseEdge": null,
+      "headEdge": "7.2.0",
+      "providerSnapshot": true
+    },
+    "vitePluginNode": {
+      "declaresSupportsColor": false,
+      "declaresVite": "^8.0.0",
+      "headDebugEdge": "4.4.3(supports-color@7.2.0)",
+      "headViteEdge": "8.3.7",
+      "headTransitivePeers": [
+        "supports-color"
+      ],
+      "baseTransitivePeers": [
+        "supports-color"
+      ],
+      "importer": "8.0.0(supports-color@7.2.0)(vite@8.3.7)"
+    }
+  },
+  "peerBindings": {
+    "reportVersion": 1,
+    "causality": "not-established",
+    "changes": [
+      {
+        "id": "[\"debug\",\"4.4.3\",[\"debug@4.4.3\"],[\"debug@4.4.3(supports-color@7.2.0)\"]]",
+        "name": "debug",
+        "version": "4.4.3",
+        "shape": "one-to-one",
+        "ambiguous": false,
+        "events": [
+          "provider-added"
+        ],
+        "base": [
+          {
+            "id": "debug@4.4.3",
+            "name": "debug",
+            "version": "4.4.3",
+            "rawContext": null,
+            "patchHash": null,
+            "contextStatus": "none",
+            "problems": [],
+            "changed": true,
+            "metadata": "present",
+            "bindings": [
+              {
+                "peer": "supports-color",
+                "provider": null,
+                "providerVersion": null,
+                "nestedContext": null,
+                "kind": "unbound",
+                "declaration": {
+                  "package": "debug@4.4.3",
+                  "range": "*",
+                  "optional": true
+                },
+                "edge": null,
+                "inheritedThrough": [],
+                "inheritedOmitted": 0,
+                "listedTransitive": false,
+                "notes": []
+              }
+            ],
+            "transitivePeerDependencies": [],
+            "consumers": [
+              {
+                "workspace": ".",
+                "name": "pnpm-update-optional-peer-fixture",
+                "relation": "transitive",
+                "section": "devDependencies",
+                "path": [
+                  "dependency:[\".\",\"devDependencies\",\"vite-plugin-node\"]",
+                  "vite-plugin-node@8.0.0(vite@8.3.7)",
+                  "debug@4.4.3"
+                ],
+                "uncertain": true,
+                "uncertainty": [
+                  "dependency:[\".\",\"devDependencies\",\"vite-plugin-node\"]: the dependency entry is marked uncertain (a declaration issue or an uncertain resolved package)",
+                  "vite-plugin-node@8.0.0(vite@8.3.7): peer context (vite@8.3.7)",
+                  "vite-plugin-node@8.0.0(vite@8.3.7): the package declares peer dependencies",
+                  "vite-plugin-node@8.0.0(vite@8.3.7): the snapshot lists transitive peer dependencies",
+                  "debug@4.4.3: the package declares peer dependencies"
+                ]
+              }
+            ],
+            "consumersOmitted": 0,
+            "consumersNote": null
+          }
+        ],
+        "head": [
+          {
+            "id": "debug@4.4.3(supports-color@7.2.0)",
+            "name": "debug",
+            "version": "4.4.3",
+            "rawContext": "(supports-color@7.2.0)",
+            "patchHash": null,
+            "contextStatus": "parsed",
+            "problems": [],
+            "changed": true,
+            "metadata": "present",
+            "bindings": [
+              {
+                "peer": "supports-color",
+                "provider": "supports-color@7.2.0",
+                "providerVersion": "7.2.0",
+                "nestedContext": null,
+                "kind": "direct",
+                "declaration": {
+                  "package": "debug@4.4.3",
+                  "range": "*",
+                  "optional": true
+                },
+                "edge": {
+                  "holder": "debug@4.4.3(supports-color@7.2.0)",
+                  "section": "optionalDependencies",
+                  "name": "supports-color",
+                  "target": "supports-color@7.2.0"
+                },
+                "inheritedThrough": [],
+                "inheritedOmitted": 0,
+                "listedTransitive": false,
+                "notes": []
+              }
+            ],
+            "transitivePeerDependencies": [],
+            "consumers": [
+              {
+                "workspace": ".",
+                "name": "pnpm-update-optional-peer-fixture",
+                "relation": "transitive",
+                "section": "devDependencies",
+                "path": [
+                  "dependency:[\".\",\"devDependencies\",\"vite-plugin-node\"]",
+                  "vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7)",
+                  "debug@4.4.3(supports-color@7.2.0)"
+                ],
+                "uncertain": true,
+                "uncertainty": [
+                  "dependency:[\".\",\"devDependencies\",\"vite-plugin-node\"]: the dependency entry is marked uncertain (a declaration issue or an uncertain resolved package)",
+                  "vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7): peer context (supports-color@7.2.0)(vite@8.3.7)",
+                  "vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7): the package declares peer dependencies",
+                  "vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7): the snapshot lists transitive peer dependencies",
+                  "debug@4.4.3(supports-color@7.2.0): peer context (supports-color@7.2.0)",
+                  "debug@4.4.3(supports-color@7.2.0): the package declares peer dependencies"
+                ]
+              }
+            ],
+            "consumersOmitted": 0,
+            "consumersNote": null
+          }
+        ],
+        "instancesOmitted": {
+          "base": 0,
+          "head": 0
+        },
+        "correspondences": [
+          {
+            "base": "debug@4.4.3",
+            "head": "debug@4.4.3(supports-color@7.2.0)",
+            "support": "holder-rekeyed",
+            "established": true,
+            "edges": [
+              {
+                "support": "holder-rekeyed",
+                "alias": "debug",
+                "base": [
+                  {
+                    "holder": "vite-plugin-node@8.0.0(vite@8.3.7)",
+                    "section": "dependencies",
+                    "name": "debug",
+                    "target": "debug@4.4.3"
+                  }
+                ],
+                "head": [
+                  {
+                    "holder": "vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7)",
+                    "section": "dependencies",
+                    "name": "debug",
+                    "target": "debug@4.4.3(supports-color@7.2.0)"
+                  }
+                ],
+                "unique": true
+              }
+            ],
+            "edgesOmitted": 0,
+            "bindingChanges": [
+              {
+                "peer": "supports-color",
+                "change": "provider-added",
+                "before": null,
+                "after": "supports-color@7.2.0",
+                "kind": {
+                  "base": "unbound",
+                  "head": "direct"
+                },
+                "optional": true
+              }
+            ],
+            "patchHash": {
+              "base": null,
+              "head": null
+            }
+          }
+        ],
+        "correspondencesOmitted": 0,
+        "uncertainty": []
+      },
+      {
+        "id": "[\"vite-plugin-node\",\"8.0.0\",[\"vite-plugin-node@8.0.0(vite@8.3.7)\"],[\"vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7)\"]]",
+        "name": "vite-plugin-node",
+        "version": "8.0.0",
+        "shape": "one-to-one",
+        "ambiguous": false,
+        "events": [
+          "provider-added"
+        ],
+        "base": [
+          {
+            "id": "vite-plugin-node@8.0.0(vite@8.3.7)",
+            "name": "vite-plugin-node",
+            "version": "8.0.0",
+            "rawContext": "(vite@8.3.7)",
+            "patchHash": null,
+            "contextStatus": "parsed",
+            "problems": [],
+            "changed": true,
+            "metadata": "present",
+            "bindings": [
+              {
+                "peer": "@swc/core",
+                "provider": null,
+                "providerVersion": null,
+                "nestedContext": null,
+                "kind": "unbound",
+                "declaration": {
+                  "package": "vite-plugin-node@8.0.0",
+                  "range": "^1.7.26",
+                  "optional": true
+                },
+                "edge": null,
+                "inheritedThrough": [],
+                "inheritedOmitted": 0,
+                "listedTransitive": false,
+                "notes": []
+              },
+              {
+                "peer": "vite",
+                "provider": "vite@8.3.7",
+                "providerVersion": "8.3.7",
+                "nestedContext": null,
+                "kind": "direct",
+                "declaration": {
+                  "package": "vite-plugin-node@8.0.0",
+                  "range": "^8.0.0",
+                  "optional": false
+                },
+                "edge": {
+                  "holder": "vite-plugin-node@8.0.0(vite@8.3.7)",
+                  "section": "dependencies",
+                  "name": "vite",
+                  "target": "vite@8.3.7"
+                },
+                "inheritedThrough": [],
+                "inheritedOmitted": 0,
+                "listedTransitive": false,
+                "notes": []
+              }
+            ],
+            "transitivePeerDependencies": [
+              "supports-color"
+            ],
+            "consumers": [
+              {
+                "workspace": ".",
+                "name": "pnpm-update-optional-peer-fixture",
+                "relation": "direct",
+                "section": "devDependencies",
+                "path": [
+                  "dependency:[\".\",\"devDependencies\",\"vite-plugin-node\"]",
+                  "vite-plugin-node@8.0.0(vite@8.3.7)"
+                ],
+                "uncertain": true,
+                "uncertainty": [
+                  "dependency:[\".\",\"devDependencies\",\"vite-plugin-node\"]: the dependency entry is marked uncertain (a declaration issue or an uncertain resolved package)",
+                  "vite-plugin-node@8.0.0(vite@8.3.7): peer context (vite@8.3.7)",
+                  "vite-plugin-node@8.0.0(vite@8.3.7): the package declares peer dependencies",
+                  "vite-plugin-node@8.0.0(vite@8.3.7): the snapshot lists transitive peer dependencies"
+                ]
+              }
+            ],
+            "consumersOmitted": 0,
+            "consumersNote": null
+          }
+        ],
+        "head": [
+          {
+            "id": "vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7)",
+            "name": "vite-plugin-node",
+            "version": "8.0.0",
+            "rawContext": "(supports-color@7.2.0)(vite@8.3.7)",
+            "patchHash": null,
+            "contextStatus": "parsed",
+            "problems": [],
+            "changed": true,
+            "metadata": "present",
+            "bindings": [
+              {
+                "peer": "@swc/core",
+                "provider": null,
+                "providerVersion": null,
+                "nestedContext": null,
+                "kind": "unbound",
+                "declaration": {
+                  "package": "vite-plugin-node@8.0.0",
+                  "range": "^1.7.26",
+                  "optional": true
+                },
+                "edge": null,
+                "inheritedThrough": [],
+                "inheritedOmitted": 0,
+                "listedTransitive": false,
+                "notes": []
+              },
+              {
+                "peer": "supports-color",
+                "provider": "supports-color@7.2.0",
+                "providerVersion": "7.2.0",
+                "nestedContext": null,
+                "kind": "transitive",
+                "declaration": null,
+                "edge": null,
+                "inheritedThrough": [
+                  {
+                    "holder": "vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7)",
+                    "section": "dependencies",
+                    "name": "debug",
+                    "target": "debug@4.4.3(supports-color@7.2.0)"
+                  }
+                ],
+                "inheritedOmitted": 0,
+                "listedTransitive": true,
+                "notes": []
+              },
+              {
+                "peer": "vite",
+                "provider": "vite@8.3.7",
+                "providerVersion": "8.3.7",
+                "nestedContext": null,
+                "kind": "direct",
+                "declaration": {
+                  "package": "vite-plugin-node@8.0.0",
+                  "range": "^8.0.0",
+                  "optional": false
+                },
+                "edge": {
+                  "holder": "vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7)",
+                  "section": "dependencies",
+                  "name": "vite",
+                  "target": "vite@8.3.7"
+                },
+                "inheritedThrough": [],
+                "inheritedOmitted": 0,
+                "listedTransitive": false,
+                "notes": []
+              }
+            ],
+            "transitivePeerDependencies": [
+              "supports-color"
+            ],
+            "consumers": [
+              {
+                "workspace": ".",
+                "name": "pnpm-update-optional-peer-fixture",
+                "relation": "direct",
+                "section": "devDependencies",
+                "path": [
+                  "dependency:[\".\",\"devDependencies\",\"vite-plugin-node\"]",
+                  "vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7)"
+                ],
+                "uncertain": true,
+                "uncertainty": [
+                  "dependency:[\".\",\"devDependencies\",\"vite-plugin-node\"]: the dependency entry is marked uncertain (a declaration issue or an uncertain resolved package)",
+                  "vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7): peer context (supports-color@7.2.0)(vite@8.3.7)",
+                  "vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7): the package declares peer dependencies",
+                  "vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7): the snapshot lists transitive peer dependencies"
+                ]
+              }
+            ],
+            "consumersOmitted": 0,
+            "consumersNote": null
+          }
+        ],
+        "instancesOmitted": {
+          "base": 0,
+          "head": 0
+        },
+        "correspondences": [
+          {
+            "base": "vite-plugin-node@8.0.0(vite@8.3.7)",
+            "head": "vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7)",
+            "support": "same-holder",
+            "established": true,
+            "edges": [
+              {
+                "support": "same-holder",
+                "alias": "vite-plugin-node",
+                "base": [
+                  {
+                    "holder": "dependency:[\".\",\"devDependencies\",\"vite-plugin-node\"]",
+                    "section": "devDependencies",
+                    "name": "vite-plugin-node",
+                    "target": "vite-plugin-node@8.0.0(vite@8.3.7)"
+                  }
+                ],
+                "head": [
+                  {
+                    "holder": "dependency:[\".\",\"devDependencies\",\"vite-plugin-node\"]",
+                    "section": "devDependencies",
+                    "name": "vite-plugin-node",
+                    "target": "vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7)"
+                  }
+                ],
+                "unique": true
+              }
+            ],
+            "edgesOmitted": 0,
+            "bindingChanges": [
+              {
+                "peer": "supports-color",
+                "change": "provider-added",
+                "before": null,
+                "after": "supports-color@7.2.0",
+                "kind": {
+                  "base": null,
+                  "head": "transitive"
+                },
+                "optional": null
+              }
+            ],
+            "patchHash": {
+              "base": null,
+              "head": null
+            }
+          }
+        ],
+        "correspondencesOmitted": 0,
+        "uncertainty": []
+      }
+    ],
+    "changesOmitted": 0,
+    "limits": {
+      "changes": 100,
+      "instancesPerChangeSide": 20,
+      "correspondencesPerChange": 16,
+      "edgesPerCorrespondence": 5,
+      "consumersPerInstance": 50,
+      "consumerTraversalsPerSide": 100,
+      "contextLength": 4096,
+      "contextDepth": 16,
+      "contextSegments": 256
+    },
+    "truncated": []
+  },
+  "consumerPaths": [
+    {
+      "side": "base",
+      "instance": "debug@4.4.3",
+      "workspace": ".",
+      "name": "pnpm-update-optional-peer-fixture",
+      "relation": "transitive",
+      "section": "devDependencies",
+      "path": [
+        "dependency:[\".\",\"devDependencies\",\"vite-plugin-node\"]",
+        "vite-plugin-node@8.0.0(vite@8.3.7)",
+        "debug@4.4.3"
+      ],
+      "uncertain": true,
+      "uncertainty": [
+        "dependency:[\".\",\"devDependencies\",\"vite-plugin-node\"]: the dependency entry is marked uncertain (a declaration issue or an uncertain resolved package)",
+        "vite-plugin-node@8.0.0(vite@8.3.7): peer context (vite@8.3.7)",
+        "vite-plugin-node@8.0.0(vite@8.3.7): the package declares peer dependencies",
+        "vite-plugin-node@8.0.0(vite@8.3.7): the snapshot lists transitive peer dependencies",
+        "debug@4.4.3: the package declares peer dependencies"
+      ]
+    },
+    {
+      "side": "head",
+      "instance": "debug@4.4.3(supports-color@7.2.0)",
+      "workspace": ".",
+      "name": "pnpm-update-optional-peer-fixture",
+      "relation": "transitive",
+      "section": "devDependencies",
+      "path": [
+        "dependency:[\".\",\"devDependencies\",\"vite-plugin-node\"]",
+        "vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7)",
+        "debug@4.4.3(supports-color@7.2.0)"
+      ],
+      "uncertain": true,
+      "uncertainty": [
+        "dependency:[\".\",\"devDependencies\",\"vite-plugin-node\"]: the dependency entry is marked uncertain (a declaration issue or an uncertain resolved package)",
+        "vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7): peer context (supports-color@7.2.0)(vite@8.3.7)",
+        "vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7): the package declares peer dependencies",
+        "vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7): the snapshot lists transitive peer dependencies",
+        "debug@4.4.3(supports-color@7.2.0): peer context (supports-color@7.2.0)",
+        "debug@4.4.3(supports-color@7.2.0): the package declares peer dependencies"
+      ]
+    },
+    {
+      "side": "base",
+      "instance": "vite-plugin-node@8.0.0(vite@8.3.7)",
+      "workspace": ".",
+      "name": "pnpm-update-optional-peer-fixture",
+      "relation": "direct",
+      "section": "devDependencies",
+      "path": [
+        "dependency:[\".\",\"devDependencies\",\"vite-plugin-node\"]",
+        "vite-plugin-node@8.0.0(vite@8.3.7)"
+      ],
+      "uncertain": true,
+      "uncertainty": [
+        "dependency:[\".\",\"devDependencies\",\"vite-plugin-node\"]: the dependency entry is marked uncertain (a declaration issue or an uncertain resolved package)",
+        "vite-plugin-node@8.0.0(vite@8.3.7): peer context (vite@8.3.7)",
+        "vite-plugin-node@8.0.0(vite@8.3.7): the package declares peer dependencies",
+        "vite-plugin-node@8.0.0(vite@8.3.7): the snapshot lists transitive peer dependencies"
+      ]
+    },
+    {
+      "side": "head",
+      "instance": "vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7)",
+      "workspace": ".",
+      "name": "pnpm-update-optional-peer-fixture",
+      "relation": "direct",
+      "section": "devDependencies",
+      "path": [
+        "dependency:[\".\",\"devDependencies\",\"vite-plugin-node\"]",
+        "vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7)"
+      ],
+      "uncertain": true,
+      "uncertainty": [
+        "dependency:[\".\",\"devDependencies\",\"vite-plugin-node\"]: the dependency entry is marked uncertain (a declaration issue or an uncertain resolved package)",
+        "vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7): peer context (supports-color@7.2.0)(vite@8.3.7)",
+        "vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7): the package declares peer dependencies",
+        "vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7): the snapshot lists transitive peer dependencies"
+      ]
+    }
+  ],
+  "summary": {
+    "explained": 0,
+    "partially-explained": 0,
+    "unexplained": 0,
+    "unknown": 3
+  },
+  "warnings": [],
+  "control": {
+    "peerContextChanges": 0,
+    "groups": 0
+  },
+  "firstPass": {
+    "groups": 206,
+    "summary": {
+      "explained": 0,
+      "partially-explained": 0,
+      "unexplained": 18,
+      "unknown": 188
+    },
+    "peerContextChanges": [
+      {
+        "package": "ajv-formats@3.0.1",
+        "shape": "merge",
+        "events": [
+          "instance-merged",
+          "provider-version-changed"
+        ]
+      },
+      {
+        "package": "debug@4.4.3",
+        "shape": "one-to-one",
+        "events": [
+          "provider-removed"
+        ]
+      },
+      {
+        "package": "vite-plugin-node@8.0.0",
+        "shape": "one-to-one",
+        "events": [
+          "provider-removed",
+          "provider-version-changed"
+        ]
+      }
+    ]
+  },
+  "textExcerpt": [
+    "Peer context changes (committed keys, metadata, and edges; why pnpm chose a provider is not established):",
+    "  debug@4.4.3: provider-added (one-to-one)",
+    "    debug@4.4.3 → debug@4.4.3(supports-color@7.2.0) [holder-rekeyed]",
+    "      supports-color: (no provider) → supports-color@7.2.0 (provider-added; head: direct optional peer, declaration and edge agree)",
+    "    Workspace consumers (graph reachability, not runtime usage):",
+    "      base: . (pnpm-update-optional-peer-fixture): transitive consumer via devDependencies of debug@4.4.3; uncertain (reasons: explain)",
+    "      head: . (pnpm-update-optional-peer-fixture): transitive consumer via devDependencies of debug@4.4.3(supports-color@7.2.0); uncertain (reasons: explain)",
+    "  vite-plugin-node@8.0.0: provider-added (one-to-one)",
+    "    vite-plugin-node@8.0.0(vite@8.3.7) → vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7) [same-holder]",
+    "      supports-color: (no provider) → supports-color@7.2.0 (provider-added; head: transitive context, inherited through a dependency)",
+    "    Workspace consumers (graph reachability, not runtime usage):",
+    "      base: . (pnpm-update-optional-peer-fixture): direct consumer via devDependencies of vite-plugin-node@8.0.0(vite@8.3.7); uncertain (reasons: explain)",
+    "      head: . (pnpm-update-optional-peer-fixture): direct consumer via devDependencies of vite-plugin-node@8.0.0(supports-color@7.2.0)(vite@8.3.7); uncertain (reasons: explain)"
+  ]
+}

@@ -5,6 +5,32 @@ release or the corresponding comparison of commits.
 
 ## [Unreleased]
 
+### Added
+
+- Peer context reports for package instances whose name and version exist on both
+  sides, including changes that leave every version the same. Each change lists the
+  instance keys of both sides, the providers before and after, and the events
+  `provider-added/removed`, `provider-version-changed`, `nested-context-changed`,
+  `evidence-changed`, and `instance-split/merged/added/removed`.
+- Evidence levels for every binding: `direct` needs the peer declaration, the
+  provider in the key, and a snapshot edge to it; `transitive` is a context inherited
+  through a dependency edge; `unconfirmed` and `conflicting` keep their reason.
+  Optional peers, nested and scoped contexts, and patch hashes are supported. Hashed,
+  malformed, and oversized suffixes are kept as written and give no bindings.
+- Pairing of instances through the dependents that hold them. Possible pairs are
+  listed as `ambiguous` when the dependents do not single one out, and nothing is
+  paired by name and version alone.
+- Workspace consumers with paths for every listed instance, a `peerBindings` JSON
+  section with its own `reportVersion` (currently `1`), peer evidence in
+  `why`/`explain`, and a [peer context reference](docs/peer-contract.md).
+- A case study of pnpm/pnpm#14895 on lockfiles reproduced with pnpm 12.4.1
+  (`examples/peer-acceptance.mjs`).
+
+### Changed
+
+- JSON reports gain the `peerBindings` section. `schemaVersion` stays `4`, and no
+  existing field, classification, or warning changes.
+
 ## [0.4.0]
 
 ### Added

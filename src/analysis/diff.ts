@@ -23,6 +23,8 @@ import type { OverrideReport } from './overrides.js';
 import { compareOverrides } from './overrides.js';
 import type { PatchReport } from './patches.js';
 import { patchReport } from './patches.js';
+import type { PeerBindingReport } from './peers.js';
+import { comparePeerBindings } from './peers.js';
 
 export type Confidence =
   | 'explained'
@@ -85,6 +87,9 @@ export interface Report {
   patches: PatchReport;
   // Added after 0.3.0 without changing schemaVersion; see overrides.reportVersion.
   overrides: OverrideReport;
+  // Added after 0.4.0 without changing schemaVersion; see peerBindings.reportVersion.
+  // Observed peer contexts only: it never changes a group's confidence or the warnings.
+  peerBindings: PeerBindingReport;
   changes: Change[];
   pathNodes: Record<string, EvidencePathNode>;
   warnings: string[];
@@ -575,6 +580,7 @@ export function diff(base: PnpmState, head: PnpmState): Report {
     catalogChanges: catalogs,
     patches: patchReport(base, head),
     overrides: overrides.report,
+    peerBindings: comparePeerBindings(base, head),
     changes,
     pathNodes,
     warnings: [...warnings].sort(),

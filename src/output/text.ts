@@ -12,7 +12,13 @@ import type {
   PatchChange,
   PatchSide,
 } from '../analysis/patches.js';
+import type {
+  BindingChange,
+  PeerContextChange,
+  PeerInstance,
+} from '../analysis/peers.js';
 import type { Declaration } from '../pnpm/catalogs.js';
+import type { PeerBinding } from '../pnpm/peers.js';
 import { sanitizeTerminalControls } from '../sanitize.js';
 
 const headings: Record<Confidence, string> = {
@@ -237,6 +243,173 @@ function overrideLines(change: OverrideChange, detail: boolean): string[] {
   return lines;
 }
 
+function bindingLabel(binding: PeerBinding | undefined): string {
+  if (!binding) return 'not in the context';
+  const optional = binding.declaration?.optional ? 'optional ' : '';
+  switch (binding.kind) {
+    case 'direct':
+      return `direct ${optional}peer, declaration and edge agree`;
+    case 'transitive':
+      return 'transitive context, inherited through a dependency';
+    case 'unconfirmed':
+      return 'unconfirmed';
+    case 'conflicting':
+      return 'conflicting';
+    case 'unbound':
+      return `declared ${optional}peer without a provider`;
+    case 'own-dependency':
+      return `declared ${optional}peer resolved by an ordinary edge`;
+  }
+}
+
+function bindingEvidence(side: string, binding: PeerBinding, indent: string): string[] {
+  const lines: string[] = [];
+  if (binding.declaration)
+    lines.push(
+      `${indent}${side} declaration: ${binding.declaration.package} peerDependencies.${binding.peer} ${JSON.stringify(binding.declaration.range)}${binding.declaration.optional ? ' (optional)' : ''}`,
+    );
+  else if (binding.provider !== null)
+    lines.push(
+      `${indent}${side} declaration: (the package does not declare this peer)`,
+    );
+  if (binding.edge)
+    lines.push(
+      `${indent}${side} edge: ${binding.edge.holder} -- ${binding.edge.section}.${binding.edge.name} -> ${binding.edge.target}`,
+    );
+  for (const edge of binding.inheritedThrough)
+    lines.push(
+      `${indent}${side} inherited through: ${edge.holder} -- ${edge.section}.${edge.name} -> ${edge.target}`,
+    );
+  if (binding.inheritedOmitted)
+    lines.push(
+      `${indent}${side}: ${binding.inheritedOmitted} more inheriting edges not listed`,
+    );
+  if (binding.kind === 'transitive')
+    lines.push(
+      `${indent}${side} transitivePeerDependencies: ${binding.listedTransitive ? 'lists' : 'does not list'} ${binding.peer}`,
+    );
+  for (const note of binding.notes)
+    lines.push(`${indent}${side} note: ${note.message}`);
+  return lines;
+}
+
+function bindingChangeLines(
+  item: BindingChange,
+  before: PeerInstance,
+  after: PeerInstance,
+  detail: boolean,
+): string[] {
+  const was = before.bindings.find((binding) => binding.peer === item.peer);
+  const now = after.bindings.find((binding) => binding.peer === item.peer);
+  const kinds =
+    item.change === 'provider-added'
+      ? `head: ${bindingLabel(now)}`
+      : item.change === 'provider-removed'
+        ? `base: ${bindingLabel(was)}`
+        : bindingLabel(was) === bindingLabel(now)
+          ? bindingLabel(now)
+          : `base: ${bindingLabel(was)}; head: ${bindingLabel(now)}`;
+  const lines = [
+    `      ${item.peer}: ${item.before ?? '(no provider)'} → ${item.after ?? '(no provider)'} (${item.change}; ${kinds})`,
+  ];
+  if (detail) {
+    if (was) lines.push(...bindingEvidence('base', was, '        '));
+    if (now) lines.push(...bindingEvidence('head', now, '        '));
+  }
+  return lines;
+}
+
+function peerLines(change: PeerContextChange, detail: boolean): string[] {
+  const lines = [
+    `  ${change.name}@${change.version}: ${change.events.join(', ') || 'no readable binding change'} (${change.shape}${change.ambiguous ? ', ambiguous' : ''})`,
+  ];
+  const sides = [
+    ['base', change.base],
+    ['head', change.head],
+  ] as const;
+  const paired = new Set<string>();
+  for (const pair of change.correspondences) {
+    const before = change.base.find((instance) => instance.id === pair.base)!;
+    const after = change.head.find((instance) => instance.id === pair.head)!;
+    paired.add(`base:${pair.base}`).add(`head:${pair.head}`);
+    lines.push(
+      `    ${shortHash(pair.base)} → ${shortHash(pair.head)} [${pair.established ? '' : 'possible; '}${pair.support}]`,
+    );
+    if (pair.bindingChanges === null)
+      lines.push('      (a context is unreadable; bindings are not compared)');
+    else if (!pair.bindingChanges.length) lines.push('      (no binding differs)');
+    else
+      for (const item of pair.bindingChanges)
+        lines.push(...bindingChangeLines(item, before, after, detail));
+    if (detail) {
+      for (const edge of pair.edges)
+        for (const [label, list] of [
+          ['base', edge.base],
+          ['head', edge.head],
+        ] as const)
+          for (const item of list)
+            lines.push(
+              `      tied by ${label} edge (${edge.support}${edge.unique ? '' : ', not unique'}): ${item.holder} -- ${item.section}.${item.name} -> ${item.target}`,
+            );
+      if (pair.edgesOmitted)
+        lines.push(`      ${pair.edgesOmitted} more shared dependents not listed`);
+    }
+  }
+  if (change.correspondencesOmitted)
+    lines.push(
+      `    ${change.correspondencesOmitted} possible correspondences not listed; no pair was chosen`,
+    );
+  // Instances outside a listed pair still show the providers their keys name.
+  for (const [label, instances] of sides)
+    for (const instance of instances) {
+      if (paired.has(`${label}:${instance.id}`) || !instance.changed) continue;
+      lines.push(`    ${label} only: ${shortHash(instance.id)}`);
+      for (const binding of instance.bindings) {
+        if (binding.kind === 'unbound' || binding.kind === 'own-dependency') continue;
+        lines.push(
+          `      ${binding.peer}: ${binding.provider} (${bindingLabel(binding)})`,
+        );
+        if (detail) lines.push(...bindingEvidence(label, binding, '        '));
+      }
+    }
+  for (const label of ['base', 'head'] as const)
+    if (change.instancesOmitted[label])
+      lines.push(
+        `    ${label}: ${change.instancesOmitted[label]} more instances not listed`,
+      );
+  const consumers = sides.flatMap(([label, instances]) =>
+    instances
+      .filter((instance) => instance.changed || paired.has(`${label}:${instance.id}`))
+      .flatMap((instance) =>
+        instance.consumers.map((consumer) => ({ label, instance, consumer })),
+      ),
+  );
+  lines.push('    Workspace consumers (graph reachability, not runtime usage):');
+  if (!consumers.length) lines.push('      (none reach a changed instance)');
+  for (const { label, instance, consumer } of consumers) {
+    const owner =
+      consumer.name && consumer.name !== consumer.workspace
+        ? ` (${consumer.name})`
+        : '';
+    lines.push(
+      `      ${label}: ${consumer.workspace}${owner}: ${consumer.relation} consumer via ${consumer.section} of ${shortHash(instance.id)}${consumer.uncertain ? (detail ? '; uncertain' : '; uncertain (reasons: explain)') : ''}`,
+    );
+    if (detail) {
+      lines.push(`        path ${consumer.path.join(' → ')}`);
+      for (const reason of consumer.uncertainty)
+        lines.push(`        Uncertainty: ${reason}`);
+    }
+  }
+  for (const [label, instances] of sides)
+    for (const instance of instances)
+      if (instance.consumersOmitted)
+        lines.push(
+          `      ${label}: ${instance.consumersOmitted} more consumers of ${shortHash(instance.id)} not listed`,
+        );
+  for (const reason of change.uncertainty) lines.push(`    Uncertainty: ${reason}`);
+  return lines;
+}
+
 export function renderText(report: Report, options: { detail?: boolean } = {}): string {
   const detail = options.detail ?? false;
   const lines = [`LockCone: ${report.base}..${report.head}`, '', 'Manifest changes:'];
@@ -330,6 +503,15 @@ export function renderText(report: Report, options: { detail?: boolean } = {}): 
     for (const change of overrides.changes)
       lines.push(...overrideLines(change, detail));
     for (const message of overrides.truncated) lines.push(`  ${message}`);
+  }
+  const peers = report.peerBindings;
+  if (peers.changes.length || peers.truncated.length) {
+    lines.push(
+      '',
+      'Peer context changes (committed keys, metadata, and edges; why pnpm chose a provider is not established):',
+    );
+    for (const change of peers.changes) lines.push(...peerLines(change, detail));
+    for (const message of peers.truncated) lines.push(`  ${message}`);
   }
   for (const confidence of Object.keys(headings) as Confidence[]) {
     const changes = report.changes.filter((change) => change.confidence === confidence);

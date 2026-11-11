@@ -649,6 +649,7 @@ describe('dependency cone analysis', () => {
         catalogChanges: [],
         patches: full.patches,
         overrides: full.overrides,
+        peerBindings: full.peerBindings,
         changes: [change],
         pathNodes: {},
         warnings: [],

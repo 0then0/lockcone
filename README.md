@@ -90,8 +90,9 @@ resolution updates or deduplication are hypotheses, not detected causes.
 - `explain [base..head]`: the same report as `diff`, with the complete dependency
   path and uncertainty reasons for each patch consumer.
 - `why <package>`: show changes for that exact package name, matching direct
-  dependency entries, relevant declarations, evidence paths, and patch and
-  override changes that name the package.
+  dependency entries, relevant declarations, evidence paths, patch and override
+  changes that name the package, and peer context changes of the package or of
+  instances that name it as a provider.
 
 All commands accept `--base`, `--head`, `--cwd`, and `--format text|json`.
 Without refs they compare `HEAD~1..HEAD`. Two-dot ranges compare the named
@@ -228,6 +229,43 @@ names included, with an exact stable version or a stable registry range as the
 value. See the [override reference](docs/override-contract.md) for the evidence
 rules, JSON fields, and limits.
 
+## Peer context changes
+
+pnpm records the peer providers of a package instance as a suffix of its lockfile
+key, and that suffix can change while every version stays the same. LockCone
+compares the instances whose name and version exist on both sides:
+
+```text
+Peer context changes (committed keys, metadata, and edges; why pnpm chose a provider is not established):
+  debug@4.4.3: provider-added (one-to-one)
+    debug@4.4.3 → debug@4.4.3(supports-color@7.2.0) [holder-rekeyed]
+      supports-color: (no provider) → supports-color@7.2.0 (provider-added; head: direct optional peer, declaration and edge agree)
+    Workspace consumers (graph reachability, not runtime usage):
+      head: . (pnpm-update-optional-peer-fixture): transitive consumer via devDependencies of debug@4.4.3(supports-color@7.2.0); uncertain (reasons: explain)
+```
+
+This output abbreviates the bundled lockfiles of
+[pnpm/pnpm#14895](docs/acceptance/pnpm-14895/README.md), written by pnpm 12.4.1.
+
+- A name in the suffix is not a binding by itself. A `direct` binding needs the
+  peer declaration in the package metadata, the provider in the key, and a snapshot
+  edge to that instance. A `transitive` context is inherited through a dependency
+  edge and is labeled as such. Anything else is `unconfirmed` or `conflicting`, with
+  its reason.
+- Events are `provider-added/removed`, `provider-version-changed`,
+  `nested-context-changed`, `evidence-changed`, and `instance-split/merged/added/removed`.
+- Equal name and version do not pair two instances. Pairs are tied by the dependents
+  that hold them. When those point at several instances, every possible pair is
+  listed and the change is `ambiguous`.
+- Nested and scoped contexts and patch hashes are read by structure. Hashed,
+  malformed, or oversized suffixes are kept as written and give no bindings.
+- `why` and `explain` add the declaration, the edges, and every consumer path.
+
+The section reports what the two commits show. It does not say why pnpm chose a
+provider, and it never changes a classification: an instance with a peer context
+stays `unknown`. See the [peer context reference](docs/peer-contract.md) for the
+evidence levels, pairing rules, JSON fields, and limits.
+
 ## Supported inputs
 
 - pnpm dependency lockfile v9, optionally preceded by the environment document
@@ -239,6 +277,8 @@ rules, JSON fields, and limits.
 - Default and named catalogs defined directly in root `pnpm-workspace.yaml`,
   using stable registry ranges.
 - Parallel package versions, peer suffixes, metadata changes, and edge changes.
+- Peer contexts in snapshot keys: `(name@version)` groups, nested and scoped, next to
+  `patch_hash` groups. See the [peer context reference](docs/peer-contract.md#supported-forms).
 - Patches declared as `patchedDependencies` in root `pnpm-workspace.yaml` or the
   root `package.json` `pnpm` field, recorded in the lockfile as a hash string or a
   `{ hash, path }` object, with name, exact-version, and registry-range selectors.
@@ -262,7 +302,9 @@ incomplete edges: they retain conservative uncertainty. An unchanged `catalog:`
 override whose catalog changed stays global uncertainty. Patches are reported in
 detail, but their global warnings remain. Hooks are never executed. Global unmodeled
 input changes can make all groups `unknown`; peer uncertainty applies to affected
-instances and paths.
+instances and paths. Peer bindings are reported as observed: peer ranges are not
+checked, hashed suffixes are not decoded, and a context change is never attributed
+to a resolver decision.
 
 Separate workspace lockfiles, custom lockfile locations, other package managers,
 registry state, platform selection, global pnpm inputs, and resolver replay are
@@ -277,7 +319,8 @@ lockcone diff --base origin/main --head HEAD --format json > lockcone-report.jso
 
 The JSON report uses `schemaVersion: 4` and includes resolved commit IDs,
 `manifestChanges`, `declarations`, `declarationChanges`, `catalogChanges`,
-`patches`, `overrides`, `changes`, `pathNodes`, `warnings`, and `summary`.
+`patches`, `overrides`, `peerBindings`, `changes`, `pathNodes`, `warnings`, and
+`summary`.
 
 `manifestChanges` contains actual manifest edits. `declarations.base/head`
 separates original specifiers, catalog origins, effective ranges, observed
@@ -289,8 +332,9 @@ confidence, a reason, evidence, and edge/metadata details. Follow `evidence.root
 to a declaration on the same side; follow `pathId` through `pathNodes` to read
 the dependency path. Metadata differences use `null` for an absent field.
 
-`patches` was added in 0.3.0 and `overrides` in 0.4.0, both without changing the
-schema version. Each carries its own `reportVersion` (currently `1`). An evidence
+`patches` was added in 0.3.0, `overrides` in 0.4.0, and `peerBindings` after 0.4.0,
+all without changing the schema version. Each carries its own `reportVersion`
+(currently `1`). `peerBindings` changes no other field. An evidence
 entry gets a `via` field only when its path starts at an override edge; evidence of
 declarations, catalogs, and patches is unchanged. Schema v4 consumers that ignore
 unknown fields keep working.
@@ -343,7 +387,9 @@ real patch change, a moved declaration, and the lockfile format change of a pnpm
 migration against Git and the raw lockfile. The
 [nitsuah/farm-3j case](docs/acceptance/farm-3j/README.md) checks a PostCSS override
 repair: what the override analysis explains, and the manifest/lockfile mismatches
-that keep every group `unknown`.
+that keep every group `unknown`. The
+[pnpm/pnpm#14895 case](docs/acceptance/pnpm-14895/README.md) checks an optional peer
+context that appears at unchanged versions, on lockfiles reproduced with pnpm 12.4.1.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for checks, fixtures, and release procedures,
 and [CHANGELOG.md](CHANGELOG.md) for release history. Use the GitHub issue forms

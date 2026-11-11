@@ -1,0 +1,9 @@
+{
+  "name": "pnpm-update-optional-peer-fixture",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "@nestjs/cli": "11.0.24",
+    "vite-plugin-node": "8.0.0"
+  }
+}
