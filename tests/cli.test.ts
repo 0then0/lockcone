@@ -88,7 +88,7 @@ describe('compiled CLI', () => {
     ).toContain('Git blame for dependency changes');
     expect(
       execFileSync(process.execPath, [cli, '--version'], { encoding: 'utf8' }).trim(),
-    ).toBe('0.5.0');
+    ).toBe('0.6.0');
   });
 
   it('reads both Git states and emits parseable JSON, keeping unexplained changes non-fatal', () => {

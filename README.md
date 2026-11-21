@@ -44,7 +44,7 @@ lockcone --help
 Replace `VERSION` with the archive's version. Each release includes `SHA256SUMS`
 for checking the download. Catalog support requires v0.2 or later, patch reports
 require v0.3 or later, override reports require v0.4 or later, and peer context
-reports require v0.5 or later.
+reports require v0.5 or later. Tarball integrity reports require v0.6 or later.
 
 ## Read a dependency report
 
