@@ -5,6 +5,18 @@ release or the corresponding comparison of commits.
 
 ## [Unreleased]
 
+### Added
+
+- Report missing `resolution.integrity` for unchanged HTTP(S) tarball entries.
+  Text and the new `tarballIntegrity` JSON section show the original digest,
+  linked snapshot instances, direct and transitive workspace paths, and coverage
+  limits. The [pnpm #14351 lab](docs/acceptance/pnpm-14351/README.md) compares the
+  published pnpm 10 CLI with the backport build.
+
+### Changed
+
+- Mask HTTP(S) URL user info, query strings, and fragments in text and JSON reports.
+
 ## [0.5.0]
 
 See the [v0.5 release notes](docs/release-notes-v0.5.md) for compatibility and limits.

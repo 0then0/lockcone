@@ -111,6 +111,10 @@ export function why(report: Report, name: string): Report {
           ),
       ),
     },
+    tarballIntegrity: {
+      ...report.tarballIntegrity,
+      changes: report.tarballIntegrity.changes.filter((change) => change.name === name),
+    },
     pathNodes,
     summary: summarize(changes),
   };

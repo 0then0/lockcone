@@ -650,6 +650,7 @@ describe('dependency cone analysis', () => {
         patches: full.patches,
         overrides: full.overrides,
         peerBindings: full.peerBindings,
+        tarballIntegrity: full.tarballIntegrity,
         changes: [change],
         pathNodes: {},
         warnings: [],

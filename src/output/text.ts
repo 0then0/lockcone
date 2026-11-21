@@ -17,9 +17,10 @@ import type {
   PeerContextChange,
   PeerInstance,
 } from '../analysis/peers.js';
+import type { TarballIntegrityLoss } from '../analysis/tarball-integrity.js';
 import type { Declaration } from '../pnpm/catalogs.js';
 import type { PeerBinding } from '../pnpm/peers.js';
-import { sanitizeTerminalControls } from '../sanitize.js';
+import { redactUrlFields, sanitizeTerminalControls } from '../sanitize.js';
 
 const headings: Record<Confidence, string> = {
   explained: 'Explained changes (reachable from changed root)',
@@ -410,7 +411,44 @@ function peerLines(change: PeerContextChange, detail: boolean): string[] {
   return lines;
 }
 
-export function renderText(report: Report, options: { detail?: boolean } = {}): string {
+function tarballLines(change: TarballIntegrityLoss, detail: boolean): string[] {
+  const lines = [
+    `  ${change.packageKey}`,
+    `    resolution.tarball: ${change.tarball}`,
+    `    resolution.integrity: ${change.integrity.before} → (absent)`,
+  ];
+  for (const side of ['base', 'head'] as const) {
+    const { instances, coverage, notes } = change[side];
+    lines.push(`    ${side} workspace consumers (coverage: ${coverage}):`);
+    if (!instances.some((instance) => instance.consumers.length))
+      lines.push('      (no paths found)');
+    for (const instance of instances) {
+      for (const consumer of instance.consumers) {
+        const name =
+          consumer.name && consumer.name !== consumer.workspace
+            ? ` (${consumer.name})`
+            : '';
+        lines.push(
+          `      ${consumer.workspace}${name}: ${consumer.relation} via ${consumer.section}`,
+          `        path ${consumer.path.join(' → ')}`,
+        );
+        if (detail)
+          for (const reason of consumer.uncertainty)
+            lines.push(`        Uncertainty: ${reason}`);
+      }
+      if (instance.omitted)
+        lines.push(
+          `      ${instance.omitted} more consumers of ${instance.id} omitted.`,
+        );
+      if (instance.note) lines.push(`      ${instance.id}: ${instance.note}`);
+    }
+    for (const note of notes) lines.push(`      ${note}`);
+  }
+  return lines;
+}
+
+export function renderText(input: Report, options: { detail?: boolean } = {}): string {
+  const report = redactUrlFields(input);
   const detail = options.detail ?? false;
   const lines = [`LockCone: ${report.base}..${report.head}`, '', 'Manifest changes:'];
   if (!report.manifestChanges.length) lines.push('  None.');
@@ -512,6 +550,11 @@ export function renderText(report: Report, options: { detail?: boolean } = {}): 
     );
     for (const change of peers.changes) lines.push(...peerLines(change, detail));
     for (const message of peers.truncated) lines.push(`  ${message}`);
+  }
+  if (report.tarballIntegrity.changes.length) {
+    lines.push('', 'Tarball integrity losses (lockfile metadata and workspace paths):');
+    for (const change of report.tarballIntegrity.changes)
+      lines.push(...tarballLines(change, detail));
   }
   for (const confidence of Object.keys(headings) as Confidence[]) {
     const changes = report.changes.filter((change) => change.confidence === confidence);

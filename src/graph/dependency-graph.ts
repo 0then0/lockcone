@@ -11,12 +11,15 @@ export interface GraphNode {
   version: string;
   scope: string;
   edges: Edge[];
+  // The package metadata row associated with this snapshot by the lockfile parser.
+  packageKey?: string;
   metadata: unknown;
   uncertain: boolean;
 }
 export interface DependencyGraph {
   nodes: Map<string, GraphNode>;
   warnings: string[];
+  incomplete?: boolean;
 }
 
 export const workspaceId = (path: string): string => `workspace:${path}`;

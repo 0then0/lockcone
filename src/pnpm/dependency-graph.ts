@@ -25,7 +25,7 @@ export interface PnpmState extends RepositoryState {
   overrides: OverrideState;
 }
 
-function identity(
+export function packageIdentity(
   key: string,
 ): { name: string; version: string; base: string } | undefined {
   const base = key.split('(')[0]!;
@@ -36,6 +36,32 @@ function identity(
     version: key.slice(separator + 1),
     base,
   };
+}
+
+export function isHttpUrl(value: unknown): value is string {
+  return (
+    typeof value === 'string' &&
+    /^https?:\/\/[^/?#\s\\][^\s\\]*$/i.test(value) &&
+    URL.canParse(value)
+  );
+}
+
+// A URL can itself contain parentheses. Consult the package rows at the full
+// snapshot key and at each boundary of its trailing pnpm context groups.
+function urlPackageKeys(key: string, packages: Lockfile['packages']): string[] {
+  const matches = Object.hasOwn(packages, key) ? [key] : [];
+  if (!key.endsWith(')')) return matches;
+  let depth = 0;
+  for (let index = key.length - 1; index >= 0; index--) {
+    if (key[index] === ')') depth++;
+    else if (key[index] === '(' && depth > 0 && --depth === 0) {
+      if (key[index + 1] === ')') break;
+      const candidate = key.slice(0, index);
+      if (Object.hasOwn(packages, candidate)) matches.push(candidate);
+    }
+    if (depth === 0 && key[index - 1] !== ')') break;
+  }
+  return matches;
 }
 
 function compileWorkspacePattern(pattern: string): RegExp | undefined {
@@ -119,12 +145,15 @@ export function buildPnpmState(repository: RepositoryState): PnpmState {
   const declarations = new Map<string, Declaration>();
   const graph: DependencyGraph = { nodes: new Map(), warnings: [] };
   const manifests = new Map<string, Manifest>();
-  const warn = (message: string): void => {
+  const warn = (message: string, incomplete = false): void => {
     graph.warnings.push(message);
+    if (incomplete) graph.incomplete = true;
   };
 
   const importerPaths = new Set(Object.keys(lockfile.importers));
-  const members = workspaceMembers(repository, workspace, importerPaths, warn);
+  const members = workspaceMembers(repository, workspace, importerPaths, (message) =>
+    warn(message, true),
+  );
   for (const path of [...members].sort()) {
     if (
       posix.isAbsolute(path) ||
@@ -140,7 +169,7 @@ export function buildPnpmState(repository: RepositoryState): PnpmState {
     const manifest = parseManifest(contents, manifestPath);
     manifests.set(path, manifest);
     if (!importerPaths.has(path)) {
-      warn(`Manifest/lockfile mismatch: ${manifestPath} has no importer.`);
+      warn(`Manifest/lockfile mismatch: ${manifestPath} has no importer.`, true);
     }
     graph.nodes.set(workspaceId(path), {
       id: workspaceId(path),
@@ -160,14 +189,24 @@ export function buildPnpmState(repository: RepositoryState): PnpmState {
   if (!manifests.has('.'))
     throw new Error('The lockfile must contain the root importer ".".');
 
+  const snapshotBases = new Set<string>();
   for (const [key, snapshot] of Object.entries(lockfile.snapshots)) {
-    const parsed = identity(key);
+    const parsed = packageIdentity(key);
     if (!parsed) {
-      warn(`Unsupported package identity: ${key}`);
+      warn(`Unsupported package identity: ${key}`, true);
       continue;
     }
-    const metadata = lockfile.packages[parsed.base];
-    if (!metadata) warn(`Missing package metadata: ${parsed.base}`);
+    const [packageKey, ...alternates] = /^https?:\/\//i.test(parsed.version)
+      ? urlPackageKeys(key, lockfile.packages)
+      : [parsed.base];
+    const metadata =
+      packageKey !== undefined && Object.hasOwn(lockfile.packages, packageKey)
+        ? lockfile.packages[packageKey]
+        : undefined;
+    if (packageKey !== undefined && metadata) snapshotBases.add(packageKey);
+    else warn(`Missing package metadata: ${packageKey ?? key}`, true);
+    if (alternates.length)
+      warn(`Ambiguous package metadata for snapshot: ${key}`, true);
     if (!/^\d+\.\d+\.\d+(?:[-+][^()]*)?$/.test(parsed.version.split('(')[0]!)) {
       warn(`Unsupported package resolution: ${key}`);
     }
@@ -178,20 +217,21 @@ export function buildPnpmState(repository: RepositoryState): PnpmState {
       version: parsed.version,
       scope: '',
       edges: [],
+      ...(packageKey !== undefined && metadata && !alternates.length
+        ? { packageKey }
+        : {}),
       metadata: { package: metadata, snapshot },
       uncertain:
-        key.includes('(') ||
+        key !== (packageKey ?? parsed.base) ||
+        alternates.length > 0 ||
         Object.keys(metadata?.peerDependencies ?? {}).length > 0 ||
         snapshot.transitivePeerDependencies.length > 0,
     });
   }
-  const snapshotBases = new Set(
-    Object.keys(lockfile.snapshots).map((key) => identity(key)?.base),
-  );
   for (const key of Object.keys(lockfile.packages)) {
     if (!snapshotBases.has(key)) {
       // Retain orphan metadata changes instead of silently dropping them.
-      const parsed = identity(key);
+      const parsed = packageIdentity(key);
       if (parsed)
         graph.nodes.set(key, {
           id: key,
@@ -203,7 +243,7 @@ export function buildPnpmState(repository: RepositoryState): PnpmState {
           metadata: { package: lockfile.packages[key] },
           uncertain: true,
         });
-      warn(`Package metadata has no snapshot: ${key}`);
+      warn(`Package metadata has no snapshot: ${key}`, true);
     }
   }
 
@@ -214,15 +254,14 @@ export function buildPnpmState(repository: RepositoryState): PnpmState {
       if (graph.nodes.has(target)) return target;
     } else {
       // Alias resolutions contain the real package name; never match by name alone.
-      for (const candidate of [
-        `${name}@${reference}`,
-        reference.replace(/^npm:/, ''),
-      ]) {
-        if (graph.nodes.has(candidate)) return candidate;
-      }
+      const targets = [`${name}@${reference}`, reference.replace(/^npm:/, '')].filter(
+        (candidate) => graph.nodes.has(candidate),
+      );
+      if (targets.length === 1) return targets[0]!;
     }
     warn(
       `Unresolved dependency: ${importerPath ?? 'snapshot'}: ${name} -> ${reference}`,
+      true,
     );
     return `unresolved:${JSON.stringify([importerPath, name, reference])}`;
   }
@@ -282,7 +321,7 @@ export function buildPnpmState(repository: RepositoryState): PnpmState {
           continue;
         }
         if (!resolved || declared !== resolved.specifier) {
-          warn(`Manifest/lockfile mismatch: ${path} ${section}.${name}`);
+          warn(`Manifest/lockfile mismatch: ${path} ${section}.${name}`, !resolved);
         }
         const id = dependencyId(path, section, name);
         const declaredEvidence =

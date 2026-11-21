@@ -123,8 +123,11 @@ export function applies(
   return undefined;
 }
 
-export function parseInstance(id: string): PatchInstance | undefined {
-  const open = id.indexOf('(');
+export function parseInstance(
+  id: string,
+  packageKey?: string,
+): PatchInstance | undefined {
+  const open = id.indexOf('(', packageKey?.length ?? 0);
   const base = open < 0 ? id : id.slice(0, open);
   const separator = base.indexOf('@', base.startsWith('@') ? 1 : 0);
   if (separator <= 0) return undefined;

@@ -25,6 +25,8 @@ import type { PatchReport } from './patches.js';
 import { patchReport } from './patches.js';
 import type { PeerBindingReport } from './peers.js';
 import { comparePeerBindings } from './peers.js';
+import type { TarballIntegrityReport } from './tarball-integrity.js';
+import { compareTarballIntegrity } from './tarball-integrity.js';
 
 export type Confidence =
   | 'explained'
@@ -90,6 +92,7 @@ export interface Report {
   // Added in 0.5.0 without changing schemaVersion; see peerBindings.reportVersion.
   // Observed peer contexts only: it never changes a group's confidence or the warnings.
   peerBindings: PeerBindingReport;
+  tarballIntegrity: TarballIntegrityReport;
   changes: Change[];
   pathNodes: Record<string, EvidencePathNode>;
   warnings: string[];
@@ -581,6 +584,7 @@ export function diff(base: PnpmState, head: PnpmState): Report {
     patches: patchReport(base, head),
     overrides: overrides.report,
     peerBindings: comparePeerBindings(base, head),
+    tarballIntegrity: compareTarballIntegrity(base, head),
     changes,
     pathNodes,
     warnings: [...warnings].sort(),

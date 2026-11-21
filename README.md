@@ -92,8 +92,8 @@ resolution updates or deduplication are hypotheses, not detected causes.
   path and uncertainty reasons for each patch consumer.
 - `why <package>`: show changes for that exact package name, matching direct
   dependency entries, relevant declarations, evidence paths, patch and override
-  changes that name the package, and peer context changes of the package or of
-  instances that name it as a provider.
+  changes that name the package, tarball integrity losses, and peer context changes
+  of the package or of instances that name it as a provider.
 
 All commands accept `--base`, `--head`, `--cwd`, and `--format text|json`.
 Without refs they compare `HEAD~1..HEAD`. Two-dot ranges compare the named
@@ -267,6 +267,27 @@ provider, and it never changes a classification: an instance with a peer context
 stays `unknown`. See the [peer context reference](docs/peer-contract.md) for the
 evidence levels, pairing rules, JSON fields, and limits.
 
+## Tarball integrity losses
+
+LockCone reports a loss when the same `packages` key and the same explicit
+HTTP(S) `resolution.tarball` occur in both lockfiles, with a supported
+`resolution.integrity` string in base and the field absent in head. The baseline
+digest must be a single `sha1`, `sha256`, `sha384`, or `sha512` SRI token with
+canonical Base64 of the expected length. A changed key or URL, an empty or
+invalid value, and an unsupported resolution retain the ordinary metadata diff.
+
+Each loss lists the package key, the previous integrity value, and the direct and
+transitive workspace consumers of the snapshots linked on each side. Each reported
+consumer has one shortest path per linked snapshot. Coverage is `partial` when
+graph data is missing or ambiguous, or when the traversal limits omit results. The
+limits are 100 snapshot starts per side and 50 consumers per start. The paths
+describe committed dependencies. The
+[pnpm #14351 lab](docs/acceptance/pnpm-14351/README.md) checks the resulting installs
+separately.
+
+Text and JSON output mask HTTP(S) URL user info, query strings, and fragments with
+report-local labels. Comparisons use the original lockfile values.
+
 ## Supported inputs
 
 - pnpm dependency lockfile v9, optionally preceded by the environment document
@@ -320,8 +341,8 @@ lockcone diff --base origin/main --head HEAD --format json > lockcone-report.jso
 
 The JSON report uses `schemaVersion: 4` and includes resolved commit IDs,
 `manifestChanges`, `declarations`, `declarationChanges`, `catalogChanges`,
-`patches`, `overrides`, `peerBindings`, `changes`, `pathNodes`, `warnings`, and
-`summary`.
+`patches`, `overrides`, `peerBindings`, `tarballIntegrity`, `changes`, `pathNodes`,
+`warnings`, and `summary`.
 
 `manifestChanges` contains actual manifest edits. `declarations.base/head`
 separates original specifiers, catalog origins, effective ranges, observed
@@ -339,6 +360,10 @@ all without changing the schema version. Each carries its own `reportVersion`
 entry gets a `via` field only when its path starts at an override edge; evidence of
 declarations, catalogs, and patches is unchanged. Schema v4 consumers that ignore
 unknown fields keep working.
+
+`tarballIntegrity` has `reportVersion: 1`. Its `changes` contain `packageKey`,
+`tarball`, `integrity.before` and `integrity.after` (`null` for absence), and
+`base`/`head` snapshot instances, consumer paths, and coverage notes.
 
 Output is deterministic for equivalent input mappings. Successful JSON contains
 no diagnostic text; failures go to stderr. Consumers must explicitly support

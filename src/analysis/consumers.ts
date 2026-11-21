@@ -30,7 +30,7 @@ export function nodeUncertainty(graph: DependencyGraph, id: string): string[] {
     return [
       `${id}: the dependency entry is marked uncertain (a declaration issue or an uncertain resolved package)`,
     ];
-  const instance = parseInstance(id);
+  const instance = parseInstance(id, node.packageKey);
   const metadata = node.metadata as {
     package?: { peerDependencies?: Record<string, string> };
     snapshot?: { transitivePeerDependencies?: string[] };
